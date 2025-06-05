@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 23, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["import { withAuth } from 'next-auth/middleware'\n\nexport default withAuth(\n  function middleware(req) {\n    // Add any additional middleware logic here\n  },\n  {\n    callbacks: {\n      authorized: ({ token, req }) => {\n        // Check if user is authenticated for protected routes\n        if (req.nextUrl.pathname.startsWith('/dashboard')) {\n          return !!token\n        }\n        if (req.nextUrl.pathname.startsWith('/api/protected')) {\n          return !!token\n        }\n        return true\n      },\n    },\n  }\n)\n\nexport const config = {\n  matcher: [\n    '/dashboard/:path*',\n    '/api/protected/:path*',\n  ]\n}\n\n"],"names":[],"mappings":";;;;AAAA;;uCAEe,CAAA,GAAA,kJAAA,CAAA,WAAQ,AAAD,EACpB,SAAS,WAAW,GAAG;AACrB,2CAA2C;AAC7C,GACA;IACE,WAAW;QACT,YAAY,CAAC,EAAE,KAAK,EAAE,GAAG,EAAE;YACzB,sDAAsD;YACtD,IAAI,IAAI,OAAO,CAAC,QAAQ,CAAC,UAAU,CAAC,eAAe;gBACjD,OAAO,CAAC,CAAC;YACX;YACA,IAAI,IAAI,OAAO,CAAC,QAAQ,CAAC,UAAU,CAAC,mBAAmB;gBACrD,OAAO,CAAC,CAAC;YACX;YACA,OAAO;QACT;IACF;AACF;AAGK,MAAM,SAAS;IACpB,SAAS;QACP;QACA;KACD;AACH"}}]
-}
