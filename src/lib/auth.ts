@@ -4,7 +4,15 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 // Get current user session on server side
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions)
-  return session?.user || null
+  if (!session?.user) return null
+  
+  // Return user with id (using email as fallback ID for now)
+  return {
+    id: session.user.email || 'unknown',
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image
+  }
 }
 
 // Get user profile from database (simplified for now)
