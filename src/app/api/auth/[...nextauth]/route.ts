@@ -1,4 +1,6 @@
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,22 +11,26 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const { email, password } = credentials ?? {};
+        // Temporary hardcoded login for testing
+        const user = {
+          id: "1",
+          name: "Test User",
+          email: credentials?.email,
+        };
 
-        // Dummy check (for development only)
-        if (email === "admin@example.com" && password === "admin123") {
-          return { id: "1", name: "Admin", email: "admin@example.com" };
+        if (credentials?.email && credentials?.password) {
+          return user;
         }
 
-        // No match
         return null;
       },
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-  },
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
+
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
