@@ -22,6 +22,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const user = await getCurrentUser()
   const hasPurchased = user ? await userHasPurchasedProduct(user.id, product.id) : false
 
+  // Debug logging
+  console.log('=== PRODUCT DEBUG ===', product)
+  console.log('Product slug:', product.slug)
+  console.log('Params slug:', params.slug)
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
@@ -31,11 +36,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Product Hero */}
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Image/Video */}
             <div className="space-y-4">
               <div className="relative h-96 bg-gradient-to-br from-[#263976] to-[#00c3ff] rounded-lg overflow-hidden">
                 {product.thumbnail_url ? (
@@ -63,7 +66,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
 
-              {/* Product Features */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-100 rounded-lg p-4 text-center">
                   <Download className="w-6 h-6 mx-auto mb-2 text-[#263976]" />
@@ -84,7 +86,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
 
-            {/* Product Details */}
             <div className="space-y-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">
@@ -105,7 +106,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </p>
               </div>
 
-              {/* Price and Purchase */}
               <div className="bg-gray-50 rounded-lg p-6" id="buy">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 ) : user ? (
                   <div className="space-y-3">
                     <CheckoutButton 
-                      productId={product.id}
+                      productSlug={product.slug || params.slug}
                       className="w-full"
                     >
                       Buy Now
@@ -158,7 +158,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
 
-              {/* What's Included */}
               <div className="border border-gray-200 rounded-lg p-6">
                 <h3 className="font-semibold mb-4">What's Included:</h3>
                 <ul className="space-y-2">
@@ -188,45 +187,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
-
-      {/* Product Description */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h2 className="text-2xl font-bold mb-6">Product Details</h2>
-          
-          <div className="prose max-w-none">
-            <h3>About This Product</h3>
-            <p>
-              The Qualification Compliance Checker is an essential tool for UK sponsors who need to verify 
-              that their sponsored workers meet Home Office qualification requirements. This comprehensive 
-              template has been developed by immigration experts with years of experience in sponsor compliance.
-            </p>
-
-            <h3>Key Features</h3>
-            <ul>
-              <li>Pre-built qualification assessment framework</li>
-              <li>Home Office compliant documentation templates</li>
-              <li>Risk assessment and mitigation strategies</li>
-              <li>Audit trail and record-keeping guidance</li>
-              <li>Regular updates to reflect policy changes</li>
-            </ul>
-
-            <h3>Who Is This For?</h3>
-            <p>
-              This product is designed for UK sponsor licence holders, HR professionals, immigration 
-              advisers, and compliance officers who need to ensure their sponsored workers meet the 
-              necessary qualification requirements.
-            </p>
-
-            <h3>Support</h3>
-            <p>
-              Purchase includes 30 days of email support to help you implement the templates and 
-              guidance effectively. Our team of immigration experts is here to help you succeed.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
-
