@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     const { data: existingPurchase } = await supabase
       .from('purchases')
       .select('id')
-      .eq('user_id', session.user.id)
+      .eq('user_id', session.user.email)
       .eq('product_id', product.id)
       .eq('status', 'completed')
       .single()
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.slug}?canceled=true`,
       customer_email: session.user.email || undefined,
       metadata: {
-        userId: session.user.id,
+        userId: session.user.email,
         productId: product.id,
         productSlug: product.slug,
       },
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     await supabase
       .from('purchases')
       .insert({
-        user_id: session.user.id,
+        user_id: session.user.email,
         product_id: product.id,
         stripe_session_id: checkoutSession.id,
         amount: product.price,
@@ -117,4 +117,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
