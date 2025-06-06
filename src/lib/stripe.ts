@@ -5,14 +5,10 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-06-20',
+  apiVersion: '2023-10-16',
 })
 
-export const formatAmountForStripe = (amount: number): number => {
-  return Math.round(amount * 100) // Convert to pence
+export function formatAmountForStripe(amount: number): number {
+  // Convert pounds to pence (multiply by 100)
+  return Math.round(amount * 100)
 }
-
-export const formatAmountFromStripe = (amount: number): number => {
-  return amount / 100 // Convert from pence to pounds
-}
-
