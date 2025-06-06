@@ -78,7 +78,7 @@ export default function Header() {
             ) : (
               <div className="flex items-center space-x-4">
                 <Link
-                  href="/auth/signin"
+                  href="/api/auth/signin"
                   className="text-gray-700 hover:text-[#263976] px-3 py-2 text-sm font-medium transition-colors"
                 >
                   Sign In
@@ -161,7 +161,7 @@ export default function Header() {
               ) : (
                 <div className="border-t border-gray-200 pt-4 space-y-2">
                   <Link
-                    href="/auth/signin"
+                    href="/api/auth/signin"
                     className="block text-gray-700 hover:text-[#263976] px-3 py-2 text-base font-medium"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -183,4 +183,3 @@ export default function Header() {
     </header>
   )
 }
-
