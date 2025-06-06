@@ -146,7 +146,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <Link href="/auth/signin">
+                    <Link href="/api/auth/signin">
                       <Button className="w-full" size="lg">
                         Sign In to Purchase
                       </Button>
