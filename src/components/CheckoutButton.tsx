@@ -3,16 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from './Button'
-import { Product } from '@/types/database'
 
 interface CheckoutButtonProps {
-  productId: string
+  productSlug: string
   className?: string
   children?: React.ReactNode
 }
 
 export default function CheckoutButton({ 
-  productId, 
+  productSlug, 
   className,
   children = 'Buy Now'
 }: CheckoutButtonProps) {
@@ -23,7 +22,7 @@ export default function CheckoutButton({
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/checkout?productId=${productId}`)
+      const response = await fetch(`/api/checkout?productSlug=${productSlug}`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -55,4 +54,3 @@ export default function CheckoutButton({
     </Button>
   )
 }
-
