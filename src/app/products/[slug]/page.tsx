@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 ) : user ? (
                   <div className="space-y-3">
                     <CheckoutButton 
-                      productSlug={product.slug || params.slug}
+                      productSlug="sponsor-licence-audit-toolkit"
                       className="w-full"
                     >
                       Buy Now
