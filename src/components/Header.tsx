@@ -3,13 +3,15 @@
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
-import { Menu, X, User, LogOut, ShoppingBag } from 'lucide-react'
+import { Menu, X, User, LogOut, ShoppingBag, ChevronDown } from 'lucide-react'
 
 export default function Header() {
   const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const toggleProductsDropdown = () => setIsProductsDropdownOpen(!isProductsDropdownOpen)
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -34,12 +36,44 @@ export default function Header() {
             >
               Home
             </Link>
-            <Link
-              href="/products"
-              className="text-gray-700 hover:text-[#263976] px-3 py-2 text-sm font-medium transition-colors"
-            >
-              Products
-            </Link>
+            
+            {/* Products Dropdown */}
+            <div className="relative">
+              <button
+                onClick={toggleProductsDropdown}
+                className="flex items-center text-gray-700 hover:text-[#263976] px-3 py-2 text-sm font-medium transition-colors"
+                onMouseEnter={() => setIsProductsDropdownOpen(true)}
+                onMouseLeave={() => setIsProductsDropdownOpen(false)}
+              >
+                Products
+                <ChevronDown className="w-4 h-4 ml-1" />
+              </button>
+              
+              {/* Dropdown Menu */}
+              {isProductsDropdownOpen && (
+                <div 
+                  className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+                  onMouseEnter={() => setIsProductsDropdownOpen(true)}
+                  onMouseLeave={() => setIsProductsDropdownOpen(false)}
+                >
+                  <div className="py-1">
+                    <Link
+                      href="/products"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#263976] transition-colors"
+                    >
+                      Digital Compliance
+                    </Link>
+                    <Link
+                      href="/ai-compliance"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#263976] transition-colors"
+                    >
+                      AI Compliance
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <Link
               href="/about"
               className="text-gray-700 hover:text-[#263976] px-3 py-2 text-sm font-medium transition-colors"
@@ -115,13 +149,36 @@ export default function Header() {
               >
                 Home
               </Link>
-              <Link
-                href="/products"
-                className="block text-gray-700 hover:text-[#263976] px-3 py-2 text-base font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Products
-              </Link>
+              
+              {/* Mobile Products Section */}
+              <div>
+                <button
+                  onClick={toggleProductsDropdown}
+                  className="flex items-center justify-between w-full text-gray-700 hover:text-[#263976] px-3 py-2 text-base font-medium"
+                >
+                  Products
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isProductsDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isProductsDropdownOpen && (
+                  <div className="pl-6 space-y-1">
+                    <Link
+                      href="/products"
+                      className="block text-gray-600 hover:text-[#263976] px-3 py-2 text-base"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Digital Compliance
+                    </Link>
+                    <Link
+                      href="/ai-compliance"
+                      className="block text-gray-600 hover:text-[#263976] px-3 py-2 text-base"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      AI Compliance
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
               <Link
                 href="/about"
                 className="block text-gray-700 hover:text-[#263976] px-3 py-2 text-base font-medium"
@@ -183,3 +240,4 @@ export default function Header() {
     </header>
   )
 }
+
