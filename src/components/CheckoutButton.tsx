@@ -1,71 +1,99 @@
-// Updated for test keys - v2
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import Button from './Button'
+import { ShoppingCart, Loader2 } from 'lucide-react'
 
 interface CheckoutButtonProps {
-  productSlug: string
+  productId: string
+  productName: string
+  price: string
   className?: string
-  children?: React.ReactNode
 }
 
 export default function CheckoutButton({ 
-  productSlug, 
-  className,
-  children = 'Buy Now'
+  productId, 
+  productName, 
+  price, 
+  className = '' 
 }: CheckoutButtonProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleCheckout = async () => {
-    setIsLoading(true)
+    // Check if user is authenticated
+    if (status === 'loading') return
     
-    // Debug logging
-    console.log('=== CHECKOUT DEBUG ===')
-    console.log('CheckoutButton clicked with productSlug:', productSlug)
+    if (!session) {
+      router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
+      return
+    }
+
+    setLoading(true)
+    setError('')
 
     try {
-      const apiUrl = `/api/checkout?productSlug=${productSlug}`
-      console.log('Calling API URL:', apiUrl)
-      
-      const response = await fetch(apiUrl)
-      console.log('Response status:', response.status)
-      console.log('Response ok:', response.ok)
-      
+      // Create checkout session
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId
+        }),
+      })
+
       const data = await response.json()
-      console.log('Response data:', data)
 
-      if (!response.ok) {
-        console.log('Response not ok, throwing error:', data.error)
-        throw new Error(data.error || 'Checkout failed')
-      }
-
-      // Redirect to Stripe Checkout
-      if (data.url) {
-        console.log('Success! Redirecting to Stripe URL:', data.url)
+      if (data.success && data.url) {
+        // Redirect to Stripe checkout
         window.location.href = data.url
       } else {
-        console.log('No URL in response, throwing error')
-        throw new Error('No checkout URL returned')
+        setError(data.message || 'Failed to create checkout session')
       }
-    } catch (error: any) {
-      console.error('=== CHECKOUT ERROR ===', error)
-      alert(`Failed to initiate checkout: ${error?.message || 'Unknown error'}`)
+    } catch (error) {
+      console.error('Checkout error:', error)
+      setError('An error occurred. Please try again.')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
+  const defaultClassName = "w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#263976] hover:bg-[#1a2557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#263976] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+
   return (
-    <Button 
-      onClick={handleCheckout} 
-      isLoading={isLoading}
-      disabled={isLoading}
-      className={className}
-    >
-      {children}
-    </Button>
+    <div className="space-y-2">
+      <button
+        onClick={handleCheckout}
+        disabled={loading || status === 'loading'}
+        className={className || defaultClassName}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="h-5 w-5 mr-2" />
+            Buy Now - {price}
+          </>
+        )}
+      </button>
+
+      {error && (
+        <p className="text-sm text-red-600 text-center">{error}</p>
+      )}
+
+      {!session && status !== 'loading' && (
+        <p className="text-sm text-gray-600 text-center">
+          You'll be asked to sign in before checkout
+        </p>
+      )}
+    </div>
   )
 }
