@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OTPService, checkRateLimit } from '@/lib/auth'
+import { OTPService, checkRateLimit } from '@/lib/enhanced_auth'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, otpCode, purpose } = body
+    const { email, purpose } = body
 
     // Validate input
-    if (!email || !otpCode || !purpose) {
+    if (!email || !purpose) {
       return NextResponse.json(
-        { success: false, message: 'Email, OTP code, and purpose are required' },
+        { success: false, message: 'Email and purpose are required' },
         { status: 400 }
       )
     }
@@ -23,15 +23,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate OTP code format (6 digits)
-    const otpRegex = /^\d{6}$/
-    if (!otpRegex.test(otpCode)) {
-      return NextResponse.json(
-        { success: false, message: 'OTP code must be 6 digits' },
-        { status: 400 }
-      )
-    }
-
     // Validate purpose
     const validPurposes = ['signup', 'login', 'password_reset']
     if (!validPurposes.includes(purpose)) {
@@ -41,13 +32,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Rate limiting - 10 verification attempts per 15 minutes per email
-    const rateLimitKey = 'otp_verify_' + email
-    if (!checkRateLimit(rateLimitKey, 10, 15 * 60 * 1000)) {
+    // Rate limiting - 5 attempts per 15 minutes per email
+    const rateLimitKey = 'otp_send_' + email
+    if (!checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000)) {
       return NextResponse.json(
         { 
           success: false, 
-          message: 'Too many verification attempts. Please wait 15 minutes before trying again.' 
+          message: 'Too many OTP requests. Please wait 15 minutes before trying again.' 
         },
         { status: 429 }
       )
@@ -58,8 +49,8 @@ export async function POST(request: NextRequest) {
                     request.headers.get('x-real-ip') || 
                     'unknown'
     
-    const ipRateLimitKey = 'otp_verify_ip_' + clientIP
-    if (!checkRateLimit(ipRateLimitKey, 20, 15 * 60 * 1000)) {
+    const ipRateLimitKey = 'otp_send_ip_' + clientIP
+    if (!checkRateLimit(ipRateLimitKey, 10, 15 * 60 * 1000)) {
       return NextResponse.json(
         { 
           success: false, 
@@ -69,34 +60,32 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify OTP
-    const result = await OTPService.verifyOTP(email, otpCode, purpose)
+    // Send OTP
+    const result = await OTPService.sendOTP(email, purpose as 'signup' | 'login' | 'password_reset')
 
     if (result.success) {
-      // Log successful verification (for monitoring)
-      console.log('OTP verified successfully for ' + email + ' with purpose ' + purpose)
+      // Log successful OTP send (for monitoring)
+      console.log('OTP sent successfully to ' + email + ' for ' + purpose)
       
       return NextResponse.json({
         success: true,
-        message: 'OTP verified successfully',
-        data: {
-          email,
-          purpose,
-          verifiedAt: new Date().toISOString()
-        }
+        message: 'OTP sent successfully. Please check your email.',
+        // Don't include the actual OTP code in production
+        ...(process.env.NODE_ENV === 'development' && { 
+          debug: 'Check console for OTP code in development mode' 
+        })
       })
     } else {
-      // Log failed verification attempt
-      console.log('OTP verification failed for ' + email + ': ' + result.message)
+      console.error('Failed to send OTP to ' + email + ':', result.message)
       
       return NextResponse.json(
         { success: false, message: result.message },
-        { status: 400 }
+        { status: 500 }
       )
     }
 
   } catch (error) {
-    console.error('Verify OTP API error:', error)
+    console.error('Send OTP API error:', error)
     
     return NextResponse.json(
       { 
