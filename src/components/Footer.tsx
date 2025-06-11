@@ -12,7 +12,7 @@ export default function Footer() {
             <div className="flex items-center mb-4">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/logos/logo.png"
+                  src="/logos/complians-logo-white.png"
                   alt="Complians"
                   width={140}
                   height={35}
@@ -45,8 +45,18 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Home
+                <Link href="/ai-agents" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  AI Agents
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-compliance" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Qualification Compliance
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-salary-compliance" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Salary Compliance
                 </Link>
               </li>
               <li>
@@ -55,50 +65,35 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/ai-agents" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  AI Agents
-                </Link>
-              </li>
-              <li>
                 <Link href="/about" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
                   About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Dashboard
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Legal & Support */}
+          {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Legal & Support</h3>
+            <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Privacy Policy
+                <Link href="/contact" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Terms of Service
+                <Link href="/help" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Help Center
                 </Link>
               </li>
               <li>
-                <Link href="/refunds" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Refund Policy
+                <Link href="/documentation" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Documentation
                 </Link>
               </li>
               <li>
-                <Link href="/support" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Support Center
+                <Link href="/tutorials" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Tutorials
                 </Link>
               </li>
               <li>
