@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function Footer() {
@@ -9,14 +10,19 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3">
-                <span className="text-[#263976] font-bold text-lg">C</span>
-              </div>
-              <span className="text-xl font-bold">Complians</span>
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/logos/logo.png"
+                  alt="Complians"
+                  width={140}
+                  height={35}
+                  className="h-7 w-auto"
+                />
+              </Link>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
-              Professional compliance tools and resources for UK sponsors and immigration professionals. 
-              Simplifying complex compliance requirements with expert-designed templates and guidance.
+              Professional compliance tools and AI-powered solutions for sponsor compliance and immigration professionals. 
+              Simplifying complex compliance requirements with expert-designed templates and intelligent automation.
             </p>
             <div className="space-y-2">
               <div className="flex items-center text-gray-300">
@@ -45,7 +51,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/products" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
-                  Products
+                  Digital Tools
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-agents" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  AI Agents
                 </Link>
               </li>
               <li>
@@ -120,4 +131,3 @@ export default function Footer() {
     </footer>
   )
 }
-
