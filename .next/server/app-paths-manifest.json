@@ -1,7 +1,1 @@
-{
-  "/ai-agents/page": "app/ai-agents/page.js",
-  "/ai-compliance/page": "app/ai-compliance/page.js",
-  "/ai-salary-compliance/page": "app/ai-salary-compliance/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
-}
+{}
