@@ -64,10 +64,22 @@ export default function Header() {
                       Digital Compliance
                     </Link>
                     <Link
+                      href="/ai-agents"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#263976] transition-colors"
+                    >
+                      AI Agents
+                    </Link>
+                    <Link
                       href="/ai-compliance"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#263976] transition-colors"
                     >
-                      AI Compliance
+                      AI Qualification Compliance
+                    </Link>
+                    <Link
+                      href="/ai-salary-compliance"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#263976] transition-colors"
+                    >
+                      AI Salary Compliance
                     </Link>
                   </div>
                 </div>
@@ -169,11 +181,25 @@ export default function Header() {
                       Digital Compliance
                     </Link>
                     <Link
+                      href="/ai-agents"
+                      className="block text-gray-600 hover:text-[#263976] px-3 py-2 text-base"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      AI Agents
+                    </Link>
+                    <Link
                       href="/ai-compliance"
                       className="block text-gray-600 hover:text-[#263976] px-3 py-2 text-base"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      AI Compliance
+                      AI Qualification Compliance
+                    </Link>
+                    <Link
+                      href="/ai-salary-compliance"
+                      className="block text-gray-600 hover:text-[#263976] px-3 py-2 text-base"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      AI Salary Compliance
                     </Link>
                   </div>
                 )}
