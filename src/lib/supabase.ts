@@ -1,56 +1,14 @@
-// src/lib/supabase.ts
-'use client'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+﻿// src/lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
 
-// Factory function - creates client when called, not at module load
-export const createSupabaseClient = () => {
-  return createClientComponentClient()
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+// Check if the environment variables are set
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Please make sure you have NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file'
+  );
 }
 
-// API functions that create client when called
-export const workerProfileApi = {
-  create: async (data: any) => {
-    const supabase = createSupabaseClient() // Create fresh client each time
-    const { data: result, error } = await supabase
-      .from('workers')
-      .insert(data)
-      .select()
-    
-    if (error) throw error
-    return result
-  },
-
-  update: async (id: string, data: any) => {
-    const supabase = createSupabaseClient()
-    const { data: result, error } = await supabase
-      .from('workers')
-      .update(data)
-      .eq('id', id)
-      .select()
-    
-    if (error) throw error
-    return result
-  },
-
-  getAll: async () => {
-    const supabase = createSupabaseClient()
-    const { data, error } = await supabase
-      .from('workers')
-      .select('*')
-    
-    if (error) throw error
-    return data
-  },
-
-  // Alias for backwards compatibility
-  createWorker: async (data: any) => {
-    const supabase = createSupabaseClient()
-    const { data: result, error } = await supabase
-      .from('workers')
-      .insert(data)
-      .select()
-    
-    if (error) throw error
-    return result
-  }
-}
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
