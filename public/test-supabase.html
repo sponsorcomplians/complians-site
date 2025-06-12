@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workers Form Test</title>
+</head>
+<body>
+    <h1>Test Workers Form</h1>
+    
+    <form id="workerForm">
+        <div style="margin: 10px 0;">
+            <label>Name: <input type="text" name="name" value="John Doe" required style="margin-left: 10px; padding: 5px;"></label>
+        </div>
+        <div style="margin: 10px 0;">
+            <label>Email: <input type="email" name="email" value="john@test.com" required style="margin-left: 10px; padding: 5px;"></label>
+        </div>
+        <div style="margin: 10px 0;">
+            <label>Position: <input type="text" name="position" value="Developer" required style="margin-left: 10px; padding: 5px;"></label>
+        </div>
+        <button type="submit" style="padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer;">Add Worker</button>
+    </form>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ddd;"></div>
+
+    <script>
+        document.getElementById('workerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const workerData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                position: formData.get('position')
+            };
+            
+            const url = 'https://ounxkplozusdysevpjan.supabase.co';
+            const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91bnhrcGxvenVzZHlzZXZwamFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ2NDUwNDksImV4cCI6MjA1MDIyMTA0OX0.mS3SNXUU_QXZV8Nj9rRzaXcJ_9x7S2v5cQrJeOl1_VE';
+            
+            document.getElementById('result').innerHTML = '<p>Testing worker creation...</p>';
+            
+            try {
+                const response = await fetch(url + '/rest/v1/workers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': key,
+                        'Authorization': `Bearer ${key}`,
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(workerData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = 
+                        '<p style="color: green;">✅ SUCCESS! Worker created successfully!</p><pre>' + JSON.stringify(result, null, 2) + '</pre>';
+                } else {
+                    document.getElementById('result').innerHTML = 
+                        '<p style="color: red;">❌ Error: ' + JSON.stringify(result, null, 2) + '</p>';
+                }
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    '<p style="color: red;">❌ Network Error: ' + error.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>

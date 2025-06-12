@@ -1,5 +1,15 @@
-import { supabase, supabaseAdmin } from './supabase'
+// src/lib/auth.ts
+import { createSupabaseClient } from './supabase'
+import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+
+// Create admin client for server-side operations
+const createSupabaseAdminClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY! // You'll need this in your .env.local
+  
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
 
 // OTP Service for generating and verifying codes
 export class OTPService {
@@ -16,6 +26,7 @@ export class OTPService {
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes from now
 
       // Store OTP in database
+      const supabaseAdmin = createSupabaseAdminClient()
       const { error: insertError } = await supabaseAdmin
         .from('otp_verifications')
         .insert({
@@ -49,6 +60,7 @@ export class OTPService {
   static async verifyOTP(email: string, otpCode: string, purpose: 'signup' | 'login' | 'password_reset'): Promise<{ success: boolean; message: string }> {
     try {
       // Find valid OTP
+      const supabaseAdmin = createSupabaseAdminClient()
       const { data: otpRecord, error: fetchError } = await supabaseAdmin
         .from('otp_verifications')
         .select('*')
@@ -88,6 +100,7 @@ export class OTPService {
 // User management functions
 export async function getUserProfile(email: string) {
   try {
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: profile, error } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -116,6 +129,7 @@ export async function createUserProfile(userData: {
   industry?: string
 }) {
   try {
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: profile, error } = await supabaseAdmin
       .from('profiles')
       .insert({
@@ -144,6 +158,7 @@ export async function createUserProfile(userData: {
 
 export async function updateUserProfile(email: string, updates: any) {
   try {
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: profile, error } = await supabaseAdmin
       .from('profiles')
       .update(updates)
@@ -168,6 +183,7 @@ export async function getUserPurchases(email: string) {
     const profile = await getUserProfile(email)
     if (!profile) return []
 
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: purchases, error } = await supabaseAdmin
       .from('purchases')
       .select('*')
@@ -191,6 +207,7 @@ export async function getUserProductAccess(email: string) {
     const profile = await getUserProfile(email)
     if (!profile) return []
 
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: access, error } = await supabaseAdmin
       .from('product_access')
       .select('*')
@@ -265,6 +282,7 @@ export async function userHasPurchasedProduct(userEmail: string, productId: stri
     const profile = await getUserProfile(userEmail)
     if (!profile) return false
 
+    const supabaseAdmin = createSupabaseAdminClient()
     const { data: purchase, error } = await supabaseAdmin
       .from('purchases')
       .select('id')

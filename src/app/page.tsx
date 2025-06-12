@@ -347,3 +347,4 @@ export default async function Home() {
   )
 }
 
+import VideoPlayer from '@/components/VideoPlayer'

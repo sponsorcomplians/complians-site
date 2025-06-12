@@ -1,20 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
-  eslint: {
-    // Disable ESLint during builds for deployment
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Disable TypeScript errors during builds for deployment
-    ignoreBuildErrors: true,
-  },
- 
-  trailingSlash: true,
   images: {
-    unoptimized: true,
+    domains: [
+      'ounxkplozusdysevpjan.supabase.co', // Add this line
+      // ... any other domains you might have
+    ],
   },
-}
+};
 
-module.exports = nextConfig
-
+module.exports = nextConfig;

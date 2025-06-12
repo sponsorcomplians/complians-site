@@ -1,19 +1,56 @@
-import { createClient } from '@supabase/supabase-js'
+// src/lib/supabase.ts
+'use client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Factory function - creates client when called, not at module load
+export const createSupabaseClient = () => {
+  return createClientComponentClient()
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// API functions that create client when called
+export const workerProfileApi = {
+  create: async (data: any) => {
+    const supabase = createSupabaseClient() // Create fresh client each time
+    const { data: result, error } = await supabase
+      .from('workers')
+      .insert(data)
+      .select()
+    
+    if (error) throw error
+    return result
+  },
 
-// Server-side client with service role key for admin operations
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+  update: async (id: string, data: any) => {
+    const supabase = createSupabaseClient()
+    const { data: result, error } = await supabase
+      .from('workers')
+      .update(data)
+      .eq('id', id)
+      .select()
+    
+    if (error) throw error
+    return result
+  },
+
+  getAll: async () => {
+    const supabase = createSupabaseClient()
+    const { data, error } = await supabase
+      .from('workers')
+      .select('*')
+    
+    if (error) throw error
+    return data
+  },
+
+  // Alias for backwards compatibility
+  createWorker: async (data: any) => {
+    const supabase = createSupabaseClient()
+    const { data: result, error } = await supabase
+      .from('workers')
+      .insert(data)
+      .select()
+    
+    if (error) throw error
+    return result
   }
-)
-
+}
