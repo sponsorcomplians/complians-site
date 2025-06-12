@@ -1,8 +1,1 @@
-{
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/test-worker/route": "app/api/test-worker/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/reports/page": "app/reports/page.js",
-  "/workers/[id]/page": "app/workers/[id]/page.js",
-  "/workers/new/page": "app/workers/new/page.js"
-}
+{}
