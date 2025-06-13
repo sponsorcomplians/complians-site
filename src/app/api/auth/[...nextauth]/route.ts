@@ -1,5 +1,5 @@
 // src/app/api/auth/[...nextauth]/route.ts
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
@@ -9,7 +9,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -23,7 +23,6 @@ const authOptions = {
         }
 
         try {
-          // Get user from Supabase
           const { data: user, error } = await supabase
             .from('users')
             .select('*')
@@ -34,14 +33,12 @@ const authOptions = {
             return null
           }
 
-          // Verify password
           const passwordMatch = await bcrypt.compare(credentials.password, user.password_hash)
           
           if (!passwordMatch) {
             return null
           }
 
-          // Check if email is verified
           if (!user.email_verified) {
             throw new Error('Please verify your email before signing in.')
           }
@@ -59,20 +56,19 @@ const authOptions = {
     })
   ],
   session: {
-    strategy: 'jwt' as const
+    strategy: 'jwt'
   },
   pages: {
-    signIn: '/auth/signin',
-    signUp: '/auth/signup'
+    signIn: '/auth/signin'
   },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
       }
       return token
     },
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (token?.id) {
         session.user.id = token.id as string
       }
