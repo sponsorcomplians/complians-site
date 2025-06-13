@@ -1,218 +1,301 @@
-'use client'
+import React, { useState, FormEvent, ChangeEvent } from 'react'
+import { supabase } from '@/lib/supabase'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Worker, workerProfileApi } from '@/lib/supabase'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { DatePicker } from '@/components/ui/date-picker'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { AlertCircle } from 'lucide-react'
-import { format } from 'date-fns'
+interface WorkerProfileFormData {
+  full_name: string
+  email: string
+  phone: string
+  specialization: string
+  experience_years: number
+  hourly_rate: number
+  bio: string
+  availability: string
+}
 
-export default function WorkerProfileForm({ worker }: { worker?: Worker }) {
-  const router = useRouter()
-  const isEditing = !!worker
+export function WorkerProfileForm() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const [errors, setErrors] = useState<Partial<WorkerProfileFormData>>({})
   
-  const [formData, setFormData] = useState({
-    first_name: worker?.first_name || '',
-    last_name: worker?.last_name || '',
-    date_of_birth: worker?.date_of_birth ? new Date(worker.date_of_birth) : undefined,
-    nationality: worker?.nationality || '',
-    passport_number: worker?.passport_number || '',
-    email: worker?.email || '',
-    phone: worker?.phone || ''
+  const [formData, setFormData] = useState<WorkerProfileFormData>({
+    full_name: '',
+    email: '',
+    phone: '',
+    specialization: '',
+    experience_years: 0,
+    hourly_rate: 0,
+    bio: '',
+    availability: ''
   })
-  
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-  
-  const handleDateChange = (date: Date | undefined) => {
-    setFormData(prev => ({ ...prev, date_of_birth: date }))
-  }
-  
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const workerData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        date_of_birth: formData.date_of_birth ? format(formData.date_of_birth, 'yyyy-MM-dd') : '',
-        nationality: formData.nationality,
-        passport_number: formData.passport_number,
-        email: formData.email,
-        phone: formData.phone
-      }
-      
-      if (isEditing && worker) {
-        await workerProfileApi.updateWorker(worker.id, workerData)
-        router.push(`/workers/${worker.id}`)
-      } else {
-        const newWorker = await workerProfileApi.createWorker(workerData)
-        router.push(`/workers/${newWorker.id}`)
-      }
-    } catch (err) {
-      console.error('Error saving worker:', err)
-      setError('Failed to save worker profile. Please try again.')
-    } finally {
-      setLoading(false)
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'experience_years' || name === 'hourly_rate' ? Number(value) : value
+    }))
+    // Clear error for this field when user starts typing
+    if (errors[name as keyof WorkerProfileFormData]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }))
     }
   }
-  
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<WorkerProfileFormData> = {}
+    
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full name is required'
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
+      newErrors.email = 'Invalid email address'
+    }
+    
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required'
+    }
+    
+    if (!formData.specialization) {
+      newErrors.specialization = 'Please select a specialization'
+    }
+    
+    if (formData.experience_years < 0) {
+      newErrors.experience_years = 'Experience cannot be negative' as any
+    }
+    
+    if (formData.hourly_rate < 0) {
+      newErrors.hourly_rate = 'Rate cannot be negative' as any
+    }
+    
+    if (!formData.availability) {
+      newErrors.availability = 'Please select availability'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      setMessage('')
+
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError || !user) {
+        throw new Error('User not authenticated')
+      }
+
+      // Insert or update worker profile directly using Supabase
+      const { error } = await supabase
+        .from('worker_profiles')
+        .upsert({
+          user_id: user.id,
+          ...formData,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      setMessage('Profile updated successfully!')
+      // Reset form
+      setFormData({
+        full_name: '',
+        email: '',
+        phone: '',
+        specialization: '',
+        experience_years: 0,
+        hourly_rate: 0,
+        bio: '',
+        availability: ''
+      })
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      setMessage('Error updating profile. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">
-          {isEditing ? 'Edit Worker Profile' : 'Add New Worker'}
-        </h1>
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 mb-6">
-            <div className="flex items-center">
-              <AlertCircle size={18} className="mr-2" />
-              {error}
-            </div>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-6">Worker Profile</h2>
+      
+      {message && (
+        <div className={`p-4 rounded-md ${message.includes('Error') ? 'bg-red-50 text-red-800' : 'bg-green-50 text-green-800'}`}>
+          {message}
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="full_name" className="block text-sm font-medium text-gray-700">
+          Full Name
+        </label>
+        <input
+          type="text"
+          id="full_name"
+          name="full_name"
+          value={formData.full_name}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+        {errors.full_name && (
+          <p className="mt-1 text-sm text-red-600">{errors.full_name}</p>
         )}
-        
-        <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>
-                Enter the worker's personal details as they appear on their passport or BRP.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="first_name">First Name</Label>
-                  <Input
-                    id="first_name"
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last_name">Last Name</Label>
-                  <Input
-                    id="last_name"
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date_of_birth">Date of Birth</Label>
-                  <DatePicker
-                    id="date_of_birth"
-                    selected={formData.date_of_birth}
-                    onSelect={handleDateChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nationality">Nationality</Label>
-                  <Select
-                    value={formData.nationality}
-                    onValueChange={(value) => handleSelectChange('nationality', value)}
-                  >
-                    <SelectTrigger id="nationality">
-                      <SelectValue placeholder="Select nationality" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Afghanistan">Afghanistan</SelectItem>
-                      <SelectItem value="Albania">Albania</SelectItem>
-                      <SelectItem value="Algeria">Algeria</SelectItem>
-                      <SelectItem value="India">India</SelectItem>
-                      <SelectItem value="Nigeria">Nigeria</SelectItem>
-                      <SelectItem value="Pakistan">Pakistan</SelectItem>
-                      <SelectItem value="Philippines">Philippines</SelectItem>
-                      <SelectItem value="South Africa">South Africa</SelectItem>
-                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                      <SelectItem value="United States">United States</SelectItem>
-                      {/* Add more countries as needed */}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="passport_number">Passport Number</Label>
-                <Input
-                  id="passport_number"
-                  name="passport_number"
-                  value={formData.passport_number}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <span className="animate-spin mr-2">⟳</span>
-                    Saving...
-                  </>
-                ) : isEditing ? 'Update Worker' : 'Add Worker'}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
       </div>
-    </div>
+
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          Phone
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+        {errors.phone && (
+          <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="specialization" className="block text-sm font-medium text-gray-700">
+          Specialization
+        </label>
+        <select
+          id="specialization"
+          name="specialization"
+          value={formData.specialization}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        >
+          <option value="">Select a specialization</option>
+          <option value="plumbing">Plumbing</option>
+          <option value="electrical">Electrical</option>
+          <option value="carpentry">Carpentry</option>
+          <option value="painting">Painting</option>
+          <option value="hvac">HVAC</option>
+          <option value="landscaping">Landscaping</option>
+          <option value="general">General Maintenance</option>
+        </select>
+        {errors.specialization && (
+          <p className="mt-1 text-sm text-red-600">{errors.specialization}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="experience_years" className="block text-sm font-medium text-gray-700">
+          Years of Experience
+        </label>
+        <input
+          type="number"
+          id="experience_years"
+          name="experience_years"
+          value={formData.experience_years}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+        {errors.experience_years && (
+          <p className="mt-1 text-sm text-red-600">{errors.experience_years}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="hourly_rate" className="block text-sm font-medium text-gray-700">
+          Hourly Rate ($)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          id="hourly_rate"
+          name="hourly_rate"
+          value={formData.hourly_rate}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        />
+        {errors.hourly_rate && (
+          <p className="mt-1 text-sm text-red-600">{errors.hourly_rate}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+          Bio
+        </label>
+        <textarea
+          id="bio"
+          name="bio"
+          value={formData.bio}
+          onChange={handleChange}
+          rows={4}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="Tell us about yourself and your experience..."
+        />
+      </div>
+
+      <div>
+        <label htmlFor="availability" className="block text-sm font-medium text-gray-700">
+          Availability
+        </label>
+        <select
+          id="availability"
+          name="availability"
+          value={formData.availability}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        >
+          <option value="">Select availability</option>
+          <option value="full-time">Full-time</option>
+          <option value="part-time">Part-time</option>
+          <option value="weekends">Weekends only</option>
+          <option value="evenings">Evenings only</option>
+          <option value="on-call">On-call</option>
+        </select>
+        {errors.availability && (
+          <p className="mt-1 text-sm text-red-600">{errors.availability}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
+      >
+        {isLoading ? 'Saving...' : 'Save Profile'}
+      </button>
+    </form>
   )
 }

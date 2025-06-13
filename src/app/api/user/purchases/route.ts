@@ -1,53 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { getUserPurchases } from '@/lib/auth'
+// src/app/api/user/purchases/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    // Get the current session
+    const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
+    if (!session || !session.user) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
+        { error: 'Unauthorized' },
         { status: 401 }
-      )
+      );
     }
 
-    const purchases = await getUserPurchases(session.user.email)
+    // For now, return empty array
+    // TODO: Implement actual purchase fetching logic
+    const purchases = [];
 
-    return NextResponse.json({
-      success: true,
-      purchases
-    })
-
+    return NextResponse.json({ purchases });
   } catch (error) {
-    console.error('Get purchases API error:', error)
+    console.error('Error fetching purchases:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
-}
-
-// Handle unsupported methods
-export async function POST() {
-  return NextResponse.json(
-    { success: false, message: 'Method not allowed' },
-    { status: 405 }
-  )
-}
-
-export async function PUT() {
-  return NextResponse.json(
-    { success: false, message: 'Method not allowed' },
-    { status: 405 }
-  )
-}
-
-export async function DELETE() {
-  return NextResponse.json(
-    { success: false, message: 'Method not allowed' },
-    { status: 405 }
-  )
 }

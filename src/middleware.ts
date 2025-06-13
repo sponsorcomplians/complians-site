@@ -1,29 +1,29 @@
-import { withAuth } from 'next-auth/middleware'
+// src/middleware.ts
+import { withAuth } from "next-auth/middleware"
+import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // Add any additional middleware logic here
+    return NextResponse.next()
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
-        // Check if user is authenticated for protected routes
-        if (req.nextUrl.pathname.startsWith('/dashboard')) {
-          return !!token
-        }
-        if (req.nextUrl.pathname.startsWith('/api/protected')) {
-          return !!token
-        }
-        return true
-      },
+      authorized({ req, token }) {
+        const pathname = req.nextUrl.pathname
+        
+        // Define protected routes
+        const protectedRoutes = ['/dashboard', '/profile', '/workers', '/reports']
+        const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+        
+        // Allow if not a protected route or if authenticated
+        return !isProtectedRoute || !!token
+      }
     },
   }
 )
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/api/protected/:path*',
-  ]
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+  ],
 }
-
