@@ -7,6 +7,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, X, Search, Eye, Edit, Trash2 } from "lucide-react";
 
+// Define Worker interface
+interface Worker {
+  id: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  position: string;
+  nationality: string;
+  dateOfBirth: string;
+  nationalInsurance: string;
+  passportNumber: string;
+  passportExpiry: string;
+  visaStatus: string;
+  visaExpiry: string;
+  startDate: string;
+  salary: string;
+  address: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  emergencyRelation: string;
+  status: string;
+}
+
 // Comprehensive nationality list
 const nationalities = [
   "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Argentinian", "Armenian", 
@@ -133,12 +159,12 @@ const countryCodes = [
 export default function WorkersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [emergencyPhoneCode, setEmergencyPhoneCode] = useState("+44");
   
-  const [workers, setWorkers] = useState([
+  const [workers, setWorkers] = useState<Worker[]>([
     {
       id: "1",
       employeeId: "EMP001",
@@ -189,46 +215,46 @@ export default function WorkersPage() {
     }
   ]);
 
-  const handleAddWorker = (e) => {
+  const handleAddWorker = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const newWorker = {
+    const formData = new FormData(e.currentTarget);
+    const newWorker: Worker = {
       id: Date.now().toString(),
-      employeeId: formData.get("employeeId"),
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      email: formData.get("email"),
-      phone: phoneCode + " " + formData.get("phone"),
-      department: formData.get("department"),
-      position: formData.get("position"),
-      nationality: formData.get("nationality"),
-      dateOfBirth: formData.get("dateOfBirth"),
-      nationalInsurance: formData.get("nationalInsurance"),
-      passportNumber: formData.get("passportNumber"),
-      passportExpiry: formData.get("passportExpiry"),
-      visaStatus: formData.get("visaStatus"),
-      visaExpiry: formData.get("visaExpiry"),
-      startDate: formData.get("startDate"),
-      salary: formData.get("salary"),
-      address: formData.get("address"),
-      emergencyContact: formData.get("emergencyContact"),
-      emergencyPhone: emergencyPhoneCode + " " + formData.get("emergencyPhone"),
-      emergencyRelation: formData.get("emergencyRelation"),
+      employeeId: formData.get("employeeId") as string || "",
+      firstName: formData.get("firstName") as string || "",
+      lastName: formData.get("lastName") as string || "",
+      email: formData.get("email") as string || "",
+      phone: phoneCode + " " + (formData.get("phone") as string || ""),
+      department: formData.get("department") as string || "",
+      position: formData.get("position") as string || "",
+      nationality: formData.get("nationality") as string || "",
+      dateOfBirth: formData.get("dateOfBirth") as string || "",
+      nationalInsurance: formData.get("nationalInsurance") as string || "",
+      passportNumber: formData.get("passportNumber") as string || "",
+      passportExpiry: formData.get("passportExpiry") as string || "",
+      visaStatus: formData.get("visaStatus") as string || "",
+      visaExpiry: formData.get("visaExpiry") as string || "",
+      startDate: formData.get("startDate") as string || "",
+      salary: formData.get("salary") as string || "",
+      address: formData.get("address") as string || "",
+      emergencyContact: formData.get("emergencyContact") as string || "",
+      emergencyPhone: emergencyPhoneCode + " " + (formData.get("emergencyPhone") as string || ""),
+      emergencyRelation: formData.get("emergencyRelation") as string || "",
       status: "active"
     };
     setWorkers([...workers, newWorker]);
     setShowAddModal(false);
-    e.target.reset();
+    e.currentTarget.reset();
     setPhoneCode("+44");
     setEmergencyPhoneCode("+44");
   };
 
-  const handleViewWorker = (worker) => {
+  const handleViewWorker = (worker: Worker) => {
     setSelectedWorker(worker);
     setShowViewModal(true);
   };
 
-  const handleDeleteWorker = (id) => {
+  const handleDeleteWorker = (id: string) => {
     if (confirm("Are you sure you want to delete this worker?")) {
       setWorkers(workers.filter(w => w.id !== id));
     }
