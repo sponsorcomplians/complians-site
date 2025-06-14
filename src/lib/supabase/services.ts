@@ -1,140 +1,86 @@
-// src/lib/supabase/services.ts
-import { supabaseAdmin } from '@/lib/supabase';
+// src/lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
 
-export const workerService = {
-  async getAll() {
-    const { data, error } = await supabaseAdmin
-      .from('workers')
-      .select('*')
-      .order('name');
-    
-    if (error) throw error;
-    return data;
-  },
+// Check if environment variables are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-  async getWorkers() {
-    // Alias for getAll to match component expectations
-    return this.getAll();
-  },
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase environment variables are not set')
+}
 
-  async getById(id: string) {
-    const { data, error } = await supabaseAdmin
-      .from('workers')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
+// Regular client for client-side usage
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null as any
 
-  async create(worker: any) {
-    const { data, error } = await supabaseAdmin
-      .from('workers')
-      .insert(worker)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  async update(id: string, updates: any) {
-    const { data, error } = await supabaseAdmin
-      .from('workers')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  async delete(id: string) {
-    const { error } = await supabaseAdmin
-      .from('workers')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
+// Function to create a new Supabase client (for components that need fresh instances)
+export const createSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase environment variables are not set')
   }
-};
+  return createClient(supabaseUrl, supabaseAnonKey)
+}
 
-export const reportingDutyService = {
-  async getAll() {
-    const { data, error } = await supabaseAdmin
-      .from('reporting_duties')
-      .select(`
-        *,
-        worker:workers(id, name, email)
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data;
-  },
+// Admin client with service role key for server-side usage
+export const supabaseAdmin = supabaseUrl && supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : null as any
 
-  async getByWorkerId(workerId: string) {
+// Worker profile API helper
+export const workerProfileApi = {
+  async getProfile(workerId: string) {
     const { data, error } = await supabaseAdmin
-      .from('reporting_duties')
+      .from('worker_profiles')
       .select('*')
-      .eq('worker_id', workerId)
-      .order('created_at', { ascending: false });
+      .eq('id', workerId)
+      .single()
     
-    if (error) throw error;
-    return data;
+    if (error) throw error
+    return data
   },
-
-  async create(duty: any) {
+  
+  async updateProfile(workerId: string, updates: any) {
     const { data, error } = await supabaseAdmin
-      .from('reporting_duties')
-      .insert(duty)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  async createReportingDuty(workerId: string, eventType: string, details: any) {
-    // Create a reporting duty with the expected signature
-    const duty = {
-      worker_id: workerId,
-      event_type: eventType,
-      ...details
-    };
-    return this.create(duty);
-  },
-
-  async update(id: string, updates: any) {
-    const { data, error } = await supabaseAdmin
-      .from('reporting_duties')
+      .from('worker_profiles')
       .update(updates)
-      .eq('id', id)
+      .eq('id', workerId)
       .select()
-      .single();
+      .single()
     
-    if (error) throw error;
-    return data;
+    if (error) throw error
+    return data
   },
 
-  async delete(id: string) {
+  async create(profile: any) {
+    const { data, error } = await supabaseAdmin
+      .from('worker_profiles')
+      .insert(profile)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async createProfile(profile: any) {
+    // Alias for backwards compatibility
+    return this.create(profile)
+  },
+
+  async deleteProfile(workerId: string) {
     const { error } = await supabaseAdmin
-      .from('reporting_duties')
+      .from('worker_profiles')
       .delete()
-      .eq('id', id);
+      .eq('id', workerId)
     
-    if (error) throw error;
-  },
-
-  async getActiveCount() {
-    const { count, error } = await supabaseAdmin
-      .from('reporting_duties')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'active');
-    
-    if (error) throw error;
-    return count || 0;
+    if (error) throw error
+    return true
   }
-};
+}
