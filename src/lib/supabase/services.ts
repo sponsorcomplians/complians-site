@@ -1,75 +1,125 @@
-// src/lib/supabase/services.ts - Add missing exports to your existing file
+// src/lib/supabase/services.ts
+import { supabaseAdmin } from '@/lib/supabase';
 
-import { createClient } from '@supabase/supabase-js'
-
-// Your existing client exports
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
-// Add the missing admin client export
-export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
-
-// Add the missing workerProfileApi export
-export const workerProfileApi = {
-  async getWorkerProfile(workerId: string) {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('worker_profiles')
-        .select('*')
-        .eq('id', workerId)
-        .single()
-
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error('Error fetching worker profile:', error)
-      return null
-    }
+export const workerService = {
+  async getAll() {
+    const { data, error } = await supabaseAdmin
+      .from('workers')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data;
   },
 
-  async createWorkerProfile(workerData: any) {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('worker_profiles')
-        .insert([workerData])
-        .select()
-        .single()
-
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error('Error creating worker profile:', error)
-      throw error
-    }
+  async getById(id: string) {
+    const { data, error } = await supabaseAdmin
+      .from('workers')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
   },
 
-  async updateWorkerProfile(workerId: string, updates: any) {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('worker_profiles')
-        .update(updates)
-        .eq('id', workerId)
-        .select()
-        .single()
+  async create(worker: any) {
+    const { data, error } = await supabaseAdmin
+      .from('workers')
+      .insert(worker)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
 
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error('Error updating worker profile:', error)
-      throw error
-    }
+  async update(id: string, updates: any) {
+    const { data, error } = await supabaseAdmin
+      .from('workers')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabaseAdmin
+      .from('workers')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
-}
+};
 
-// Your existing exports remain the same...
+export const reportingDutyService = {
+  async getAll() {
+    const { data, error } = await supabaseAdmin
+      .from('reporting_duties')
+      .select(`
+        *,
+        worker:workers(id, name, email)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getByWorkerId(workerId: string) {
+    const { data, error } = await supabaseAdmin
+      .from('reporting_duties')
+      .select('*')
+      .eq('worker_id', workerId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(duty: any) {
+    const { data, error } = await supabaseAdmin
+      .from('reporting_duties')
+      .insert(duty)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabaseAdmin
+      .from('reporting_duties')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabaseAdmin
+      .from('reporting_duties')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async getActiveCount() {
+    const { count, error } = await supabaseAdmin
+      .from('reporting_duties')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active');
+    
+    if (error) throw error;
+    return count || 0;
+  }
+};
