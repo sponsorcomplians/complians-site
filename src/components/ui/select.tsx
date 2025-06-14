@@ -3,14 +3,27 @@ import * as React from "react"
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   children?: React.ReactNode
+  onValueChange?: (value: string) => void
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, onValueChange, onChange, ...props }, ref) => {
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      // Call onValueChange if provided
+      if (onValueChange) {
+        onValueChange(e.target.value)
+      }
+      // Also call onChange if provided
+      if (onChange) {
+        onChange(e)
+      }
+    }
+
     return (
       <select
         className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className || ''}`}
         ref={ref}
+        onChange={handleChange}
         {...props}
       >
         {children}
