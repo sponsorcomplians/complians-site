@@ -1,4 +1,5 @@
-﻿import * as React from "react"
+﻿// src/components/ui/select.tsx
+import * as React from "react"
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   children?: React.ReactNode
@@ -18,6 +19,20 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   }
 )
 Select.displayName = "Select"
+
+// SelectTrigger - for compatibility, just returns the Select component
+export const SelectTrigger = Select
+SelectTrigger.displayName = "SelectTrigger"
+
+// SelectValue - for compatibility, just returns a span
+export const SelectValue = ({ placeholder, ...props }: { placeholder?: string }) => {
+  return null // This is handled by the native select element
+}
+
+// SelectContent - for compatibility, just returns children
+export const SelectContent = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>
+}
 
 export interface SelectItemProps extends React.OptionHTMLAttributes<HTMLOptionElement> {
   children?: React.ReactNode
