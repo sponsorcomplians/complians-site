@@ -12,6 +12,11 @@ export const workerService = {
     return data;
   },
 
+  async getWorkers() {
+    // Alias for getAll to match component expectations
+    return this.getAll();
+  },
+
   async getById(id: string) {
     const { data, error } = await supabaseAdmin
       .from('workers')
