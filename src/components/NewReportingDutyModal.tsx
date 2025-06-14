@@ -1,57 +1,37 @@
+// src/components/NewReportingDutyModal.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { workerService, reportingDutyService } from '@/lib/supabase/services';
 
 interface Worker {
   id: string;
-  first_name: string;
-  last_name: string;
+  name: string;
+  email: string;
 }
 
 interface NewReportingDutyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
-const EVENT_TYPES = [
-  { value: 'Change of Address', label: 'Change of Address' },
-  { value: 'Change of Employment Status', label: 'Change of Employment Status' },
-  { value: 'Salary Change', label: 'Salary Change' },
-  { value: 'Job Title Change', label: 'Job Title Change' },
-  { value: 'Work Location Change', label: 'Work Location Change' },
-  { value: 'Working Hours Change', label: 'Working Hours Change' },
-  { value: 'Sponsor License Renewal', label: 'Sponsor License Renewal' },
-  { value: 'Annual BRP Check', label: 'Annual BRP Check' },
-  { value: 'Passport Renewal', label: 'Passport Renewal' },
-  { value: 'Visa Extension', label: 'Visa Extension' },
-  { value: 'New Starter', label: 'New Starter' },
-  { value: 'Resignation', label: 'Resignation' },
-  { value: 'Termination', label: 'Termination' },
-  { value: 'Maternity/Paternity Leave', label: 'Maternity/Paternity Leave' },
-  { value: 'Extended Absence', label: 'Extended Absence' },
-  { value: 'Return from Extended Absence', label: 'Return from Extended Absence' },
-  { value: 'Disciplinary Action', label: 'Disciplinary Action' },
-  { value: 'Criminal Conviction', label: 'Criminal Conviction' },
-  { value: 'Other', label: 'Other' }
-];
-
 export default function NewReportingDutyModal({ isOpen, onClose, onSuccess }: NewReportingDutyModalProps) {
-  const [workers, setWorkers] = useState<Worker[]>([]);
   const [formData, setFormData] = useState({
     worker_id: '',
     event_type: '',
-    event_date: new Date().toISOString().split('T')[0],
+    event_date: '',
     notes: ''
   });
+  const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -65,127 +45,123 @@ export default function NewReportingDutyModal({ isOpen, onClose, onSuccess }: Ne
       setWorkers(data);
     } catch (err) {
       console.error('Failed to fetch workers:', err);
+      setError('Failed to load workers');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    
-    if (!formData.worker_id || !formData.event_type) {
-      setError('Please select a worker and event type');
-      return;
-    }
-
+    setError('');
     setLoading(true);
+
     try {
       await reportingDutyService.createReportingDuty(
         formData.worker_id,
         formData.event_type,
         { notes: formData.notes, event_date: formData.event_date }
       );
-      
+
       // Reset form
       setFormData({
         worker_id: '',
         event_type: '',
-        event_date: new Date().toISOString().split('T')[0],
+        event_date: '',
         notes: ''
       });
-      
-      onSuccess();
+
+      onSuccess?.();
       onClose();
     } catch (err) {
+      console.error('Failed to create reporting duty:', err);
       setError('Failed to create reporting duty');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-lg">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Add New Reporting Duty</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>New Reporting Duty</DialogTitle>
+        </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Worker Select */}
+          <div>
+            <Label htmlFor="worker">Worker *</Label>
             <Select
-              label="Worker"
+              id="worker"
               value={formData.worker_id}
               onChange={(e) => setFormData({ ...formData, worker_id: e.target.value })}
-              options={workers.map(w => ({
-                value: w.id,
-                label: `${w.first_name} ${w.last_name}`
-              }))}
               required
-            />
+            >
+              <option value="">Select a worker</option>
+              {workers.map(w => (
+                <option key={w.id} value={w.id}>
+                  {w.name}
+                </option>
+              ))}
+            </Select>
+          </div>
 
+          {/* Event Type Select */}
+          <div>
+            <Label htmlFor="event_type">Event Type *</Label>
             <Select
-              label="Event Type"
+              id="event_type"
               value={formData.event_type}
               onChange={(e) => setFormData({ ...formData, event_type: e.target.value })}
-              options={EVENT_TYPES}
               required
-            />
+            >
+              <option value="">Select event type</option>
+              <option value="incident">Incident</option>
+              <option value="hazard">Hazard</option>
+              <option value="near_miss">Near Miss</option>
+              <option value="observation">Observation</option>
+            </Select>
+          </div>
 
+          {/* Event Date */}
+          <div>
+            <Label htmlFor="event_date">Event Date *</Label>
             <Input
-              label="Event Date"
+              id="event_date"
               type="date"
               value={formData.event_date}
               onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
               required
             />
+          </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Notes (Optional)
-              </label>
-              <textarea
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm 
-                  placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 
-                  focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                rows={3}
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Add any relevant details about this event..."
-              />
-            </div>
+          {/* Notes */}
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <textarea
+              id="notes"
+              className="w-full min-h-[100px] px-3 py-2 text-sm border rounded-md"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Additional details..."
+            />
+          </div>
 
-            {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded">
-                {error}
-              </div>
-            )}
+          {/* Error message */}
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
 
-            <div className="flex gap-3 justify-end pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? 'Creating...' : 'Create Reporting Duty'}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Card>
-    </div>
+          {/* Actions */}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Creating...' : 'Create'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
