@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (data.user) {
       const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
         data.user.id,
-        { email_confirmed_at: new Date().toISOString() }
+        { email_confirm: true }
       );
 
       if (updateError) {
