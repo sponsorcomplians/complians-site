@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { X } from 'lucide-react';
-import { workerService, reportingDutyService } from '@/lib/supabase/services';
 
 interface Worker {
   id: string;
@@ -41,8 +40,9 @@ export default function NewReportingDutyModal({ isOpen, onClose, onSuccess }: Ne
 
   const fetchWorkers = async () => {
     try {
-      const data = await workerService.getWorkers();
-      setWorkers(data);
+      const response = await fetch('/api/workers');
+      const data = await response.json();
+      setWorkers(data.workers || []);
     } catch (err) {
       console.error('Failed to fetch workers:', err);
       setError('Failed to load workers');
@@ -55,11 +55,15 @@ export default function NewReportingDutyModal({ isOpen, onClose, onSuccess }: Ne
     setLoading(true);
 
     try {
-      await reportingDutyService.createReportingDuty(
-        formData.worker_id,
-        formData.event_type,
-        { notes: formData.notes, event_date: formData.event_date }
-      );
+      const response = await fetch('/api/reporting-duties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create reporting duty');
+      }
 
       // Reset form
       setFormData({

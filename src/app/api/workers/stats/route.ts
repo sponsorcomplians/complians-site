@@ -24,7 +24,7 @@ export async function GET() {
       .from('workers')
       .select('department');
     
-    const uniqueDepartments = new Set(workers?.map(w => w.department) || []);
+    const uniqueDepartments = new Set(workers?.map((w: any) => w.department) || []);
 
     // Get active reports count
     const { count: reportsCount } = await supabase
