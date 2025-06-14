@@ -85,12 +85,12 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Worker</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="mt-4">
           <div className="grid gap-4 py-4">
             {/* Name */}
             <div className="grid gap-2">
@@ -145,10 +145,13 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
             <div className="grid gap-2">
               <Label htmlFor="department">Department *</Label>
               <Select
+                id="department"
                 value={formData.department}
                 onValueChange={(value) => handleChange('department', value)}
+                required
+                className="w-full"
               >
-                <option value="" disabled>Select department</option>
+                <option value="">Select department</option>
                 <SelectItem value="engineering">Engineering</SelectItem>
                 <SelectItem value="design">Design</SelectItem>
                 <SelectItem value="marketing">Marketing</SelectItem>
@@ -163,10 +166,12 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
             <div className="grid gap-2">
               <Label htmlFor="experience">Experience Level</Label>
               <Select
+                id="experience"
                 value={formData.experience}
                 onValueChange={(value) => handleChange('experience', value)}
+                className="w-full"
               >
-                <option value="" disabled>Select experience</option>
+                <option value="">Select experience</option>
                 <SelectItem value="0-1">0-1 years</SelectItem>
                 <SelectItem value="1-3">1-3 years</SelectItem>
                 <SelectItem value="3-5">3-5 years</SelectItem>
@@ -183,6 +188,7 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => handleChange('startDate', e.target.value)}
+                className="w-full"
               />
             </div>
 
@@ -201,8 +207,9 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
                       handleAddSkill();
                     }
                   }}
+                  className="flex-1"
                 />
-                <Button type="button" onClick={handleAddSkill} variant="outline">
+                <Button type="button" onClick={handleAddSkill} variant="outline" size="default">
                   Add
                 </Button>
               </div>
@@ -213,13 +220,13 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
                   {formData.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-gray-100 rounded-md"
+                      className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 rounded-full"
                     >
                       {skill}
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(skill)}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="ml-1 text-gray-500 hover:text-gray-700 font-bold"
                       >
                         ×
                       </button>
@@ -230,7 +237,7 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
