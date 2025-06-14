@@ -141,25 +141,10 @@ export default function HomePage() {
     fetchDashboardData();
   };
 
-  const handleCreateReport = async (reportData: any) => {
-    try {
-      const { error } = await supabase
-        .from('reports')
-        .insert([{
-          ...reportData,
-          status: 'pending',
-          created_at: new Date().toISOString()
-        }]);
-      
-      if (error) throw error;
-      
-      toast.success('Reporting duty created successfully!');
-      setIsNewReportingDutyOpen(false);
-      fetchDashboardData(); // Refresh data
-    } catch (error) {
-      console.error('Error creating report:', error);
-      toast.error('Failed to create reporting duty');
-    }
+  const handleCreateReport = () => {
+    // The modal handles the submission internally
+    // We just need to refresh the data when a report is created
+    fetchDashboardData();
   };
 
   if (status === 'loading' || loading) {
@@ -246,7 +231,7 @@ export default function HomePage() {
       <NewReportingDutyModal
         isOpen={isNewReportingDutyOpen}
         onClose={() => setIsNewReportingDutyOpen(false)}
-        onCreateReport={handleCreateReport}
+        onSuccess={handleCreateReport}
       />
 
       {/* Main Content Tabs */}
