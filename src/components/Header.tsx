@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react'
+import { Menu, X, ChevronDown, User, LogOut, Users } from 'lucide-react'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -74,9 +74,9 @@ export default function Header() {
             <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Home
             </Link>
-            
+
             {/* Products Dropdown */}
-            <div 
+            <div
               className="relative"
               onMouseEnter={handleMouseEnterProducts}
               onMouseLeave={handleMouseLeaveProducts}
@@ -85,18 +85,18 @@ export default function Header() {
                 Products
                 <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${isProductsOpen ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {isProductsOpen && (
                 <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <Link 
-                    href="/products" 
+                  <Link
+                    href="/products"
                     className="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <div className="font-medium text-gray-900">Digital Sponsor Compliance Tools</div>
                     <div className="text-sm text-gray-500 mt-1">Traditional compliance checking tools</div>
                   </Link>
-                  <Link 
-                    href="/ai-agents" 
+                  <Link
+                    href="/ai-agents"
                     className="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <div className="font-medium text-gray-900">AI Sponsor Compliance Agents</div>
@@ -109,6 +109,14 @@ export default function Header() {
             <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               About
             </Link>
+            
+            {/* Workers link - only show when logged in */}
+            {session && (
+              <Link href="/workers" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                Workers
+              </Link>
+            )}
+            
             <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Contact
             </Link>
@@ -117,24 +125,28 @@ export default function Header() {
           {/* User Menu / Auth */}
           <div className="hidden md:flex items-center space-x-4">
             {session ? (
-              <div 
+              <div
                 className="relative"
                 onMouseEnter={handleMouseEnterUserMenu}
                 onMouseLeave={handleMouseLeaveUserMenu}
               >
                 <button className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   <User className="h-5 w-5" />
-                  <span>{session.user?.name || session.user?.email}</span>
+                  <span>{session.user?.name || session.user?.email}</span>    
                   <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {isUserMenuOpen && (
                   <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                     <Link href="/dashboard" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                       <User className="h-4 w-4 mr-2" />
                       Dashboard
                     </Link>
-                    <button 
+                    <Link href="/workers" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Users className="h-4 w-4 mr-2" />
+                      Workers
+                    </Link>
+                    <button
                       onClick={() => signOut()}
                       className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
                     >
@@ -146,14 +158,14 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link 
-                  href="/auth/signin" 
+                <Link
+                  href="/auth/signin"
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 >
                   Sign In
                 </Link>
-                <Link 
-                  href="/auth/signup" 
+                <Link
+                  href="/auth/signup"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   Get Started
@@ -166,7 +178,7 @@ export default function Header() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-gray-700 hover:text-blue-600 transition-colors" 
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -181,27 +193,27 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
-              
+
               {/* Mobile Products Section */}
               <div className="space-y-2">
-                <div className="text-gray-900 font-medium">Products</div>
+                <div className="text-gray-900 font-medium">Products</div>     
                 <div className="pl-4 space-y-2">
-                  <Link 
-                    href="/products" 
+                  <Link
+                    href="/products"
                     className="block text-gray-600 hover:text-blue-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Digital Sponsor Compliance Tools
                   </Link>
-                  <Link 
-                    href="/ai-agents" 
+                  <Link
+                    href="/ai-agents"
                     className="block text-gray-600 hover:text-blue-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -210,15 +222,27 @@ export default function Header() {
                 </div>
               </div>
 
-              <Link 
-                href="/about" 
+              <Link
+                href="/about"
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
-              <Link 
-                href="/contact" 
+              
+              {/* Workers link in mobile menu - only show when logged in */}
+              {session && (
+                <Link
+                  href="/workers"
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Workers
+                </Link>
+              )}
+              
+              <Link
+                href="/contact"
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -232,14 +256,21 @@ export default function Header() {
                     <div className="text-gray-900 font-medium">
                       {session.user?.name || session.user?.email}
                     </div>
-                    <Link 
-                      href="/dashboard" 
+                    <Link
+                      href="/dashboard"
                       className="block text-gray-600 hover:text-blue-600 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
-                    <button 
+                    <Link
+                      href="/workers"
+                      className="block text-gray-600 hover:text-blue-600 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Workers Management
+                    </Link>
+                    <button
                       onClick={() => {
                         signOut()
                         setIsMenuOpen(false)
@@ -251,15 +282,15 @@ export default function Header() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link 
-                      href="/auth/signin" 
+                    <Link
+                      href="/auth/signin"
                       className="block text-gray-700 hover:text-blue-600 font-medium transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Sign In
                     </Link>
-                    <Link 
-                      href="/auth/signup" 
+                    <Link
+                      href="/auth/signup"
                       className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -275,4 +306,3 @@ export default function Header() {
     </header>
   )
 }
-
