@@ -135,25 +135,10 @@ export default function HomePage() {
     }
   };
 
-  const handleAddWorker = async (workerData: any) => {
-    try {
-      const { error } = await supabase
-        .from('workers')
-        .insert([{
-          ...workerData,
-          status: 'active',
-          created_at: new Date().toISOString()
-        }]);
-      
-      if (error) throw error;
-      
-      toast.success('Worker added successfully!');
-      setIsAddWorkerOpen(false);
-      fetchDashboardData(); // Refresh data
-    } catch (error) {
-      console.error('Error adding worker:', error);
-      toast.error('Failed to add worker');
-    }
+  const handleAddWorker = () => {
+    // The modal handles the submission internally
+    // We just need to refresh the data when a worker is added
+    fetchDashboardData();
   };
 
   const handleCreateReport = async (reportData: any) => {
