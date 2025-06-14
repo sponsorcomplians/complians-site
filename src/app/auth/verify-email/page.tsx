@@ -1,182 +1,137 @@
 // src/app/auth/verify-email/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const email = searchParams.get('email');
   const token = searchParams.get('token');
-  const [status, setStatus] = useState<'pending' | 'verifying' | 'success' | 'error'>('pending');
+  const email = searchParams.get('email');
+  
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (token) {
-      verifyEmail();
-    }
-  }, [token]);
-
-  const verifyEmail = async () => {
-    setStatus('verifying');
-    
-    try {
-      const response = await fetch('/api/auth/verify-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage('Your email has been verified successfully!');
-        
-        // Redirect to sign in after 3 seconds
-        setTimeout(() => {
-          router.push('/auth/signin?verified=true');
-        }, 3000);
-      } else {
-        setStatus('error');
-        setMessage(data.error || 'Verification failed. The link may be expired.');
-      }
-    } catch (error) {
+    if (!token) {
       setStatus('error');
-      setMessage('An error occurred during verification.');
+      setMessage('No verification token provided');
+      return;
     }
-  };
 
-  const resendVerification = async () => {
-    if (!email) return;
+    // Verify the email token
+    const verifyEmail = async () => {
+      try {
+        const response = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, email }),
+        });
 
-    try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+        const data = await response.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage('Verification email sent! Please check your inbox.');
-      } else {
-        setMessage(data.error || 'Failed to send verification email.');
+        if (response.ok) {
+          setStatus('success');
+          setMessage('Your email has been verified successfully!');
+          // Redirect to signin after 3 seconds
+          setTimeout(() => {
+            router.push('/auth/signin');
+          }, 3000);
+        } else {
+          setStatus('error');
+          setMessage(data.error || 'Verification failed');
+        }
+      } catch (error) {
+        setStatus('error');
+        setMessage('An error occurred during verification');
       }
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
-    }
-  };
+    };
+
+    verifyEmail();
+  }, [token, email, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          {status === 'pending' && (
-            <>
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
-                <Mail className="h-8 w-8 text-blue-600" />
-              </div>
-              <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                Verify your email
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                We've sent a verification email to
-              </p>
-              <p className="font-medium text-gray-900">{email}</p>
-              <p className="mt-4 text-sm text-gray-600">
-                Please check your inbox and click the verification link to activate your account.
-              </p>
-              
-              <div className="mt-8 space-y-4">
-                <p className="text-sm text-gray-600">
-                  Didn't receive the email?
-                </p>
-                <button
-                  onClick={resendVerification}
-                  className="text-blue-600 hover:text-blue-500 font-medium"
-                >
-                  Resend verification email
-                </button>
-              </div>
-            </>
-          )}
-
-          {status === 'verifying' && (
-            <>
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-              <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                Verifying your email...
-              </h2>
-            </>
-          )}
-
-          {status === 'success' && (
-            <>
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-              <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                Email verified!
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                {message}
-              </p>
-              <p className="mt-2 text-sm text-gray-600">
-                Redirecting to sign in...
-              </p>
-            </>
-          )}
-
-          {status === 'error' && (
-            <>
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
-                <XCircle className="h-8 w-8 text-red-600" />
-              </div>
-              <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                Verification failed
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                {message}
-              </p>
-              
-              <div className="mt-8 space-y-4">
-                <button
-                  onClick={resendVerification}
-                  className="text-blue-600 hover:text-blue-500 font-medium"
-                >
-                  Resend verification email
-                </button>
-                <p className="text-sm text-gray-600">
-                  or
-                </p>
-                <Link
-                  href="/auth/signin"
-                  className="text-blue-600 hover:text-blue-500 font-medium"
-                >
-                  Go to sign in
-                </Link>
-              </div>
-            </>
-          )}
-        </div>
-
-        {message && status === 'pending' && (
-          <div className="rounded-md bg-blue-50 p-4">
-            <p className="text-sm text-blue-800">{message}</p>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>
+          {status === 'verifying' && 'Verifying your email...'}
+          {status === 'success' && 'Email verified!'}
+          {status === 'error' && 'Verification failed'}
+        </CardTitle>
+        <CardDescription>
+          {status === 'verifying' && 'Please wait while we verify your email address.'}
+          {status === 'success' && 'Your email has been successfully verified.'}
+          {status === 'error' && 'We couldn\'t verify your email address.'}
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        {status === 'verifying' && (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
         )}
-      </div>
+        
+        {status === 'success' && (
+          <div className="text-center">
+            <div className="text-green-600 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-sm text-gray-600">{message}</p>
+            <p className="text-sm text-gray-500 mt-2">Redirecting to sign in...</p>
+          </div>
+        )}
+        
+        {status === 'error' && (
+          <div className="text-center">
+            <div className="text-red-600 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <p className="text-sm text-red-600">{message}</p>
+          </div>
+        )}
+      </CardContent>
+      
+      <CardFooter>
+        {status === 'error' && (
+          <div className="w-full space-y-2">
+            <Link href="/auth/signup" className="block">
+              <Button variant="outline" className="w-full">
+                Try signing up again
+              </Button>
+            </Link>
+            <Link href="/auth/signin" className="block">
+              <Button className="w-full">
+                Go to sign in
+              </Button>
+            </Link>
+          </div>
+        )}
+      </CardFooter>
+    </Card>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Suspense fallback={
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6">
+            <div className="text-center">Loading verification...</div>
+          </CardContent>
+        </Card>
+      }>
+        <VerifyEmailContent />
+      </Suspense>
     </div>
   );
 }
