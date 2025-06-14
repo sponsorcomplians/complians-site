@@ -97,6 +97,16 @@ export const reportingDutyService = {
     return data;
   },
 
+  async createReportingDuty(workerId: string, eventType: string, details: any) {
+    // Create a reporting duty with the expected signature
+    const duty = {
+      worker_id: workerId,
+      event_type: eventType,
+      ...details
+    };
+    return this.create(duty);
+  },
+
   async update(id: string, updates: any) {
     const { data, error } = await supabaseAdmin
       .from('reporting_duties')
