@@ -1,41 +1,7 @@
-// src/app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import type { NextAuthOptions } from "next-auth";
+// src/app/api/signin/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // Temporary hardcoded login for testing
-        const user = {
-          id: "1",
-          name: "Test User",
-          email: credentials?.email,
-        };
-
-        if (credentials?.email && credentials?.password) {
-          return user;
-        }
-
-        return null;
-      },
-    }),
-  ],
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: 
-'/auth/signin', // Ensure this line is exactly as shown, no extra newlines or missing quotes
-  },
-};
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export async function GET(request: NextRequest) {
+  // Redirect to the NextAuth signin page
+  return NextResponse.redirect(new URL('/api/auth/signin', request.url));
+}
