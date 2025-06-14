@@ -38,10 +38,15 @@ export const authOptions: NextAuthOptions = {
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   }),
   callbacks: {
-    async session({ session, user, token }) {
-      if (session?.user) {
-        // For JWT strategy, user ID comes from token
-        session.user.id = token?.sub || user?.id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session?.user && token?.id) {
+        session.user.id = token.id as string;
       }
       return session;
     },
