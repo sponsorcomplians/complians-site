@@ -1,7 +1,7 @@
 // src/app/api/user/purchases/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from "@/lib/auth-config"
 
 export async function GET(request: NextRequest) {
   try {
