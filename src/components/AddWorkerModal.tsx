@@ -1,86 +1,116 @@
-// src/components/AddWorkerModal.tsx
-'use client';
-
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface AddWorkerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddWorker: (worker: WorkerFormData) => void;
+  onWorkerAdded: () => void;
 }
 
 interface WorkerFormData {
-  name: string;
-  role: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
+  role: string;
   department: string;
   startDate: string;
-  experience: string;
-  skills: string[];
+  salary: string;
+  employmentType: string;
+  address: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  notes: string;
 }
 
-export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWorkerModalProps) {
+export default function AddWorkerModal({ isOpen, onClose, onWorkerAdded }: AddWorkerModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<WorkerFormData>({
-    name: '',
-    role: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
+    role: '',
     department: '',
     startDate: '',
-    experience: '',
-    skills: []
+    salary: '',
+    employmentType: 'full-time',
+    address: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+    notes: '',
   });
 
-  const [skillInput, setSkillInput] = useState('');
-
-  const handleChange = (field: keyof WorkerFormData, value: string | string[]) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [name]: value,
     }));
   };
 
-  const handleAddSkill = () => {
-    if (skillInput.trim() && !formData.skills.includes(skillInput.trim())) {
-      handleChange('skills', [...formData.skills, skillInput.trim()]);
-      setSkillInput('');
-    }
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleRemoveSkill = (skill: string) => {
-    handleChange('skills', formData.skills.filter(s => s !== skill));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (!formData.name || !formData.role || !formData.email || !formData.department) {
-      alert('Please fill in all required fields');
-      return;
-    }
+    setIsLoading(true);
 
-    onAddWorker(formData);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      role: '',
-      email: '',
-      phone: '',
-      department: '',
-      startDate: '',
-      experience: '',
-      skills: []
-    });
-    setSkillInput('');
-    onClose();
+    try {
+      const response = await fetch('/api/workers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add worker');
+      }
+
+      toast.success('Worker added successfully!');
+      onWorkerAdded();
+      onClose();
+      
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        role: '',
+        department: '',
+        startDate: '',
+        salary: '',
+        employmentType: 'full-time',
+        address: '',
+        emergencyContact: '',
+        emergencyPhone: '',
+        notes: '',
+      });
+    } catch (error) {
+      console.error('Error adding worker:', error);
+      toast.error('Failed to add worker. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,166 +120,181 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
           <DialogTitle>Add New Worker</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="mt-4">
-          <div className="grid gap-4 py-4">
-            {/* Name */}
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name *</Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
               <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="John Doe"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
                 required
               />
             </div>
-
-            {/* Email */}
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email *</Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
               <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="john@example.com"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
                 required
               />
-            </div>
-
-            {/* Role */}
-            <div className="grid gap-2">
-              <Label htmlFor="role">Role *</Label>
-              <Input
-                id="role"
-                value={formData.role}
-                onChange={(e) => handleChange('role', e.target.value)}
-                placeholder="Software Engineer"
-                required
-              />
-            </div>
-
-            {/* Phone */}
-            <div className="grid gap-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-
-            {/* Department */}
-            <div className="grid gap-2">
-              <Label htmlFor="department">Department *</Label>
-              <Select
-                id="department"
-                value={formData.department}
-                onValueChange={(value) => handleChange('department', value)}
-                required
-                className="w-full"
-              >
-                <option value="">Select department</option>
-                <SelectItem value="engineering">Engineering</SelectItem>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
-                <SelectItem value="sales">Sales</SelectItem>
-                <SelectItem value="hr">Human Resources</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
-                <SelectItem value="operations">Operations</SelectItem>
-              </Select>
-            </div>
-
-            {/* Experience */}
-            <div className="grid gap-2">
-              <Label htmlFor="experience">Experience Level</Label>
-              <Select
-                id="experience"
-                value={formData.experience}
-                onValueChange={(value) => handleChange('experience', value)}
-                className="w-full"
-              >
-                <option value="">Select experience</option>
-                <SelectItem value="0-1">0-1 years</SelectItem>
-                <SelectItem value="1-3">1-3 years</SelectItem>
-                <SelectItem value="3-5">3-5 years</SelectItem>
-                <SelectItem value="5-10">5-10 years</SelectItem>
-                <SelectItem value="10+">10+ years</SelectItem>
-              </Select>
-            </div>
-
-            {/* Start Date */}
-            <div className="grid gap-2">
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => handleChange('startDate', e.target.value)}
-                className="w-full"
-              />
-            </div>
-
-            {/* Skills */}
-            <div className="grid gap-2">
-              <Label htmlFor="skills">Skills</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="skills"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  placeholder="Add a skill"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddSkill();
-                    }
-                  }}
-                  className="flex-1"
-                />
-                <Button type="button" onClick={handleAddSkill} variant="outline" size="default">
-                  Add
-                </Button>
-              </div>
-              
-              {/* Skills list */}
-              {formData.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-gray-100 rounded-full"
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="ml-1 text-gray-500 hover:text-gray-700 font-bold"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
-         <div className="mt-6">
-  <DialogFooter>
-    <Button type="button" variant="outline" onClick={onClose}>
-      Cancel
-    </Button>
-    {/* other buttons */}
-  </DialogFooter>
-</div>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">Add Worker</Button>
-          </DialogFooter>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Input
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="department">Department</Label>
+              <Input
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="startDate">Start Date</Label>
+              <Input
+                id="startDate"
+                name="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="employmentType">Employment Type</Label>
+              <Select
+                value={formData.employmentType}
+                onValueChange={(value) => handleSelectChange('employmentType', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full-time">Full Time</SelectItem>
+                  <SelectItem value="part-time">Part Time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="salary">Salary</Label>
+            <Input
+              id="salary"
+              name="salary"
+              type="number"
+              value={formData.salary}
+              onChange={handleInputChange}
+              placeholder="Annual salary"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Textarea
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              rows={2}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="emergencyContact">Emergency Contact</Label>
+              <Input
+                id="emergencyContact"
+                name="emergencyContact"
+                value={formData.emergencyContact}
+                onChange={handleInputChange}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="emergencyPhone">Emergency Phone</Label>
+              <Input
+                id="emergencyPhone"
+                name="emergencyPhone"
+                type="tel"
+                value={formData.emergencyPhone}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleInputChange}
+              rows={3}
+            />
+          </div>
+
+          <div className="mt-6">
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Adding...' : 'Add Worker'}
+              </Button>
+            </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
