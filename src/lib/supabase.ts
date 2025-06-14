@@ -44,7 +44,7 @@ export const workerProfileApi = {
     return data
   },
 
-  async createProfile(profile: any) {
+  async create(profile: any) {
     const { data, error } = await supabaseAdmin
       .from('worker_profiles')
       .insert(profile)
@@ -53,6 +53,11 @@ export const workerProfileApi = {
     
     if (error) throw error
     return data
+  },
+
+  async createProfile(profile: any) {
+    // Alias for backwards compatibility
+    return this.create(profile)
   },
 
   async deleteProfile(workerId: string) {
