@@ -1,8 +1,0 @@
-﻿{
-    "outputDirectory":  ".next",
-    "buildCommand":  "npm run build",
-    "env":  {
-                "NEXT_TELEMETRY_DISABLED":  "1"
-            },
-    "framework":  "nextjs"
-}
