@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AddWorkerModal from '@/components/AddWorkerModal';
 import NewReportingDutyModal from '@/components/NewReportingDutyModal';
-import { workerService, reportingDutyService } from '@/lib/supabase/services';
 import { Plus, Users, FileText } from 'lucide-react';
 
 interface Worker {
@@ -23,6 +22,7 @@ export default function WorkersPage() {
   const [isAddWorkerOpen, setIsAddWorkerOpen] = useState(false);
   const [isReportingDutyOpen, setIsReportingDutyOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalWorkers: 0,
     activeReports: 0,
@@ -37,10 +37,18 @@ export default function WorkersPage() {
   const fetchWorkers = async () => {
     try {
       setLoading(true);
-      const data = await workerService.getAll();
-      setWorkers(data || []);
+      setError(null);
+      
+      const response = await fetch('/api/workers');
+      if (!response.ok) {
+        throw new Error('Failed to fetch workers');
+      }
+      
+      const data = await response.json();
+      setWorkers(data.workers || []);
     } catch (error) {
       console.error('Error fetching workers:', error);
+      setError('Failed to load workers. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -48,16 +56,14 @@ export default function WorkersPage() {
 
   const fetchStats = async () => {
     try {
-      const workersData = await workerService.getAll();
-      const reportsCount = await reportingDutyService.getActiveCount();
+      const response = await fetch('/api/workers/stats');
+      if (!response.ok) {
+        console.error('Failed to fetch stats');
+        return;
+      }
       
-      const uniqueDepartments = new Set(workersData?.map((w: any) => w.department) || []);
-      
-      setStats({
-        totalWorkers: workersData?.length || 0,
-        activeReports: reportsCount,
-        departments: uniqueDepartments.size
-      });
+      const data = await response.json();
+      setStats(data);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
@@ -65,11 +71,21 @@ export default function WorkersPage() {
 
   const handleAddWorker = async (workerData: any) => {
     try {
-      await workerService.create(workerData);
+      const response = await fetch('/api/workers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(workerData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add worker');
+      }
+      
       fetchWorkers();
       fetchStats();
     } catch (error) {
       console.error('Error adding worker:', error);
+      setError('Failed to add worker. Please try again.');
     }
   };
 
@@ -139,6 +155,12 @@ export default function WorkersPage() {
           <CardDescription>A list of all workers in your organization</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="text-red-600 mb-4 p-3 bg-red-50 rounded">
+              {error}
+            </div>
+          )}
+          
           {loading ? (
             <div className="text-center py-8">Loading workers...</div>
           ) : workers.length === 0 ? (
@@ -191,6 +213,6 @@ export default function WorkersPage() {
         onClose={() => setIsReportingDutyOpen(false)}
         onSuccess={handleReportingDutySuccess}
       />
-        </div>
+    </div>
   );
 }
