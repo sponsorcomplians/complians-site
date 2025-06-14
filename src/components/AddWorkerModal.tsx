@@ -237,7 +237,14 @@ export default function AddWorkerModal({ isOpen, onClose, onAddWorker }: AddWork
             </div>
           </div>
 
-          <DialogFooter className="mt-6">
+         <div className="mt-6">
+  <DialogFooter>
+    <Button type="button" variant="outline" onClick={onClose}>
+      Cancel
+    </Button>
+    {/* other buttons */}
+  </DialogFooter>
+</div>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
