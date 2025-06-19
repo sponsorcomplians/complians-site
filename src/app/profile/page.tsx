@@ -149,7 +149,12 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    onChange={(e) => setFormData({
+  fullName: data.full_name || '',
+  email: data.email ?? session?.user.email ?? '',
+  company: data.company || '',
+  phone: data.phone || '',
+});
                     disabled={!isEditing}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
