@@ -149,24 +149,24 @@ function ComplianceArea4Section({
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <Checkbox
-                          id={originalKey}
-                          checked={data[originalKey] || false}
-                          onCheckedChange={(checked) =>
-                            handleFieldChange(originalKey, checked)
-                          }
-                        />
+  id={originalKey}
+  checked={!!data[originalKey]} // ✅ safely cast to boolean
+  onCheckedChange={(checked) =>
+    handleFieldChange(originalKey, checked)
+  }
+/>
                         <Label htmlFor={originalKey} className="text-sm">
                           Original Seen
                         </Label>
                       </div>
                       <div className="flex items-center gap-2">
                         <Checkbox
-                          id={copyKey}
-                          checked={data[copyKey] || false}
-                          onCheckedChange={(checked) =>
-                            handleFieldChange(copyKey, checked)
-                          }
-                        />
+  id={`${doc.field}_copy`}
+  checked={!!data[copyKey]} // ✅ safely cast to boolean
+  onCheckedChange={(checked) =>
+    handleFieldChange(copyKey, checked)
+  }
+/>
                         <Label htmlFor={copyKey} className="text-sm">
                           Copy Made
                         </Label>
