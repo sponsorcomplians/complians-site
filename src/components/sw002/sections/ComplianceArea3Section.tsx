@@ -172,7 +172,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
 <div className="flex items-center gap-2">
 <Checkbox
   id={copyKey}
-  checked={data.documents_part1[copyKey] ?? false}
+  checked={Boolean(data.documents_part1[copyKey])}
   onCheckedChange={(checked) => 
     handleFieldChange('documents_part1', copyKey, checked)
   }
