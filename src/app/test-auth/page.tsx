@@ -1,24 +1,15 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useSession } from 'next-auth/react';
 
-export const dynamic = 'force-dynamic';
-
 export default function TestAuthPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Test Auth Page</h1>
-      {status === 'loading' ? (
-        <p>Loading session...</p>
-      ) : session ? (
-        <div>
-          <p>Signed in as: <strong>{session.user?.email}</strong></p>
-        </div>
-      ) : (
-        <p>Not signed in</p>
-      )}
-    </main>
+    <div>
+      <h1>Auth Test</h1>
+      <p>{session ? 'Authenticated' : 'Not authenticated'}</p>
+    </div>
   );
 }
