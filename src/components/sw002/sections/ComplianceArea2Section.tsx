@@ -33,7 +33,7 @@ interface ContactDetailsData {
 interface ComplianceArea2SectionProps {
   data: ContactDetailsData;
   onChange: (data: ContactDetailsData) => void;
-  onSave: () => void;
+  onSave: (section: string) => void;
 }
 
 export default function ComplianceArea2Section({ data, onChange, onSave }: ComplianceArea2SectionProps) {

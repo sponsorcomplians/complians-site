@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 interface ComplianceAreaSectionProps {
   data: any;
   onChange: (field: string, value: any) => void;
+  onSave: (section: string) => void;
 }
 
 interface ImmigrationMonitoringData {

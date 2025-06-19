@@ -35,7 +35,7 @@ interface MigrantTrackingData {
 interface ComplianceArea4SectionProps {
   data: MigrantTrackingData;
   onChange: (data: MigrantTrackingData) => void;
-  onSave: () => void;
+  onSave: (section: string) => void;
 }
 
 export default function ComplianceArea4Section({ data, onChange, onSave }: ComplianceArea4SectionProps) {
