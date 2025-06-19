@@ -7,8 +7,10 @@ export default function ProfilePage() {
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold">Your Profile</h1>
-      <p>Welcome{session?.user?.name ? `, ${session.user.name}` : ''} to your profile.</p>
+      <h1 className="text-2xl font-bold">Profile</h1>
+      <p>
+        Welcome{session?.user?.name ? `, ${session.user.name}` : ''} to your profile page.
+      </p>
     </main>
   );
 }
