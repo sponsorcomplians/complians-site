@@ -56,76 +56,6 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const supabase = createRouteHandlerClient({ cookies });
-    const body = await request.json();
-    
-    // Update worker details if provided
-    if (body.worker) {
-      const { error: workerError } = await supabase
-        .from('workers')
-        .update({
-          ...body.worker,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', params.id);
-      
-      if (workerError) {
-        return NextResponse.json({ error: workerError.message }, { status: 400 });
-      }
-    }
-    
-    // Update documents if provided
-    if (body.documents) {
-      for (const doc of body.documents) {
-        const { error } = await supabase
-          .from('worker_documents')
-          .upsert({
-            worker_id: params.id,
-            ...doc,
-            updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'worker_id,document_code'
-          });
-        
-        if (error) {
-          console.error('Document update error:', error);
-        }
-      }
-    }
-    
-    // Update training if provided
-    if (body.training) {
-      for (const module of body.training) {
-        const { error } = await supabase
-          .from('worker_training')
-          .upsert({
-            worker_id: params.id,
-            ...module,
-            updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'worker_id,module_code'
-          });
-        
-        if (error) {
-          console.error('Training update error:', error);
-        }
-      }
-    }
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
@@ -133,7 +63,7 @@ export async function POST(
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const body = await request.json();
-    
+
     // Add new note
     if (body.note) {
       const { data, error } = await supabase
@@ -146,15 +76,17 @@ export async function POST(
         })
         .select()
         .single();
-      
+
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
-      
+
       return NextResponse.json({ note: data });
     }
-    
+
+    // ✅ this return goes inside the POST block, NOT after
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+
   } catch (error) {
     return NextResponse.json(
       { error: 'Internal server error' },

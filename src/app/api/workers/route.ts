@@ -42,7 +42,7 @@ export async function GET() {
     console.log('Workers GET: Success! Found ' + (workers?.length || 0) + ' workers');
     
     // Transform snake_case to camelCase manually for better control
-    const transformedWorkers = workers?.map(worker => ({
+    const transformedWorkers = workers?.map((worker: any) => ({
       id: worker.id,
       firstName: worker.first_name,
       lastName: worker.last_name,
