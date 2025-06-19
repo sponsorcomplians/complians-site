@@ -25,6 +25,3 @@ export default function TestPage() {
     </div>
   );
 }
-export default function TestPage() {
-  return <div>Test Page - No Errors</div>;
-}
