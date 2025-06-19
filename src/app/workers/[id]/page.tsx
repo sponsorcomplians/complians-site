@@ -103,7 +103,6 @@ export default function WorkerDetailsPage() {
       if (error) throw error;
 
       if (data) {
-        // Transform snake_case to camelCase
         const transformedWorker: Worker = {
           id: data.id,
           firstName: data.first_name,
@@ -294,21 +293,4 @@ export default function WorkerDetailsPage() {
       </Tabs>
     </div>
   );
-}const fetchWorkers = async () => {
-  try {
-    console.log('Starting to fetch workers...');
-    setLoading(true);
-
-    const { data, error } = await supabase
-      .from('workers')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    console.log('Supabase response:', { data, error });
-
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
-    }
-    
-    // ... rest of your code
+}
