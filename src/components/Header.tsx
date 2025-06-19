@@ -1,55 +1,51 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useSession, signOut } from 'next-auth/react'
-import { Menu, X, ChevronDown, User, LogOut, Users } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useSession, signOut } from 'next-auth/react';
+import { Menu, X, ChevronDown, User, LogOut, Users } from 'lucide-react';
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isProductsOpen, setIsProductsOpen] = useState(false)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const { data: session } = useSession()
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const userMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProductsOpen, setIsProductsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnterProducts = () => {
     if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current)
+      clearTimeout(dropdownTimeoutRef.current);
     }
-    setIsProductsOpen(true)
-  }
+    setIsProductsOpen(true);
+  };
 
   const handleMouseLeaveProducts = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
-      setIsProductsOpen(false)
-    }, 150)
-  }
+      setIsProductsOpen(false);
+    }, 150);
+  };
 
   const handleMouseEnterUserMenu = () => {
     if (userMenuTimeoutRef.current) {
-      clearTimeout(userMenuTimeoutRef.current)
+      clearTimeout(userMenuTimeoutRef.current);
     }
-    setIsUserMenuOpen(true)
-  }
+    setIsUserMenuOpen(true);
+  };
 
   const handleMouseLeaveUserMenu = () => {
     userMenuTimeoutRef.current = setTimeout(() => {
-      setIsUserMenuOpen(false)
-    }, 150)
-  }
+      setIsUserMenuOpen(false);
+    }, 150);
+  };
 
   useEffect(() => {
     return () => {
-      if (dropdownTimeoutRef.current) {
-        clearTimeout(dropdownTimeoutRef.current)
-      }
-      if (userMenuTimeoutRef.current) {
-        clearTimeout(userMenuTimeoutRef.current)
-      }
-    }
-  }, [])
+      if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+      if (userMenuTimeoutRef.current) clearTimeout(userMenuTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -102,6 +98,15 @@ export default function Header() {
                     <div className="font-medium text-gray-900">AI Sponsor Compliance Agents</div>
                     <div className="text-sm text-gray-500 mt-1">Advanced AI-powered compliance automation</div>
                   </Link>
+                  <a
+                    href="https://dragon.sponsorcomplians.co.uk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="font-medium text-gray-900">Dragon AI Recruitment Agents</div>
+                    <div className="text-sm text-gray-500 mt-1">AI agents for sponsor-based recruitment</div>
+                  </a>
                 </div>
               )}
             </div>
@@ -109,14 +114,13 @@ export default function Header() {
             <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               About
             </Link>
-            
-            {/* Workers link - only show when logged in */}
+
             {session && (
               <Link href="/workers" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Workers
               </Link>
             )}
-            
+
             <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Contact
             </Link>
@@ -132,7 +136,7 @@ export default function Header() {
               >
                 <button className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   <User className="h-5 w-5" />
-                  <span>{session.user?.name || session.user?.email}</span>    
+                  <span>{session.user?.name || session.user?.email}</span>
                   <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -158,10 +162,7 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/auth/signin"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
+                <Link href="/auth/signin" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   Sign In
                 </Link>
                 <Link
@@ -178,7 +179,7 @@ export default function Header() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 transition-colors" 
+              className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -193,59 +194,43 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
                 Home
               </Link>
 
               {/* Mobile Products Section */}
               <div className="space-y-2">
-                <div className="text-gray-900 font-medium">Products</div>     
+                <div className="text-gray-900 font-medium">Products</div>
                 <div className="pl-4 space-y-2">
-                  <Link
-                    href="/products"
-                    className="block text-gray-600 hover:text-blue-600 transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link href="/products" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                     Digital Sponsor Compliance Tools
                   </Link>
-                  <Link
-                    href="/ai-agents"
+                  <Link href="/ai-agents" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                    AI Sponsor Compliance Agents
+                  </Link>
+                  <a
+                    href="https://dragon.sponsorcomplians.co.uk"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="block text-gray-600 hover:text-blue-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    AI Sponsor Compliance Agents
-                  </Link>
+                    Dragon AI Recruitment Agents
+                  </a>
                 </div>
               </div>
 
-              <Link
-                href="/about"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
+              <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
-              
-              {/* Workers link in mobile menu - only show when logged in */}
+
               {session && (
-                <Link
-                  href="/workers"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <Link href="/workers" className="text-gray-700 hover:text-blue-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
                   Workers
                 </Link>
               )}
-              
-              <Link
-                href="/contact"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
+
+              <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Link>
 
@@ -256,24 +241,16 @@ export default function Header() {
                     <div className="text-gray-900 font-medium">
                       {session.user?.name || session.user?.email}
                     </div>
-                    <Link
-                      href="/dashboard"
-                      className="block text-gray-600 hover:text-blue-600 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
+                    <Link href="/dashboard" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                       Dashboard
                     </Link>
-                    <Link
-                      href="/workers"
-                      className="block text-gray-600 hover:text-blue-600 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
+                    <Link href="/workers" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                       Workers Management
                     </Link>
                     <button
                       onClick={() => {
-                        signOut()
-                        setIsMenuOpen(false)
+                        signOut();
+                        setIsMenuOpen(false);
                       }}
                       className="block text-gray-600 hover:text-blue-600 transition-colors"
                     >
@@ -282,18 +259,10 @@ export default function Header() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Link
-                      href="/auth/signin"
-                      className="block text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
+                    <Link href="/auth/signin" className="block text-gray-700 hover:text-blue-600 font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
                       Sign In
                     </Link>
-                    <Link
-                      href="/auth/signup"
-                      className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
+                    <Link href="/auth/signup" className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center" onClick={() => setIsMenuOpen(false)}>
                       Get Started
                     </Link>
                   </div>
@@ -304,5 +273,5 @@ export default function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }

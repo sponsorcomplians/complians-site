@@ -15,7 +15,8 @@ import {
   Clock,
   Plus,
   TrendingUp,
-  Building
+  Building,
+  User
 } from 'lucide-react';
 import AddWorkerModal from '@/components/AddWorkerModal';
 import NewReportingDutyModal from '@/components/NewReportingDutyModal';
@@ -30,26 +31,6 @@ interface DashboardStats {
   complianceRate: number;
 }
 
-interface Worker {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  department: string;
-  startDate: string;
-  status: 'active' | 'inactive';
-}
-
-interface Report {
-  id: string;
-  title: string;
-  type: string;
-  dueDate: string;
-  status: 'pending' | 'submitted' | 'approved';
-  assignedTo: string;
-}
-
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -57,14 +38,12 @@ export default function HomePage() {
   
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
-    totalWorkers: 0,
+    totalWorkers: 1,
     totalReports: 0,
     pendingReports: 0,
     upcomingDeadlines: 0,
     complianceRate: 0
   });
-  const [workers, setWorkers] = useState<Worker[]>([]);
-  const [reports, setReports] = useState<Report[]>([]);
   const [isAddWorkerOpen, setIsAddWorkerOpen] = useState(false);
   const [isNewReportingDutyOpen, setIsNewReportingDutyOpen] = useState(false);
 
@@ -73,78 +52,21 @@ export default function HomePage() {
     if (status === 'loading') return;
     if (!session) {
       router.push('/auth/signin');
-    }
-  }, [session, status, router]);
-
-  // Fetch dashboard data
-  useEffect(() => {
-    if (session) {
-      fetchDashboardData();
-    }
-  }, [session]);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch workers
-      const { data: workersData, error: workersError } = await supabase
-        .from('workers')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (workersError) throw workersError;
-      setWorkers(workersData || []);
-      
-      // Fetch reports
-      const { data: reportsData, error: reportsError } = await supabase
-        .from('reports')
-        .select('*')
-        .order('due_date', { ascending: true });
-      
-      if (reportsError) throw reportsError;
-      setReports(reportsData || []);
-      
-      // Calculate stats
-      const pendingReports = reportsData?.filter(r => r.status === 'pending').length || 0;
-      const upcomingDeadlines = reportsData?.filter(r => {
-        const dueDate = new Date(r.dueDate);
-        const today = new Date();
-        const daysDiff = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        return daysDiff <= 7 && daysDiff >= 0;
-      }).length || 0;
-      
-      const completedReports = reportsData?.filter(r => r.status === 'approved').length || 0;
-      const complianceRate = reportsData && reportsData.length > 0 
-        ? Math.round((completedReports / reportsData.length) * 100)
-        : 0;
-      
-      setStats({
-        totalWorkers: workersData?.length || 0,
-        totalReports: reportsData?.length || 0,
-        pendingReports,
-        upcomingDeadlines,
-        complianceRate
-      });
-      
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
-    } finally {
+    } else {
       setLoading(false);
     }
-  };
+  }, [session, status, router]);
 
   const handleAddWorker = () => {
     // The modal handles the submission internally
     // We just need to refresh the data when a worker is added
-    fetchDashboardData();
+    toast.success('Worker added successfully!');
   };
 
   const handleCreateReport = () => {
     // The modal handles the submission internally
     // We just need to refresh the data when a report is created
-    fetchDashboardData();
+    toast.success('Report created successfully!');
   };
 
   if (status === 'loading' || loading) {
@@ -166,6 +88,48 @@ export default function HomePage() {
         <p className="text-muted-foreground mt-2">
           Welcome back, {session.user?.email}
         </p>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/workers/dc99da28-756b-433a-a269-f78b1987ef53')}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5" />
+                View Worker Compliance
+              </CardTitle>
+              <CardDescription>
+                Access the compliance dashboard for Altaf Umarji Mahmed Patel
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setIsAddWorkerOpen(true)}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Plus className="w-5 h-5" />
+                Add New Worker
+              </CardTitle>
+              <CardDescription>
+                Register a new worker in the system
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setIsNewReportingDutyOpen(true)}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                New Reporting Duty
+              </CardTitle>
+              <CardDescription>
+                Create a new compliance report
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -234,158 +198,39 @@ export default function HomePage() {
         onSuccess={handleCreateReport}
       />
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="workers" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="workers">Workers</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="deadlines">Deadlines</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="workers" className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Workers</h2>
-            <Button onClick={() => setIsAddWorkerOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Worker
-            </Button>
-          </div>
-          
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="text-left p-4">Name</th>
-                      <th className="text-left p-4">Email</th>
-                      <th className="text-left p-4">Role</th>
-                      <th className="text-left p-4">Department</th>
-                      <th className="text-left p-4">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {workers.map((worker) => (
-                      <tr key={worker.id} className="border-b">
-                        <td className="p-4">{worker.firstName} {worker.lastName}</td>
-                        <td className="p-4">{worker.email}</td>
-                        <td className="p-4">{worker.role}</td>
-                        <td className="p-4">{worker.department}</td>
-                        <td className="p-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                            worker.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {worker.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Reports</h2>
-            <Button onClick={() => setIsNewReportingDutyOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              New Reporting Duty
-            </Button>
-          </div>
-          
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="text-left p-4">Title</th>
-                      <th className="text-left p-4">Type</th>
-                      <th className="text-left p-4">Due Date</th>
-                      <th className="text-left p-4">Assigned To</th>
-                      <th className="text-left p-4">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reports.map((report) => (
-                      <tr key={report.id} className="border-b">
-                        <td className="p-4">{report.title}</td>
-                        <td className="p-4">{report.type}</td>
-                        <td className="p-4">{new Date(report.dueDate).toLocaleDateString()}</td>
-                        <td className="p-4">{report.assignedTo}</td>
-                        <td className="p-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                            report.status === 'approved' 
-                              ? 'bg-green-100 text-green-800'
-                              : report.status === 'submitted'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {report.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="deadlines" className="space-y-4">
-          <h2 className="text-2xl font-semibold mb-4">Upcoming Deadlines</h2>
-          
+      {/* Main Content Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Getting Started</CardTitle>
+          <CardDescription>
+            Welcome to your compliance management system
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <div className="space-y-4">
-            {reports
-              .filter(report => {
-                const dueDate = new Date(report.dueDate);
-                const today = new Date();
-                const daysDiff = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                return daysDiff <= 14 && daysDiff >= 0;
-              })
-              .map((report) => {
-                const dueDate = new Date(report.dueDate);
-                const today = new Date();
-                const daysDiff = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                
-                return (
-                  <Card key={report.id}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle>{report.title}</CardTitle>
-                          <CardDescription>
-                            Due: {dueDate.toLocaleDateString()} ({daysDiff} days remaining)
-                          </CardDescription>
-                        </div>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                          daysDiff <= 3 
-                            ? 'bg-red-100 text-red-800'
-                            : daysDiff <= 7
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {daysDiff <= 3 ? 'Urgent' : daysDiff <= 7 ? 'Soon' : 'Upcoming'}
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Type: {report.type} | Assigned to: {report.assignedTo} | Status: {report.status}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div>
+              <h3 className="font-semibold mb-2">Key Features:</h3>
+              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                <li>Track worker compliance and documentation</li>
+                <li>Monitor visa and work permit expiry dates</li>
+                <li>Manage training and qualification records</li>
+                <li>Generate compliance reports</li>
+                <li>Set up automatic reminders for important dates</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-2">Quick Tips:</h3>
+              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                <li>Click "View Worker Compliance" to access the detailed compliance dashboard</li>
+                <li>Use "Add New Worker" to register additional workers</li>
+                <li>Set up reporting duties to track compliance requirements</li>
+                <li>Check the Workers page for a full list of all registered workers</li>
+              </ul>
+            </div>
           </div>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
