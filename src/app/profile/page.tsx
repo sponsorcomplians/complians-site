@@ -1,14 +1,15 @@
 'use client';
+
 import { useSession } from 'next-auth/react';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
 
   return (
-    <div>
-      <h1>Profile</h1>
-      <p>Email: {session?.user?.email || 'N/A'}</p>
-    </div>
+    <main className="p-8">
+      <h1 className="text-2xl font-bold">Your Profile</h1>
+      <p>Welcome{session?.user?.name ? `, ${session.user.name}` : ''} to your profile.</p>
+    </main>
   );
 }
 
