@@ -202,7 +202,11 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              selected={data.documents_part1[dateKey] ? new Date(data.documents_part1[dateKey]) : undefined}
+                              selected={
+  typeof data.documents_part1[dateKey] === 'string'
+    ? new Date(data.documents_part1[dateKey] as string)
+    : undefined
+}
                               onSelect={(date) => handleFieldChange('documents_part1', dateKey, date?.toISOString())}
                               initialFocus
                             />
