@@ -1,4 +1,3 @@
-// src/components/sw002/sections/OtherDocumentsSection.tsx
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,42 +49,42 @@ export default function OtherDocumentsSection({ data, onChange, onSave }: OtherD
     {
       code: 'SW066',
       name: 'Personal Details, Background Check and Uniform',
-      field: 'sw066',
+      field: 'sw066_personal_details_background',
       description: 'Complete personal information and background verification',
       required: true
     },
     {
       code: 'SW067',
       name: 'Car Insurance',
-      field: 'sw067',
+      field: 'sw067_car_insurance',
       description: 'Valid car insurance for work-related driving',
       required: true
     },
     {
       code: 'SW068',
       name: 'Contract of Employment (Esteemed)',
-      field: 'sw068',
+      field: 'sw068_employment_contract',
       description: 'Employment contract with Esteemed Life Ltd',
       required: true
     },
     {
       code: 'SW069',
       name: 'Vaccination Certificate',
-      field: 'sw069',
+      field: 'sw069_vaccination_certificate',
       description: 'Required vaccinations for healthcare work',
       required: true
     },
     {
       code: 'SW070',
       name: 'MOT',
-      field: 'sw070',
+      field: 'sw070_mot',
       description: 'Valid MOT certificate for work vehicle',
       required: true
     },
     {
       code: 'SW071',
       name: 'Driving License (South African)',
-      field: 'sw071',
+      field: 'sw071_driving_licence',
       description: 'Valid driving license',
       required: true
     }
@@ -101,82 +100,82 @@ export default function OtherDocumentsSection({ data, onChange, onSave }: OtherD
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
-          {documents.map((doc) => (
-            <div key={doc.code} className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">
-                    {doc.code} - {doc.name}
-                    {doc.required && <span className="text-red-500 ml-1">*</span>}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">{doc.description}</p>
-                </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${doc.field}_original`}
-                      checked={data[`${doc.field}_${doc.field.split('_')[1]}_original`] || false}
-                      onCheckedChange={(checked) => 
-                        handleFieldChange(`${doc.field}_${doc.field.split('_')[1]}_original` as keyof OtherDocumentsData, checked)
-                      }
-                    />
-                    <Label htmlFor={`${doc.field}_original`} className="text-sm">
-                      Original Seen
-                    </Label>
+          {documents.map((doc) => {
+            const originalKey = `${doc.field}_original` as keyof OtherDocumentsData;
+            const copyKey = `${doc.field}_copy` as keyof OtherDocumentsData;
+            const dateKey = `${doc.field.split('_')[0]}_date` as keyof OtherDocumentsData;
+
+            return (
+              <div key={doc.code} className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">
+                      {doc.code} - {doc.name}
+                      {doc.required && <span className="text-red-500 ml-1">*</span>}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{doc.description}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${doc.field}_copy`}
-                      checked={data[`${doc.field}_${doc.field.split('_')[1]}_copy`] || false}
-                      onCheckedChange={(checked) => 
-                        handleFieldChange(`${doc.field}_${doc.field.split('_')[1]}_copy` as keyof OtherDocumentsData, checked)
-                      }
-                    />
-                    <Label htmlFor={`${doc.field}_copy`} className="text-sm">
-                      Copy Made
-                    </Label>
-                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <div>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !data[`${doc.field}_date` as keyof OtherDocumentsData] && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {data[`${doc.field}_date` as keyof OtherDocumentsData]
-                          ? format(new Date(data[`${doc.field}_date` as keyof OtherDocumentsData] as string), "dd/MM/yyyy")
-                          : "Select date"
-                        }
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={data[`${doc.field}_date` as keyof OtherDocumentsData] ? new Date(data[`${doc.field}_date` as keyof OtherDocumentsData] as string) : undefined}
-                        onSelect={(date) => handleFieldChange(`${doc.field}_date` as keyof OtherDocumentsData, date?.toISOString())}
-                        initialFocus
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={originalKey}
+                        checked={!!data[originalKey]}
+                        onCheckedChange={(checked) => handleFieldChange(originalKey, checked)}
                       />
-                    </PopoverContent>
-                  </Popover>
+                      <Label htmlFor={originalKey} className="text-sm">
+                        Original Seen
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={copyKey}
+                        checked={!!data[copyKey]}
+                        onCheckedChange={(checked) => handleFieldChange(copyKey, checked)}
+                      />
+                      <Label htmlFor={copyKey} className="text-sm">
+                        Copy Made
+                      </Label>
+                    </div>
+                  </div>
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !data[dateKey] && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {data[dateKey]
+                            ? format(new Date(data[dateKey] as string), "dd/MM/yyyy")
+                            : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={data[dateKey] ? new Date(data[dateKey] as string) : undefined}
+                          onSelect={(date) => handleFieldChange(dateKey, date?.toISOString())}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Important Notes */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
           <h4 className="font-medium text-blue-800 mb-2">Important Notes:</h4>
           <ul className="space-y-1 text-sm text-blue-700">
@@ -187,7 +186,6 @@ export default function OtherDocumentsSection({ data, onChange, onSave }: OtherD
           </ul>
         </div>
 
-        {/* Save Button */}
         <div className="flex justify-end pt-4">
           <Button onClick={onSave}>
             <Save className="h-4 w-4 mr-2" />
