@@ -6,8 +6,10 @@ import { BookOpen, CheckCircle2 } from 'lucide-react';
 
 interface TrainingModulesSectionProps {
   data: any;
-  onChange: (field: string, value: any) => void;
+  onChange: (data: any) => void;
+  onSave: () => void;
 }
+
 
 const trainingModules = [
   {
@@ -87,7 +89,7 @@ const trainingModules = [
   }
 ];
 
-export default function TrainingModulesSection({ data, onChange }: TrainingModulesSectionProps) {
+export default function TrainingModulesSection({ data, onChange, onSave }: TrainingModulesSectionProps) {
   const completedModules = trainingModules.filter(module => data[module.field]).length;
   const completionPercentage = (completedModules / trainingModules.length) * 100;
 
