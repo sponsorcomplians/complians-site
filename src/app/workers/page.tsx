@@ -1,14 +1,15 @@
 ﻿'use client';
+
 import { useSession } from 'next-auth/react';
 
 export default function WorkersPage() {
   const { data: session } = useSession();
 
   return (
-    <div>
-      <h1>Workers</h1>
-      <p>Accessed by: {session?.user?.email}</p>
-    </div>
+    <main className="p-8">
+      <h1 className="text-2xl font-bold">Workers</h1>
+      <p>Welcome{session?.user?.name ? `, ${session.user.name}` : ''} to the workers page.</p>
+    </main>
   );
 }
 
