@@ -194,7 +194,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {data.documents_part1[dateKey]
-                                ? format(new Date(data.documents_part1[dateKey]), "dd/MM/yyyy")
+                                ? format(new Date(String(data.documents_part1[dateKey])), "dd/MM/yyyy")
                                 : "Date seen/copied"
                               }
                             </Button>
