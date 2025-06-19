@@ -1,5 +1,16 @@
-// src/app/test-auth/page.tsx
-'use client'
+'use client';
+import { useSession } from 'next-auth/react';
+
+export default function TestAuthPage() {
+  const { data: session } = useSession();
+
+  return (
+    <div>
+      <h1>Test Auth Page</h1>
+      <p>Session user: {session?.user?.email || 'No session'}</p>
+    </div>
+  );
+}
 
 import { useSession, signIn, signOut } from 'next-auth/react'
 

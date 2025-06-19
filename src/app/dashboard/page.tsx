@@ -1,4 +1,19 @@
-'use client'
+'use client';
+import { useSession } from 'next-auth/react';
+
+export default function DashboardPage() {
+  const { data: session } = useSession();
+
+  if (!session) {
+    return <p>Please sign in to access your dashboard.</p>;
+  }
+
+  return (
+    <div>
+      <h2>Dashboard for {session.user?.email}</h2>
+    </div>
+  );
+}
 
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'

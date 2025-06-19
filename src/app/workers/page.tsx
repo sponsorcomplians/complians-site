@@ -1,4 +1,16 @@
 ﻿'use client';
+import { useSession } from 'next-auth/react';
+
+export default function WorkersPage() {
+  const { data: session } = useSession();
+
+  return (
+    <div>
+      <h1>Workers</h1>
+      <p>Accessed by: {session?.user?.email}</p>
+    </div>
+  );
+}
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';

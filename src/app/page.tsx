@@ -1,4 +1,15 @@
 'use client';
+import { useSession } from 'next-auth/react';
+
+export default function HomePage() {
+  const { data: session } = useSession();
+
+  return (
+    <main>
+      <h1>Welcome{session?.user?.name ? `, ${session.user.name}` : ''}!</h1>
+    </main>
+  );
+}
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';

@@ -1,5 +1,16 @@
-// src/app/auth/signin/page.tsx
 'use client';
+import { useSession } from 'next-auth/react';
+
+export default function SigninCallbackPage() {
+  const { data: session } = useSession();
+
+  return (
+    <div>
+      <h1>Sign-in Callback</h1>
+      <p>Welcome back {session?.user?.email || 'user'}.</p>
+    </div>
+  );
+}
 
 import { Suspense, useState } from 'react';
 import { signIn } from 'next-auth/react';

@@ -1,5 +1,16 @@
-// src/app/profile/page.tsx
 'use client';
+import { useSession } from 'next-auth/react';
+
+export default function ProfilePage() {
+  const { data: session } = useSession();
+
+  return (
+    <div>
+      <h1>Profile</h1>
+      <p>Email: {session?.user?.email || 'N/A'}</p>
+    </div>
+  );
+}
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
