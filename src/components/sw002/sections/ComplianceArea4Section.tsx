@@ -126,13 +126,16 @@ export default function ComplianceArea4Section({ data, onChange, onSave }: Compl
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${doc.field}_original`}
-                        checked={data[`${doc.field}_${doc.field.includes('form') ? doc.field.split('_')[1] : doc.field.split('_')[1]}_original`] || false}
-                        onCheckedChange={(checked) => 
-                          handleFieldChange(`${doc.field}_${doc.field.includes('form') ? doc.field.split('_')[1] : doc.field.split('_')[1]}_original`, checked)
-                        }
-                      />
+                      const originalKey = `${doc.field}_${doc.field.split('_')[1]}_original` as keyof MigrantTrackingData;
+
+<Checkbox
+  id={originalKey}
+  checked={data[originalKey] as boolean || false}
+  onCheckedChange={(checked) =>
+    handleFieldChange(originalKey, checked)
+  }
+/>
+
                       <Label htmlFor={`${doc.field}_original`} className="text-sm">
                         Original Seen
                       </Label>
