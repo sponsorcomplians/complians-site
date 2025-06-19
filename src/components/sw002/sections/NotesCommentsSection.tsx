@@ -1,6 +1,7 @@
 ﻿// src/components/sw002/sections/NotesCommentsSection.tsx
 'use client';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
