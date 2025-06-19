@@ -360,10 +360,11 @@ export default function ComplianceArea2Section({ data, onChange, onSave }: Compl
 
           {/* Save Button */}
           <div className="flex justify-end pt-4">
-            <Button onClick={onSave}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Contact Details
-            </Button>
+            <Button onClick={() => onSave('contact_details')}>
+  <Save className="h-4 w-4 mr-2" />
+  Save Contact Details
+</Button>
+
           </div>
         </CardContent>
       </Card>
