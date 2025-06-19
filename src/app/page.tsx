@@ -1,15 +1,4 @@
 'use client';
-import { useSession } from 'next-auth/react';
-
-export default function HomePage() {
-  const { data: session } = useSession();
-
-  return (
-    <main>
-      <h1>Welcome{session?.user?.name ? `, ${session.user.name}` : ''}!</h1>
-    </main>
-  );
-}
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -58,7 +47,6 @@ export default function HomePage() {
   const [isAddWorkerOpen, setIsAddWorkerOpen] = useState(false);
   const [isNewReportingDutyOpen, setIsNewReportingDutyOpen] = useState(false);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -69,14 +57,10 @@ export default function HomePage() {
   }, [session, status, router]);
 
   const handleAddWorker = () => {
-    // The modal handles the submission internally
-    // We just need to refresh the data when a worker is added
     toast.success('Worker added successfully!');
   };
 
   const handleCreateReport = () => {
-    // The modal handles the submission internally
-    // We just need to refresh the data when a report is created
     toast.success('Report created successfully!');
   };
 
@@ -88,16 +72,12 @@ export default function HomePage() {
     );
   }
 
-  if (!session) {
-    return null;
-  }
-
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Compliance Dashboard</h1>
         <p className="text-muted-foreground mt-2">
-          Welcome back, {session.user?.email}
+          Welcome back, {session?.user?.email}
         </p>
       </div>
 
@@ -145,58 +125,25 @@ export default function HomePage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Workers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalWorkers}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalReports}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Reports</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingReports}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Deadlines</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.upcomingDeadlines}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Compliance Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.complianceRate}%</div>
-          </CardContent>
-        </Card>
+        {[
+          { title: 'Total Workers', value: stats.totalWorkers, icon: <Users className="h-4 w-4 text-muted-foreground" /> },
+          { title: 'Total Reports', value: stats.totalReports, icon: <FileText className="h-4 w-4 text-muted-foreground" /> },
+          { title: 'Pending Reports', value: stats.pendingReports, icon: <Clock className="h-4 w-4 text-muted-foreground" /> },
+          { title: 'Upcoming Deadlines', value: stats.upcomingDeadlines, icon: <AlertCircle className="h-4 w-4 text-muted-foreground" /> },
+          { title: 'Compliance Rate', value: `${stats.complianceRate}%`, icon: <TrendingUp className="h-4 w-4 text-muted-foreground" /> },
+        ].map((stat, idx) => (
+          <Card key={idx}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              {stat.icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Modals */}
       <AddWorkerModal
         isOpen={isAddWorkerOpen}
         onClose={() => setIsAddWorkerOpen(false)}
@@ -209,7 +156,6 @@ export default function HomePage() {
         onSuccess={handleCreateReport}
       />
 
-      {/* Main Content Info */}
       <Card>
         <CardHeader>
           <CardTitle>Getting Started</CardTitle>
@@ -229,7 +175,6 @@ export default function HomePage() {
                 <li>Set up automatic reminders for important dates</li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-semibold mb-2">Quick Tips:</h3>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
