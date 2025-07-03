@@ -455,6 +455,16 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: "MIGRANT_TRACKING_BREACH",
     evidenceStatus: "MISSING_TRACKING_EVIDENCE",
   },
+  "ai-contracted-hours-compliance": {
+    title: "AI Contracted Hours Compliance System",
+    description: "Checks working hours against contract and legal limits.",
+    chatWelcome:
+      "Hello! I'm your AI contracted hours compliance assistant. I can help you with questions about working hours, contract compliance, and legal limits. How can I assist you today?",
+    defaultJobTitle: "Care Assistant",
+    defaultSocCode: "6145",
+    breachType: "CONTRACTED_HOURS_BREACH",
+    evidenceStatus: "MISSING_HOURS_EVIDENCE",
+  },
 };
 
 export default function AIComplianceDashboard() {
