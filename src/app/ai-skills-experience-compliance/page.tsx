@@ -1,6 +1,18 @@
 'use client';
-import SkillsExperienceComplianceDashboard from '@/components/SkillsExperienceComplianceDashboard'
 
+import { Suspense } from 'react';
+import SkillsExperienceComplianceDashboard from '@/components/SkillsExperienceComplianceDashboard';
+
+// Content component that uses useSearchParams
+function SkillsExperienceComplianceContent() {
+  return <SkillsExperienceComplianceDashboard />;
+}
+
+// Default export with Suspense wrapper
 export default function SkillsExperienceCompliancePage() {
-  return <SkillsExperienceComplianceDashboard />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SkillsExperienceComplianceContent />
+    </Suspense>
+  );
 } 
