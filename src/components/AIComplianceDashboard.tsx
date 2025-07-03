@@ -345,6 +345,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'THIRD_PARTY_ARRANGEMENT_BREACH',
     evidenceStatus: 'MISSING_THIRD_PARTY_EVIDENCE'
   },
+  'ai-reporting-duties-compliance': {
+    title: 'AI Reporting Duties Compliance System',
+    description: 'AI-powered automated monitoring and compliance checking for sponsor reporting obligations.',
+    chatWelcome: 'Hello! I\'m your AI reporting duties compliance assistant. I can help you with questions about reporting deadlines, obligations, compliance status, and automated alerts. How can I assist you today?',
+    defaultJobTitle: 'Software Developer',
+    defaultSocCode: '2136',
+    breachType: 'REPORTING_DUTIES_BREACH',
+    evidenceStatus: 'MISSING_REPORTING_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -521,6 +530,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-reporting-duties-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'David Chen',
+          jobTitle: 'Software Developer',
+          socCode: '2136',
+          cosReference: 'COS111111',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Emma Wilson',
+          jobTitle: 'Data Analyst',
+          socCode: '2135',
+          cosReference: 'COS222222',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-15'
+        },
+        {
+          id: '3',
+          name: 'Michael Brown',
+          jobTitle: 'IT Consultant',
+          socCode: '2136',
+          cosReference: 'COS333333',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-20'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -681,6 +730,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-third-party-labour-compliance') {
       return `Third-Party Labour Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Third-Party Labour Compliance Agent has reviewed the third-party arrangement and compliance evidence.\n\nKEY FINDINGS:\n- Third-party arrangement: [summarize arrangement]\n- Labour provider verification: [summarize provider status]\n- Contract compliance: [summarize contract status]\n- Worker assignment: [summarize assignment details]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the third-party arrangement is not properly documented or the labour provider is not compliant, this is a serious breach.\n2. If contract terms are not met or worker assignments are not transparent, this is a breach.\n3. If all evidence is present and the arrangement is compliant, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all third-party arrangement documentation is uploaded.\n- Verify labour provider compliance and registration.\n- Review contract terms and worker assignment transparency.\n- Address any concerns about third-party arrangement legitimacy.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-reporting-duties-compliance') {
+      return `Reporting Duties Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Reporting Duties Compliance Agent has reviewed the reporting obligations and compliance status.\n\nKEY FINDINGS:\n- Reporting deadlines: [summarize deadline status]\n- Obligation compliance: [summarize obligation status]\n- Report submissions: [summarize submission status]\n- Compliance alerts: [summarize any alerts or issues]\n- Concerns: [summarize any red flags or missing reports]\n\nCOMPLIANCE FINDINGS:\n1. If reporting deadlines are missed or obligations are not met, this is a serious breach.\n2. If reports are incomplete or late, this is a breach.\n3. If all reporting duties are fulfilled on time, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required reports are submitted on time.\n- Address any missed reporting deadlines immediately.\n- Review and complete any outstanding reporting obligations.\n- Set up automated alerts for future reporting deadlines.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment

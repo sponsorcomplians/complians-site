@@ -135,11 +135,11 @@ const allAgents = [
     title: 'AI Reporting Duties Compliance Agent',
     description: 'Automated monitoring and compliance checking for sponsor reporting obligations.',
     price: 149.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated deadline tracking', 'Compliance obligation monitoring', 'Timely reporting assurance'],
-    available: false
+    available: true
   },
   {
     id: 'immigration-status',
