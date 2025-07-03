@@ -102,11 +102,11 @@ const allAgents = [
     title: 'AI Skills & Experience Compliance Agent',
     description: 'Comprehensive skills assessment and work experience verification for sponsored worker compliance.',
     price: 169.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated skills verification', 'Experience compliance assurance', 'Professional background checks'],
-    available: false
+    available: true
   },
   {
     id: 'genuine-vacancies',
