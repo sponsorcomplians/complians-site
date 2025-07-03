@@ -142,7 +142,7 @@ const allAgents = [
     available: true
   },
   {
-    id: 'immigration-status',
+    id: 'immigration-status-monitoring',
     title: 'AI Immigration Status Monitoring Agent',
     description: 'Real-time monitoring and compliance checking for migrant worker immigration status.',
     price: 179.99,
