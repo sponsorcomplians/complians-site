@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ClientOnly from '@/components/ClientOnly';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -80,12 +79,7 @@ export default function HomePage() {
   }
 
   return (
-    <ClientOnly fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    }>
-      <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Compliance Dashboard</h1>
           <p className="text-muted-foreground mt-2">
@@ -200,6 +194,5 @@ export default function HomePage() {
         </CardContent>
       </Card>
       </div>
-    </ClientOnly>
   );
 }

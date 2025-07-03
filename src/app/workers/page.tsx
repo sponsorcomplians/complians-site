@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'sonner';
-import ClientOnly from '@/components/ClientOnly';
 
 interface Worker {
   id: string;
@@ -23,8 +22,8 @@ interface Worker {
 
 export default function WorkersPage() {
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,12 +110,7 @@ export default function WorkersPage() {
   }
 
   return (
-    <ClientOnly fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    }>
-      <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Workers</h1>
@@ -206,6 +200,5 @@ export default function WorkersPage() {
         </table>
       </div>
       </div>
-    </ClientOnly>
   );
 }

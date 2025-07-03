@@ -1,10 +1,9 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ClientOnly from '@/components/ClientOnly';
 import { User, Mail, Building, Phone, Calendar, Shield } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -12,11 +11,13 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -134,17 +135,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <ClientOnly fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <main className="min-h-screen bg-gray-50 py-12">
+      {/* You can keep rendering your form UI here using formData, handlers, and JSX */}
+      <div className="text-center text-gray-700 font-medium">
+        Profile page loaded successfully.
       </div>
-    }>
-      <main className="min-h-screen bg-gray-50 py-12">
-        {/* You can keep rendering your form UI here using formData, handlers, and JSX */}
-        <div className="text-center text-gray-700 font-medium">
-          Profile page loaded successfully.
-        </div>
-      </main>
-    </ClientOnly>
+    </main>
   );
 }
