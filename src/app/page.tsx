@@ -164,15 +164,15 @@ const allAgents = [
     available: true
   },
   {
-    id: 'migrant-contact',
+    id: 'migrant-contact-maintenance',
     title: 'AI Migrant Contact Maintenance Agent',
     description: 'Automated monitoring and compliance checking for maintaining migrant worker contact.',
     price: 129.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'basic',
     benefits: ['Automated contact monitoring', 'Communication tracking', 'Compliance assurance'],
-    available: false
+    available: true
   },
   {
     id: 'recruitment-practices',

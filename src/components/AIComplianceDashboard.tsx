@@ -372,6 +372,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'RECORD_KEEPING_BREACH',
     evidenceStatus: 'MISSING_RECORD_EVIDENCE'
   },
+  'ai-migrant-contact-maintenance': {
+    title: 'AI Migrant Contact Maintenance System',
+    description: 'AI-powered automated monitoring and compliance checking for maintaining migrant worker contact.',
+    chatWelcome: 'Hello! I\'m your AI migrant contact maintenance assistant. I can help you with questions about contact record keeping, communication tracking, and compliance assurance. How can I assist you today?',
+    defaultJobTitle: 'Support Worker',
+    defaultSocCode: '6141',
+    breachType: 'CONTACT_MAINTENANCE_BREACH',
+    evidenceStatus: 'MISSING_CONTACT_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -668,6 +677,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-migrant-contact-maintenance') {
+      return [
+        {
+          id: '1',
+          name: 'Mohammed Ali',
+          jobTitle: 'Support Worker',
+          socCode: '6141',
+          cosReference: 'COS123123',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Elena Petrova',
+          jobTitle: 'Care Assistant',
+          socCode: '6141',
+          cosReference: 'COS456456',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-15'
+        },
+        {
+          id: '3',
+          name: 'John Smith',
+          jobTitle: 'Healthcare Assistant',
+          socCode: '6141',
+          cosReference: 'COS789789',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-20'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -837,6 +886,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-record-keeping-compliance') {
       return `Record Keeping Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Record Keeping Compliance Agent has reviewed the record keeping and document management evidence.\n\nKEY FINDINGS:\n- Document management: [summarize document status]\n- Record verification: [summarize record status]\n- Compliance assurance: [summarize compliance status]\n- Audit readiness: [summarize audit readiness]\n- Concerns: [summarize any red flags or missing records]\n\nCOMPLIANCE FINDINGS:\n1. If required records are missing or not properly maintained, this is a serious breach.\n2. If document management is inadequate or records are incomplete, this is a breach.\n3. If all records are properly maintained and documented, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required records are properly maintained and accessible.\n- Review document management processes and procedures.\n- Address any missing or incomplete records immediately.\n- Prepare for audit readiness with comprehensive documentation.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-migrant-contact-maintenance') {
+      return `Migrant Contact Maintenance Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Migrant Contact Maintenance Agent has reviewed the contact record keeping and communication tracking evidence.\n\nKEY FINDINGS:\n- Contact record keeping: [summarize contact record status]\n- Communication tracking: [summarize communication status]\n- Compliance assurance: [summarize compliance status]\n- Concerns: [summarize any red flags or missing contact records]\n\nCOMPLIANCE FINDINGS:\n1. If contact records are missing or not updated, this is a serious breach.\n2. If communication tracking is inadequate, this is a breach.\n3. If all contact records are up to date and communication is tracked, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all contact records are up to date and accurate.\n- Track all communications with migrant workers.\n- Address any missing or outdated contact information immediately.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment
