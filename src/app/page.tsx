@@ -1029,10 +1029,6 @@ export default function HomePage() {
                 src={product.image}
                 alt={product.title}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  console.error(`Failed to load: ${product.image}`);
-                  e.currentTarget.src = '/images/placeholder.png';
-                }}
               />
             </div>
             <div className="content">
