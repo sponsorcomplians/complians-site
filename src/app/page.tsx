@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -36,6 +35,8 @@ import {
   MapPin,
   Play,
 } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 // AI Agents Data
 const featuredAgents = [
@@ -333,8 +334,8 @@ const allAgents = [
       "Audit readiness",
     ],
     available: true,
-    image: "/images/ai-document-compliance-agent.png",
-  },
+    image: "/images/ai-document-compliance-agent.png"
+  }
 ];
 
 const categories = [
