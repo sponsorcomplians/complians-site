@@ -465,6 +465,16 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: "CONTRACTED_HOURS_BREACH",
     evidenceStatus: "MISSING_HOURS_EVIDENCE",
   },
+  "ai-paragraph-c7-26-compliance": {
+    title: "AI Paragraph C7-26 Compliance System",
+    description: "Monitors compliance with Paragraph C7-26 requirements.",
+    chatWelcome:
+      "Hello! I'm your AI Paragraph C7-26 compliance assistant. I can help you with questions about C7-26 obligations, compliance, and reporting. How can I assist you today?",
+    defaultJobTitle: "Compliance Officer",
+    defaultSocCode: "2429",
+    breachType: "PARAGRAPH_C7_26_BREACH",
+    evidenceStatus: "MISSING_C7_26_EVIDENCE",
+  },
 };
 
 export default function AIComplianceDashboard() {
