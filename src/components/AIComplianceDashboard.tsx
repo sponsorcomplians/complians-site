@@ -317,6 +317,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     defaultSocCode: '6145',
     breachType: 'EXPIRED_RTW',
     evidenceStatus: 'MISSING_RTW_DOCUMENTS'
+  },
+  'ai-skills-experience-compliance': {
+    title: 'AI Skills & Experience Compliance System',
+    description: 'AI-powered skills and experience verification for sponsored workers, with gap analysis and compliance risk detection.',
+    chatWelcome: 'Hello! I\'m your AI skills & experience compliance assistant. I can help you with questions about skills, experience, CVs, references, and compliance for sponsored workers. How can I assist you today?',
+    defaultJobTitle: 'Care Assistant',
+    defaultSocCode: '6145',
+    breachType: 'INSUFFICIENT_EXPERIENCE',
+    evidenceStatus: 'MISSING_EXPERIENCE_DOCS'
   }
 };
 
@@ -371,6 +380,46 @@ export default function AIComplianceDashboard() {
           lastAssessment: '2024-06-08',
           redFlag: false,
           assignmentDate: '2024-03-10'
+        }
+      ];
+    }
+    if (agentKey === 'ai-skills-experience-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Emily Carter',
+          jobTitle: 'Care Assistant',
+          socCode: '6145',
+          cosReference: 'COS111111',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Rajesh Kumar',
+          jobTitle: 'Senior Care Worker',
+          socCode: '6146',
+          cosReference: 'COS222222',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-15'
+        },
+        {
+          id: '3',
+          name: 'Anna Nowak',
+          jobTitle: 'Care Assistant',
+          socCode: '6145',
+          cosReference: 'COS333333',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-12'
         }
       ];
     }
@@ -490,6 +539,9 @@ export default function AIComplianceDashboard() {
   }
 
   const generateProfessionalAssessment = (workerName: string, cosRef: string, jobTitle: string, socCode: string, assignmentDate: string) => {
+    if (agentKey === 'ai-skills-experience-compliance') {
+      return `Skills & Experience Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nUpon review of the uploaded CV and experience documents, the AI Skills & Experience Compliance Agent has identified:\n\n- Relevant experience: [summarize experience]\n- Skills match: [summarize skills]\n- Gaps/concerns: [summarize gaps or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the worker lacks direct care experience or relevant skills, this is a compliance risk.\n2. If references or employment history are missing, this is a breach.\n3. If the worker has strong, relevant experience, they are compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all experience and reference documents are uploaded.\n- Address any skills or experience gaps with training or additional evidence.\n- Review job assignment for suitability.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
     if (agentKey === 'ai-right-to-work-compliance') {
       return `Right to Work Assessment for ${workerName} (${cosRef})
 
