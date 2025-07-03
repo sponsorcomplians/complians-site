@@ -468,15 +468,15 @@ export default function HomePage() {
                 <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
                   {agent.id === "qualification" && (
                     <img
-                      src="/images/AI Experience Compliance Agent.png"
-                      alt="AI Qualification Compliance Agent Showcase"
+                      src="/images/ai-qualification-compliance-agent.png"
+                      alt="AI Qualification Compliance Agent"
                       className="w-full h-full object-cover"
                     />
                   )}
                   {agent.id === "salary" && (
                     <img
-                      src="/images/AI Salary Compliance Agent.png"
-                      alt="AI Salary Compliance Agent Showcase"
+                      src="/images/ai-salary-compliance-agent.png"
+                      alt="AI Salary Compliance Agent"
                       className="w-full h-full object-cover"
                     />
                   )}
