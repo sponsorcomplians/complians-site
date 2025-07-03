@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import ClientOnly from '@/components/ClientOnly';
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -33,11 +34,17 @@ export default function CallbackPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-2">Processing...</h2>
-        <p className="text-gray-600">Please wait while we complete your sign in.</p>
+    <ClientOnly fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    </div>
+    }>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-2">Processing...</h2>
+          <p className="text-gray-600">Please wait while we complete your sign in.</p>
+        </div>
+      </div>
+    </ClientOnly>
   );
 }
