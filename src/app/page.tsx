@@ -186,15 +186,15 @@ const allAgents = [
     available: true
   },
   {
-    id: 'migrant-tracking',
+    id: 'migrant-tracking-compliance',
     title: 'AI Migrant Tracking Compliance Agent',
     description: 'Comprehensive tracking and compliance monitoring for migrant worker activities.',
     price: 189.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated activity tracking', 'Compliance monitoring', 'Activity verification'],
-    available: false
+    available: true
   },
   {
     id: 'contracted-hours',

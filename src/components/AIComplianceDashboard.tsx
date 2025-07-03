@@ -390,6 +390,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'RECRUITMENT_PRACTICES_BREACH',
     evidenceStatus: 'MISSING_RECRUITMENT_EVIDENCE'
   },
+  'ai-migrant-tracking-compliance': {
+    title: 'AI Migrant Tracking Compliance System',
+    description: 'AI-powered comprehensive tracking and compliance monitoring for migrant worker activities.',
+    chatWelcome: 'Hello! I\'m your AI migrant tracking compliance assistant. I can help you with questions about activity tracking, compliance monitoring, and activity verification. How can I assist you today?',
+    defaultJobTitle: 'Logistics Coordinator',
+    defaultSocCode: '3541',
+    breachType: 'MIGRANT_TRACKING_BREACH',
+    evidenceStatus: 'MISSING_TRACKING_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -766,6 +775,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-migrant-tracking-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Olga Ivanova',
+          jobTitle: 'Logistics Coordinator',
+          socCode: '3541',
+          cosReference: 'COS111333',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Samuel Lee',
+          jobTitle: 'Warehouse Supervisor',
+          socCode: '3541',
+          cosReference: 'COS444555',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-15'
+        },
+        {
+          id: '3',
+          name: 'Priya Patel',
+          jobTitle: 'Transport Manager',
+          socCode: '3541',
+          cosReference: 'COS666777',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-20'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -941,6 +990,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-recruitment-practices-compliance') {
       return `Recruitment Practices Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Recruitment Practices Compliance Agent has reviewed the recruitment process and policy compliance evidence.\n\nKEY FINDINGS:\n- Recruitment process: [summarize process]\n- Policy compliance: [summarize policy status]\n- Transparency: [summarize transparency status]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If recruitment practices are not transparent or policies are not followed, this is a serious breach.\n2. If documentation is missing or incomplete, this is a breach.\n3. If all recruitment practices are compliant and transparent, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment policies are followed and documented.\n- Review recruitment process for transparency and compliance.\n- Address any missing or incomplete documentation immediately.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-migrant-tracking-compliance') {
+      return `Migrant Tracking Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Migrant Tracking Compliance Agent has reviewed the activity tracking and compliance monitoring evidence.\n\nKEY FINDINGS:\n- Activity tracking: [summarize activity status]\n- Compliance monitoring: [summarize monitoring status]\n- Activity verification: [summarize verification status]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If activity tracking is missing or not up to date, this is a serious breach.\n2. If compliance monitoring is inadequate, this is a breach.\n3. If all activities are tracked and verified, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all activities are tracked and documented.\n- Review compliance monitoring processes.\n- Address any missing or incomplete activity records immediately.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment
