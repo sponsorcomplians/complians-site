@@ -92,7 +92,7 @@ const allAgents = [
       "Immediate breach detection",
     ],
     available: true,
-    image: "/images/ai-qualification-showcase.png",
+    image: "/images/AI Experience Compliance Agent.png",
   },
   {
     id: "salary",
@@ -110,7 +110,7 @@ const allAgents = [
       "Underpayment prevention",
     ],
     available: true,
-    image: "/images/ai-salary-showcase.png",
+    image: "/images/AI Salary Compliance Agent.png",
   },
 
   {
@@ -128,7 +128,7 @@ const allAgents = [
       "Compliance monitoring",
     ],
     available: true,
-    image: "/images/ai-right-to-work-showcase.png",
+    image: "/images/AI Right to Work Agent.png",
   },
 
   {
@@ -146,7 +146,7 @@ const allAgents = [
       "Professional background checks",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Skills & Experience Compliance Agent.png",
   },
   {
     id: "genuine-vacancies",
@@ -163,7 +163,7 @@ const allAgents = [
       "Market rate validation",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Genuine Vacancies Compliance Agent.png",
   },
   {
     id: "third-party-labour",
@@ -180,7 +180,7 @@ const allAgents = [
       "Contract verification",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Third-Party Labour Compliance Agent.png",
   },
   {
     id: "reporting-duties",
@@ -197,7 +197,7 @@ const allAgents = [
       "Timely reporting assurance",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Reporting Duties Compliance Agent.png",
   },
   {
     id: "immigration-status-monitoring",
@@ -214,7 +214,7 @@ const allAgents = [
       "Status change alerts",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Immigration Status Monitoring Agent.png",
   },
   {
     id: "record-keeping",
@@ -231,6 +231,7 @@ const allAgents = [
       "Audit readiness",
     ],
     available: true,
+    image: "/images/AI Record Keeping Compliance Agent.png",
   },
   {
     id: "migrant-contact-maintenance",
@@ -247,7 +248,7 @@ const allAgents = [
       "Compliance assurance",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Migrant Contact Maintenance Agent.png",
   },
   {
     id: "recruitment-practices-compliance",
@@ -264,7 +265,7 @@ const allAgents = [
       "Transparency verification",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Recruitment Practices Compliance Agent.png",
   },
   {
     id: "migrant-tracking-compliance",
@@ -281,7 +282,7 @@ const allAgents = [
       "Compliance verification",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Migrant Tracking Compliance Agent.png",
   },
   {
     id: "contracted-hours",
@@ -298,7 +299,7 @@ const allAgents = [
       "Hours verification",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Contracted Hours Compliance Agent.png",
   },
   {
     id: "paragraph-c7-26",
@@ -315,7 +316,24 @@ const allAgents = [
       "Specialized guidance",
     ],
     available: true,
-    image: "/images/digital-tools-showcase.png",
+    image: "/images/AI Paragraph C7-26 Compliance Agent.png",
+  },
+  {
+    id: "document-compliance",
+    title: "AI Document Compliance Agent",
+    description:
+      "Comprehensive document compliance and management for UK sponsors.",
+    price: 149.99,
+    status: "Available",
+    category: "compliance",
+    level: "basic",
+    benefits: [
+      "Automated document verification",
+      "Compliance assurance",
+      "Audit readiness",
+    ],
+    available: true,
+    image: "/images/AI Document Compliance Agent.png",
   },
 ];
 
@@ -450,14 +468,14 @@ export default function HomePage() {
                 <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
                   {agent.id === "qualification" && (
                     <img
-                      src="/images/ai-qualification-showcase.png"
+                      src="/images/AI Experience Compliance Agent.png"
                       alt="AI Qualification Compliance Agent Showcase"
                       className="w-full h-full object-cover"
                     />
                   )}
                   {agent.id === "salary" && (
                     <img
-                      src="/images/ai-salary-showcase.png"
+                      src="/images/AI Salary Compliance Agent.png"
                       alt="AI Salary Compliance Agent Showcase"
                       className="w-full h-full object-cover"
                     />
