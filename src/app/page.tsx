@@ -294,7 +294,7 @@ const allAgents = [
     description:
       "Specialized compliance monitoring for Paragraph C7-26 requirements and obligations.",
     price: 199.99,
-    status: "Coming Soon",
+    status: "Available",
     category: "compliance",
     level: "enterprise",
     benefits: [
@@ -302,7 +302,7 @@ const allAgents = [
       "Requirement compliance assurance",
       "Specialized guidance",
     ],
-    available: false,
+    available: true,
   },
 ];
 
