@@ -336,6 +336,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'NOT_GENUINE_VACANCY',
     evidenceStatus: 'MISSING_VACANCY_EVIDENCE'
   },
+  'ai-third-party-labour-compliance': {
+    title: 'AI Third-Party Labour Compliance System',
+    description: 'AI-powered monitoring and compliance checking for third-party labour arrangements.',
+    chatWelcome: 'Hello! I\'m your AI third-party labour compliance assistant. I can help you with questions about third-party arrangements, labour provider verification, contract compliance, and risk assessment. How can I assist you today?',
+    defaultJobTitle: 'Care Assistant',
+    defaultSocCode: '6141',
+    breachType: 'THIRD_PARTY_ARRANGEMENT_BREACH',
+    evidenceStatus: 'MISSING_THIRD_PARTY_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -469,6 +478,46 @@ export default function AIComplianceDashboard() {
           lastAssessment: '2024-06-08',
           redFlag: false,
           assignmentDate: '2024-03-18'
+        }
+      ];
+    }
+    if (agentKey === 'ai-third-party-labour-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Maria Rodriguez',
+          jobTitle: 'Care Assistant',
+          socCode: '6141',
+          cosReference: 'COS777777',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-15'
+        },
+        {
+          id: '2',
+          name: 'Ahmed Hassan',
+          jobTitle: 'Support Worker',
+          socCode: '6141',
+          cosReference: 'COS888888',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-20'
+        },
+        {
+          id: '3',
+          name: 'Sarah Johnson',
+          jobTitle: 'Healthcare Assistant',
+          socCode: '6141',
+          cosReference: 'COS999999',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-10'
         }
       ];
     }
@@ -629,6 +678,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-genuine-vacancies-compliance') {
       return `Genuine Vacancy Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Genuine Vacancies Compliance Agent has reviewed the vacancy and recruitment evidence.\n\nKEY FINDINGS:\n- Vacancy authenticity: [summarize evidence]\n- Recruitment process: [summarize process]\n- Market rate: [summarize salary/role]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the vacancy is not genuine or recruitment was not transparent, this is a serious breach.\n2. If market rate is not met, or job description is not accurate, this is a breach.\n3. If all evidence is present and the vacancy is genuine, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment and vacancy evidence is uploaded.\n- Address any concerns about vacancy authenticity or market rate.\n- Review recruitment process for transparency and compliance.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-third-party-labour-compliance') {
+      return `Third-Party Labour Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Third-Party Labour Compliance Agent has reviewed the third-party arrangement and compliance evidence.\n\nKEY FINDINGS:\n- Third-party arrangement: [summarize arrangement]\n- Labour provider verification: [summarize provider status]\n- Contract compliance: [summarize contract status]\n- Worker assignment: [summarize assignment details]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the third-party arrangement is not properly documented or the labour provider is not compliant, this is a serious breach.\n2. If contract terms are not met or worker assignments are not transparent, this is a breach.\n3. If all evidence is present and the arrangement is compliant, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all third-party arrangement documentation is uploaded.\n- Verify labour provider compliance and registration.\n- Review contract terms and worker assignment transparency.\n- Address any concerns about third-party arrangement legitimacy.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment

@@ -124,11 +124,11 @@ const allAgents = [
     title: 'AI Third-Party Labour Compliance Agent',
     description: 'Comprehensive monitoring and compliance checking for third-party labour arrangements.',
     price: 189.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'enterprise',
     benefits: ['Automated third-party monitoring', 'Compliance risk identification', 'Contract verification'],
-    available: false
+    available: true
   },
   {
     id: 'reporting-duties',
