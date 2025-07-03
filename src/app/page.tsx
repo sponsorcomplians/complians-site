@@ -84,28 +84,7 @@ const allAgents = [
     benefits: ['Automated salary verification', 'NMW compliance assurance', 'Underpayment prevention'],
     available: true
   },
-  {
-    id: 'experience',
-    title: 'AI Experience Compliance Agent',
-    description: 'Intelligent work experience verification and skills assessment for sponsored worker compliance.',
-    price: 149.99,
-    status: 'Coming Soon',
-    category: 'compliance',
-    level: 'advanced',
-    benefits: ['Automated experience verification', 'Skills gap analysis', 'Professional documentation'],
-    available: false
-  },
-  {
-    id: 'document',
-    title: 'AI Document Compliance Agent',
-    description: 'Comprehensive document verification and compliance checking for all sponsor requirements.',
-    price: 129.99,
-    status: 'Coming Soon',
-    category: 'compliance',
-    level: 'basic',
-    benefits: ['Complete document oversight', 'Authenticity verification', 'Expiry management'],
-    available: false
-  },
+
   {
     id: 'right-to-work',
     title: 'AI Right to Work Agent',
@@ -117,17 +96,7 @@ const allAgents = [
     benefits: ['Automated RTW checking', 'Real-time status updates', 'Compliance monitoring'],
     available: false
   },
-  {
-    id: 'hr',
-    title: 'AI HR Compliance Agent',
-    description: 'Complete HR compliance management with policy checking and employee monitoring.',
-    price: 189.99,
-    status: 'Coming Soon',
-    category: 'hr',
-    level: 'enterprise',
-    benefits: ['Complete HR oversight', 'Policy compliance', 'Training management'],
-    available: false
-  },
+
   {
     id: 'skills-experience',
     title: 'AI Skills & Experience Compliance Agent',
@@ -439,11 +408,11 @@ export default function HomePage() {
               <div className="text-gray-600">Available Now</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-600 mb-2">15</div>
+              <div className="text-3xl font-bold text-gray-600 mb-2">12</div>
               <div className="text-gray-600">Coming Soon</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-600 mb-2">20</div>
+              <div className="text-3xl font-bold text-gray-600 mb-2">17</div>
               <div className="text-gray-600">Total Planned</div>
             </div>
             <div>
