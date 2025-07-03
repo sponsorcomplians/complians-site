@@ -285,41 +285,41 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
+      <section className="bg-gradient-to-br from-brand-dark via-brand-dark to-brand-light text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             AI Compliance Agents
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Revolutionize your compliance management with our suite of intelligent AI agents
+            Revolutionise your compliance management with our suite of intelligent AI agents
           </p>
           <p className="text-lg mb-12 max-w-4xl mx-auto">
             From qualification verification to salary compliance, our AI agents provide expert-level analysis, automated reporting, and real-time compliance monitoring for UK sponsors.
           </p>
           
-          {/* Feature Highlights */}
+          {/* Feature Highlights with Icons */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <Brain className="w-8 h-8" />
+              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                <Brain className="w-10 h-10 text-brand-dark" />
               </div>
               <h3 className="font-semibold">Expert-Level Analysis</h3>
             </div>
             <div className="text-center">
-              <div className="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <Zap className="w-8 h-8" />
+              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                <Zap className="w-10 h-10 text-brand-dark" />
               </div>
               <h3 className="font-semibold">Real-Time Monitoring</h3>
             </div>
             <div className="text-center">
-              <div className="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <FileText className="w-8 h-8" />
+              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-10 h-10 text-brand-dark" />
               </div>
               <h3 className="font-semibold">Professional Reporting</h3>
             </div>
             <div className="text-center">
-              <div className="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-8 h-8" />
+              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                <Clock className="w-10 h-10 text-brand-dark" />
               </div>
               <h3 className="font-semibold">24/7 Availability</h3>
             </div>
@@ -385,9 +385,14 @@ export default function HomePage() {
                         </span>
                       )}
                     </div>
-                    <Button size="lg" className="bg-blue-600 hover:bg-blue-700" asChild>
-                      <Link href={`/ai-qualification-compliance?tab=assessment`}>
-                        Get Started
+                    <Button
+                      size={agent.status ? 'lg' : 'sm'}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      asChild
+                      disabled={!agent.available}
+                    >
+                      <Link href={`/ai-${agent.id}-compliance?tab=assessment`}>
+                        {agent.available ? 'Get Started' : 'Coming Soon'}
                       </Link>
                     </Button>
                   </div>
@@ -529,12 +534,15 @@ export default function HomePage() {
                         </span>
                       )}
                     </div>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size={agent.status ? 'lg' : 'sm'}
                       className="bg-blue-600 hover:bg-blue-700"
+                      asChild
                       disabled={!agent.available}
                     >
-                      {agent.available ? 'Get Started' : 'Coming Soon'}
+                      <Link href={`/ai-${agent.id}-compliance?tab=assessment`}>
+                        {agent.available ? 'Get Started' : 'Coming Soon'}
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
