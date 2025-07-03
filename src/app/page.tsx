@@ -1,3 +1,4 @@
+// Trigger redeploy: trivial comment for Vercel
 "use client";
 
 import { useState } from "react";
