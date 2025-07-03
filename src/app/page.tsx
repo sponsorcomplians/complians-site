@@ -146,7 +146,7 @@ const allAgents = [
       "Professional background checks",
     ],
     available: true,
-    image: "/images/ai-skills-&-experience-compliance-agent.png",
+    image: "/images/ai-skills-experience-compliance-agent.png",
   },
   {
     id: "genuine-vacancies",
