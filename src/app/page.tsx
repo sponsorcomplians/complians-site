@@ -278,7 +278,7 @@ const allAgents = [
     description:
       "Comprehensive monitoring and compliance checking for contracted working hours.",
     price: 159.99,
-    status: "Coming Soon",
+    status: "Available",
     category: "compliance",
     level: "advanced",
     benefits: [
@@ -286,7 +286,7 @@ const allAgents = [
       "Contract compliance assurance",
       "Hours verification",
     ],
-    available: false,
+    available: true,
   },
   {
     id: "paragraph-c7-26",
