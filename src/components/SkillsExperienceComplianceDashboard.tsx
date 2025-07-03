@@ -16,6 +16,7 @@ import {
   Send,
   Bot,
 } from 'lucide-react';
+import AgentAssessmentExplainer from './AgentAssessmentExplainer';
 
 // Sample data for demonstration
 const sampleWorkers = [
@@ -142,7 +143,7 @@ export default function SkillsExperienceComplianceDashboard() {
     <button
       className={`flex items-center gap-2 px-6 py-2 rounded-t-lg font-medium transition-colors ${
         activeTab === value
-          ? 'bg-white text-[#263976] border-b-2 border-[#263976]'
+          ? 'bg-white text-brand-dark border-b-2 border-brand-dark'
           : 'bg-gray-100 text-gray-500'
       }`}
       onClick={() => setActiveTab(value)}
@@ -156,8 +157,8 @@ export default function SkillsExperienceComplianceDashboard() {
     <div className="container mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#263976] mb-2 flex items-center gap-3">
-          <Bot className="h-8 w-8 text-[#00c3ff]" />
+        <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
+          <Bot className="h-8 w-8 text-brand-light" />
           AI Skills & Experience Compliance System
         </h1>
         <p className="text-gray-600">
@@ -200,12 +201,12 @@ export default function SkillsExperienceComplianceDashboard() {
                   <div className="text-sm font-medium text-gray-500">
                     Total Workers
                   </div>
-                  <div className="text-2xl font-bold text-[#263976]">
+                  <div className="text-2xl font-bold text-brand-dark">
                     {dashboardStats.totalWorkers}
                   </div>
                   <div className="text-xs text-gray-400">Active workers</div>
                 </div>
-                <Users className="h-6 w-6 text-[#00c3ff]" />
+                <Users className="h-6 w-6 text-brand-light" />
               </div>
             </div>
             <div className="bg-white rounded-lg p-6 shadow border">
@@ -214,7 +215,7 @@ export default function SkillsExperienceComplianceDashboard() {
                   <div className="text-sm font-medium text-gray-500">
                     Compliance Rate
                   </div>
-                  <div className="text-2xl font-bold text-[#263976]">
+                  <div className="text-2xl font-bold text-brand-dark">
                     {dashboardStats.complianceRate}%
                   </div>
                   <div className="text-xs text-gray-400">
@@ -252,7 +253,7 @@ export default function SkillsExperienceComplianceDashboard() {
                   <div className="text-sm font-medium text-gray-500">
                     High Risk
                   </div>
-                  <div className="text-2xl font-bold text-[#263976]">
+                  <div className="text-2xl font-bold text-brand-dark">
                     {dashboardStats.highRisk}
                   </div>
                   <div className="text-xs text-gray-400">
@@ -267,7 +268,7 @@ export default function SkillsExperienceComplianceDashboard() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="font-semibold text-[#263976] mb-2 flex items-center gap-2">
+              <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
                 <PieChart className="h-5 w-5" />
                 Compliance Status Distribution
               </div>
@@ -292,7 +293,7 @@ export default function SkillsExperienceComplianceDashboard() {
               </div>
             </div>
             <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="font-semibold text-[#263976] mb-2 flex items-center gap-2">
+              <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
                 Risk Level Breakdown
               </div>
@@ -314,7 +315,7 @@ export default function SkillsExperienceComplianceDashboard() {
 
           {/* Recent Activity */}
           <div className="bg-white rounded-lg p-6 shadow border">
-            <div className="font-semibold text-[#263976] mb-2">
+            <div className="font-semibold text-brand-dark mb-2">
               Recent Activity
             </div>
             <ul>
@@ -345,7 +346,7 @@ export default function SkillsExperienceComplianceDashboard() {
         <div className="bg-white rounded-lg p-6 shadow border">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="font-semibold text-[#263976] flex items-center gap-2">
+              <div className="font-semibold text-brand-dark flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 Workers
               </div>
@@ -353,7 +354,7 @@ export default function SkillsExperienceComplianceDashboard() {
                 Manage sponsored workers and their skills/experience
               </div>
             </div>
-            <button className="bg-[#263976] text-white px-4 py-2 rounded flex items-center gap-2 font-medium">
+            <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium">
               <Plus className="h-4 w-4" />
               Add Worker
             </button>
@@ -361,7 +362,7 @@ export default function SkillsExperienceComplianceDashboard() {
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="bg-gray-100 text-[#263976]">
+                <tr className="bg-gray-100 text-brand-dark">
                   <th className="px-4 py-2 text-left">Name</th>
                   <th className="px-4 py-2 text-left">Job Title</th>
                   <th className="px-4 py-2 text-left">SOC Code</th>
@@ -421,49 +422,52 @@ export default function SkillsExperienceComplianceDashboard() {
       )}
 
       {activeTab === 'assessment' && (
-        <div className="bg-white rounded-lg p-6 shadow border">
-          <div className="font-semibold text-[#263976] flex items-center gap-2 mb-4">
-            <FileText className="h-5 w-5" />
-            Document Assessment
-          </div>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center">
-            <Upload className="h-12 w-12 text-gray-400 mb-4" />
-            <div className="text-xl font-semibold mb-2">
-              Upload Compliance Documents
+        <>
+          <AgentAssessmentExplainer />
+          <div className="bg-white rounded-lg p-6 shadow border">
+            <div className="font-semibold text-brand-dark flex items-center gap-2 mb-4">
+              <FileText className="h-5 w-5" />
+              Document Assessment
             </div>
-            <div className="text-gray-600 mb-4 text-center">
-              Upload CV, qualification certificates, experience documents, and application forms for AI analysis
-            </div>
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              id="file-upload"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="file-upload"
-              className="bg-[#263976] text-white px-6 py-2 rounded cursor-pointer font-medium"
-            >
-              Choose Files
-            </label>
-            {uploadedFiles.length > 0 && (
-              <div className="mt-4 w-full">
-                <div className="font-medium mb-2">Selected Files:</div>
-                <ul className="list-disc list-inside text-sm text-gray-700">
-                  {uploadedFiles.map((file, idx) => (
-                    <li key={idx}>{file.name}</li>
-                  ))}
-                </ul>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center">
+              <Upload className="h-12 w-12 text-gray-400 mb-4" />
+              <div className="text-xl font-semibold mb-2">
+                Upload Compliance Documents
               </div>
-            )}
+              <div className="text-gray-600 mb-4 text-center">
+                Upload CV, qualification certificates, experience documents, and application forms for AI analysis
+              </div>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                id="file-upload"
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="file-upload"
+                className="bg-brand-light text-brand-dark px-6 py-2 rounded cursor-pointer font-medium"
+              >
+                Choose Files
+              </label>
+              {uploadedFiles.length > 0 && (
+                <div className="mt-4 w-full">
+                  <div className="font-medium mb-2">Selected Files:</div>
+                  <ul className="list-disc list-inside text-sm text-gray-700">
+                    {uploadedFiles.map((file, idx) => (
+                      <li key={idx}>{file.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {activeTab === 'ai-assistant' && (
         <div className="bg-white rounded-lg p-6 shadow border">
-          <div className="font-semibold text-[#263976] flex items-center gap-2 mb-4">
+          <div className="font-semibold text-brand-dark flex items-center gap-2 mb-4">
             <Bot className="h-5 w-5" />
             AI Compliance Assistant
           </div>
@@ -498,7 +502,7 @@ export default function SkillsExperienceComplianceDashboard() {
               }}
             />
             <button
-              className="bg-[#263976] text-white px-4 py-2 rounded flex items-center gap-2 font-medium"
+              className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium"
               onClick={handleChatSend}
             >
               <Send className="h-4 w-4" />

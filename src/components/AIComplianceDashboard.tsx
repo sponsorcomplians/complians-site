@@ -23,6 +23,7 @@ import {
   PieChart,
   HelpCircle
 } from 'lucide-react'
+import AgentAssessmentExplainer from './AgentAssessmentExplainer'
 
 // Custom Card Components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -720,8 +721,8 @@ Best regards`
     <div className="container mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#263976] mb-2 flex items-center gap-3">
-          <Bot className="h-8 w-8 text-[#00c3ff]" />
+        <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
+          <Bot className="h-8 w-8 text-brand-light" />
           AI Qualification Compliance System
         </h1>
         <p className="text-gray-600">
@@ -776,10 +777,10 @@ Best regards`
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Workers</CardTitle>
-                <Users className="h-4 w-4 text-[#00c3ff]" />
+                <Users className="h-4 w-4 text-brand-light" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.totalWorkers}</div>
+                <div className="text-2xl font-bold text-brand-dark">{dashboardStats.totalWorkers}</div>
                 <p className="text-xs text-gray-600">Active workers</p>
               </CardContent>
             </Card>
@@ -790,7 +791,7 @@ Best regards`
                 <CheckCircle className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.complianceRate}%</div>
+                <div className="text-2xl font-bold text-brand-dark">{dashboardStats.complianceRate}%</div>
                 <p className="text-xs text-gray-600">{dashboardStats.compliantWorkers} compliant workers</p>
               </CardContent>
             </Card>
@@ -812,7 +813,7 @@ Best regards`
                 <TrendingUp className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.highRisk}</div>
+                <div className="text-2xl font-bold text-brand-dark">{dashboardStats.highRisk}</div>
                 <p className="text-xs text-gray-600">High risk workers</p>
               </CardContent>
             </Card>
@@ -822,7 +823,7 @@ Best regards`
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#263976] flex items-center gap-2">
+                <CardTitle className="text-brand-dark flex items-center gap-2">
                   <PieChart className="h-5 w-5" />
                   Compliance Status Distribution
                 </CardTitle>
@@ -842,7 +843,7 @@ Best regards`
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#263976] flex items-center gap-2">
+                <CardTitle className="text-brand-dark flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
                   Risk Level Breakdown
                 </CardTitle>
@@ -856,7 +857,7 @@ Best regards`
           {/* Recent Activity */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#263976]">Recent Activity</CardTitle>
+              <CardTitle className="text-brand-dark">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {workers.slice(-3).reverse().map((worker, index) => (
@@ -885,7 +886,7 @@ Best regards`
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-[#263976] flex items-center gap-2">
+                <CardTitle className="text-brand-dark flex items-center gap-2">
                   <Users className="h-5 w-5" />
                   Workers
                 </CardTitle>
@@ -959,9 +960,10 @@ Best regards`
         {/* Assessment Tab */}
         <TabsContent value="assessment" activeTab={activeTab}>
           <div className="space-y-6">
+            <AgentAssessmentExplainer />
             <Card>
               <CardHeader>
-                <CardTitle className="text-[#263976] flex items-center gap-2">
+                <CardTitle className="text-brand-dark flex items-center gap-2">
                   <FileCheck className="h-5 w-5" />
                   Document Assessment
                 </CardTitle>
@@ -984,7 +986,7 @@ Best regards`
                   />
                   
                   <Button 
-                    className="bg-[#00c3ff] hover:bg-[#0099cc] text-white mb-4"
+                    className="bg-brand-light hover:bg-brand-light text-white mb-4"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     Choose Files
@@ -1030,7 +1032,7 @@ Best regards`
                 <CardHeader className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <FileText className="h-6 w-6 text-gray-600 mr-2" />
-                    <CardTitle className="text-[#263976]">Compliance Analysis Report</CardTitle>
+                    <CardTitle className="text-brand-dark">Compliance Analysis Report</CardTitle>
                   </div>
                   <p className="text-sm text-gray-600">
                     Generated on {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleDateString('en-GB')} {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleTimeString('en-GB', { hour12: false })}
@@ -1058,7 +1060,7 @@ Best regards`
 
                   {/* Assessment Summary */}
                   <div>
-                    <h4 className="font-medium mb-3 text-[#263976] flex items-center gap-2">
+                    <h4 className="font-medium mb-3 text-brand-dark flex items-center gap-2">
                       <FileCheck className="h-4 w-4" />
                       Assessment Summary
                     </h4>
@@ -1092,7 +1094,7 @@ Best regards`
 
                   {/* Report Options */}
                   <div className="border-t pt-6">
-                    <h4 className="font-medium mb-4 text-[#263976] flex items-center gap-2">
+                    <h4 className="font-medium mb-4 text-brand-dark flex items-center gap-2">
                       <Download className="h-4 w-4" />
                       Report Options
                     </h4>
@@ -1130,7 +1132,7 @@ Best regards`
         <TabsContent value="ai-assistant" activeTab={activeTab}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#263976] flex items-center gap-2">
+              <CardTitle className="text-brand-dark flex items-center gap-2">
                 <Bot className="h-5 w-5" />
                 AI Compliance Assistant
               </CardTitle>
@@ -1143,7 +1145,7 @@ Best regards`
                       <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                           message.role === 'user' 
-                            ? 'bg-[#263976] text-white' 
+                            ? 'bg-brand-dark text-white' 
                             : 'bg-white shadow-sm border'
                         }`}>
                           <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -1157,7 +1159,7 @@ Best regards`
                       <div className="flex justify-start">
                         <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
                           <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#263976]"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-dark"></div>
                             <span className="text-sm">AI is thinking...</span>
                           </div>
                         </div>
@@ -1169,14 +1171,14 @@ Best regards`
                   <input 
                     type="text" 
                     placeholder="Ask about compliance requirements, SOC codes, Care Certificates..."
-                    className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c3ff]"
+                    className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-light"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleChatSend()}
                     disabled={chatLoading}
                   />
                   <Button 
-                    className="bg-[#263976] hover:bg-[#1e2a5a] text-white"
+                    className="bg-brand-dark hover:bg-brand-light text-white"
                     onClick={handleChatSend}
                     disabled={chatLoading || !chatInput.trim()}
                   >
