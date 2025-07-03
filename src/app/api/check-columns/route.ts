@@ -6,11 +6,17 @@ export async function GET() {
   try {
     const supabase = getSupabaseClient();
 
-    // Try with minimal data
+    // Try with minimal data including required fields
     const testData = {
       first_name: 'Test',
       last_name: 'User',
-      email: 'test' + Date.now() + '@example.com'
+      email: 'test' + Date.now() + '@example.com',
+      date_of_birth: '1990-01-01', // Required field
+      nationality: 'British', // Required field
+      passport_number: 'TEST123456', // Required field
+      phone: '07123456789', // Required field
+      role: 'Test Role', // Required field
+      start_date: '2024-01-01' // Required field
     };
 
     console.log('Trying to insert:', testData);

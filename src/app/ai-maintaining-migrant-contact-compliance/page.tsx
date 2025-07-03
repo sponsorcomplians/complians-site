@@ -1,9 +1,14 @@
 'use client'
 
 import { FileText, Shield, Clock, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export default function AIAgentPage() {
-  const agentName = window.location.pathname.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  const [agentName, setAgentName] = useState('')
+  
+  useEffect(() => {
+    setAgentName(window.location.pathname.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '')
+  }, [])
   
   return (
     <div className="min-h-screen bg-gray-50">
