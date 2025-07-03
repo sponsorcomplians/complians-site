@@ -1,6 +1,8 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { 
   BarChart3, 
   Users, 
@@ -285,8 +287,11 @@ interface ChatMessage {
   timestamp: string
 }
 
-export default function AISalaryComplianceDashboard() {
-  const [activeTab, setActiveTab] = useState('dashboard')
+// Content component that uses useSearchParams
+function SalaryComplianceContent() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams?.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [currentAssessment, setCurrentAssessment] = useState<SalaryAssessment | null>(null)
@@ -1323,5 +1328,14 @@ Best regards`
       </Tabs>
     </div>
   )
+}
+
+// Default export with Suspense wrapper
+export default function AISalaryCompliancePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SalaryComplianceContent />
+    </Suspense>
+  );
 }
 
