@@ -157,11 +157,11 @@ const allAgents = [
     title: 'AI Record Keeping Compliance Agent',
     description: 'Comprehensive record keeping compliance and document management for UK sponsors.',
     price: 139.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'basic',
     benefits: ['Automated record verification', 'Compliance assurance', 'Audit readiness'],
-    available: false
+    available: true
   },
   {
     id: 'migrant-contact',

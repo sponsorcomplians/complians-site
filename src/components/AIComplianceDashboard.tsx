@@ -363,6 +363,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'IMMIGRATION_STATUS_BREACH',
     evidenceStatus: 'MISSING_IMMIGRATION_EVIDENCE'
   },
+  'ai-record-keeping-compliance': {
+    title: 'AI Record Keeping Compliance System',
+    description: 'AI-powered comprehensive record keeping compliance and document management for UK sponsors.',
+    chatWelcome: 'Hello! I\'m your AI record keeping compliance assistant. I can help you with questions about document management, record verification, compliance assurance, and audit readiness. How can I assist you today?',
+    defaultJobTitle: 'Accountant',
+    defaultSocCode: '2421',
+    breachType: 'RECORD_KEEPING_BREACH',
+    evidenceStatus: 'MISSING_RECORD_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -619,6 +628,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-record-keeping-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Jennifer Davis',
+          jobTitle: 'Accountant',
+          socCode: '2421',
+          cosReference: 'COS777777',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-20'
+        },
+        {
+          id: '2',
+          name: 'Carlos Rodriguez',
+          jobTitle: 'Financial Controller',
+          socCode: '2421',
+          cosReference: 'COS888888',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-25'
+        },
+        {
+          id: '3',
+          name: 'Sarah Mitchell',
+          jobTitle: 'Audit Manager',
+          socCode: '2421',
+          cosReference: 'COS999999',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-15'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -785,6 +834,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-immigration-status-monitoring') {
       return `Immigration Status Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Immigration Status Monitoring Agent has reviewed the immigration status and compliance evidence.\n\nKEY FINDINGS:\n- Visa status: [summarize current visa status]\n- Immigration compliance: [summarize compliance status]\n- Status changes: [summarize any status changes]\n- Real-time monitoring: [summarize monitoring status]\n- Concerns: [summarize any red flags or status issues]\n\nCOMPLIANCE FINDINGS:\n1. If the worker\'s immigration status is invalid or expired, this is a serious breach.\n2. If status changes are not reported or monitored, this is a breach.\n3. If all immigration requirements are met and status is valid, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all immigration status documentation is current and valid.\n- Monitor for any status changes or visa expirations.\n- Report any immigration status changes immediately.\n- Set up real-time monitoring for immigration compliance.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-record-keeping-compliance') {
+      return `Record Keeping Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Record Keeping Compliance Agent has reviewed the record keeping and document management evidence.\n\nKEY FINDINGS:\n- Document management: [summarize document status]\n- Record verification: [summarize record status]\n- Compliance assurance: [summarize compliance status]\n- Audit readiness: [summarize audit readiness]\n- Concerns: [summarize any red flags or missing records]\n\nCOMPLIANCE FINDINGS:\n1. If required records are missing or not properly maintained, this is a serious breach.\n2. If document management is inadequate or records are incomplete, this is a breach.\n3. If all records are properly maintained and documented, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required records are properly maintained and accessible.\n- Review document management processes and procedures.\n- Address any missing or incomplete records immediately.\n- Prepare for audit readiness with comprehensive documentation.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment
