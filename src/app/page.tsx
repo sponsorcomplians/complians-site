@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import SessionWrapper from '@/components/SessionWrapper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -65,22 +66,15 @@ export default function HomePage() {
     toast.success('Report created successfully!');
   };
 
-  if (status === 'loading' || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Compliance Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Welcome back, {session?.user?.email}
-        </p>
-      </div>
+    <SessionWrapper>
+      <div className="container mx-auto py-8 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Compliance Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Welcome back, {session?.user?.email}
+          </p>
+        </div>
 
       {/* Quick Actions */}
       <div className="mb-8">
@@ -188,6 +182,7 @@ export default function HomePage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </SessionWrapper>
   );
 }

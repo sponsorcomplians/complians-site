@@ -16,7 +16,8 @@ export async function GET() {
       passport_number: 'TEST123456', // Required field
       phone: '07123456789', // Required field
       role: 'Test Role', // Required field
-      start_date: '2024-01-01' // Required field
+      start_date: '2024-01-01', // Required field
+      visa_expiry: '2025-12-31' // Required field
     };
 
     console.log('Trying to insert:', testData);

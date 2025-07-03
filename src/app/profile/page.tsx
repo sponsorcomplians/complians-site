@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Building, Phone, Calendar, Shield } from 'lucide-react';
+import SessionWrapper from '@/components/SessionWrapper';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -119,20 +120,14 @@ export default function ProfilePage() {
     }
   };
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
+    <SessionWrapper>
     <main className="min-h-screen bg-gray-50 py-12">
       {/* You can keep rendering your form UI here using formData, handlers, and JSX */}
       <div className="text-center text-gray-700 font-medium">
         Profile page loaded successfully.
       </div>
     </main>
+    </SessionWrapper>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'sonner';
+import SessionWrapper from '@/components/SessionWrapper';
 
 interface Worker {
   id: string;
@@ -96,16 +97,9 @@ export default function WorkersPage() {
     );
   });
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="container mx-auto p-6 text-center text-muted-foreground">
-        Loading...
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <SessionWrapper>
+      <div className="container mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Workers</h1>
@@ -194,6 +188,7 @@ export default function WorkersPage() {
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </SessionWrapper>
   );
 }

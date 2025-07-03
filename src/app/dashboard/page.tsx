@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import SessionWrapper from '@/components/SessionWrapper';
 import {
   User, Settings, ShoppingBag, CreditCard, LogOut, Bell, ChevronRight, Package,
   Calendar, Mail, Phone, Building, Briefcase, Users, Building2,
@@ -119,26 +120,17 @@ export default function UserDashboard() {
     }).format(amount / 100);
   };
 
-  if (status === 'loading' || loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (!session) return null;
 
   // 👉🏼 Copy your existing JSX here unchanged...
   // Due to character limits, we’ll not repeat the full render again.
 
   return (
-    <div>
-      {/* Your JSX code starts here (header, sidebar, content tabs, etc.) */}
-      {/* All your layout is valid as long as there's only one export default */}
-    </div>
+    <SessionWrapper>
+      <div>
+        {/* Your JSX code starts here (header, sidebar, content tabs, etc.) */}
+        {/* All your layout is valid as long as there's only one export default */}
+      </div>
+    </SessionWrapper>
   );
 }
