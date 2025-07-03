@@ -27,7 +27,8 @@ import {
   TrendingUp,
   Lock,
   Globe,
-  Smartphone
+  Smartphone,
+  Building
 } from 'lucide-react'
 
 // Custom Card Components
@@ -167,7 +168,7 @@ const aiAgents: AIAgent[] = [
     status: 'available',
     category: 'compliance',
     complexity: 'advanced',
-    href: '/ai-compliance',
+    href: '/ai-qualification-compliance',
     popular: true,
     new: false,
     showcaseImage: '/images/ai-qualification-showcase.png'
@@ -309,6 +310,336 @@ const aiAgents: AIAgent[] = [
     href: '#',
     popular: false,
     new: false
+  },
+  {
+    id: 'skills-experience-compliance',
+    name: 'AI Skills & Experience Compliance Agent',
+    description: 'Comprehensive skills assessment and work experience verification for sponsored worker compliance.',
+    icon: <Users className="h-8 w-8" />,
+    price: '£169.99',
+    features: [
+      'Skills assessment analysis',
+      'Work experience verification',
+      'CV and reference checking',
+      'Professional background verification',
+      'Skills gap analysis',
+      'Experience compliance reports',
+      'AI skills assistant',
+      'Professional documentation'
+    ],
+    keyBenefits: [
+      'Automated skills verification',
+      'Experience compliance assurance',
+      'Professional background checks',
+      'Skills gap identification',
+      'Compliance documentation'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-skills-experience-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'genuine-vacancies-compliance',
+    name: 'AI Genuine Vacancies Compliance Agent',
+    description: 'Intelligent analysis of genuine vacancy requirements and recruitment compliance for UK sponsors.',
+    icon: <Building className="h-8 w-8" />,
+    price: '£159.99',
+    features: [
+      'Vacancy genuineness analysis',
+      'Recruitment process verification',
+      'Job description compliance',
+      'Market rate analysis',
+      'Recruitment timeline tracking',
+      'Genuine vacancy reports',
+      'AI recruitment assistant',
+      'Compliance monitoring'
+    ],
+    keyBenefits: [
+      'Automated vacancy verification',
+      'Recruitment compliance assurance',
+      'Market rate validation',
+      'Process transparency',
+      'Compliance documentation'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-genuine-vacancies-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'third-party-labour-compliance',
+    name: 'AI Third-Party Labour Compliance Agent',
+    description: 'Comprehensive monitoring and compliance checking for third-party labour arrangements.',
+    icon: <Users className="h-8 w-8" />,
+    price: '£189.99',
+    features: [
+      'Third-party arrangement analysis',
+      'Labour provider verification',
+      'Contract compliance checking',
+      'Worker assignment tracking',
+      'Compliance risk assessment',
+      'Third-party reports',
+      'AI monitoring assistant',
+      'Risk mitigation guidance'
+    ],
+    keyBenefits: [
+      'Automated third-party monitoring',
+      'Compliance risk identification',
+      'Contract verification',
+      'Risk mitigation support',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'enterprise',
+    href: '/ai-third-party-labour-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'reporting-duties-compliance',
+    name: 'AI Reporting Duties Compliance Agent',
+    description: 'Automated monitoring and compliance checking for sponsor reporting obligations.',
+    icon: <FileText className="h-8 w-8" />,
+    price: '£149.99',
+    features: [
+      'Reporting deadline tracking',
+      'Obligation monitoring',
+      'Automated compliance alerts',
+      'Report generation assistance',
+      'Compliance status tracking',
+      'Reporting dashboard',
+      'AI reporting assistant',
+      'Deadline management'
+    ],
+    keyBenefits: [
+      'Automated deadline tracking',
+      'Compliance obligation monitoring',
+      'Timely reporting assurance',
+      'Risk mitigation',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-reporting-duties-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'monitoring-immigration-status-compliance',
+    name: 'AI Immigration Status Monitoring Agent',
+    description: 'Real-time monitoring and compliance checking for migrant worker immigration status.',
+    icon: <Shield className="h-8 w-8" />,
+    price: '£179.99',
+    features: [
+      'Immigration status monitoring',
+      'Visa expiry tracking',
+      'Status change alerts',
+      'Compliance verification',
+      'Real-time monitoring',
+      'Status reports',
+      'AI monitoring assistant',
+      'Alert management'
+    ],
+    keyBenefits: [
+      'Real-time status monitoring',
+      'Automated compliance checking',
+      'Timely alert system',
+      'Risk prevention',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-monitoring-immigration-status-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'record-keeping-compliance',
+    name: 'AI Record Keeping Compliance Agent',
+    description: 'Comprehensive record keeping compliance and document management for UK sponsors.',
+    icon: <FileText className="h-8 w-8" />,
+    price: '£139.99',
+    features: [
+      'Record keeping verification',
+      'Document management',
+      'Compliance checking',
+      'Audit trail maintenance',
+      'Record retention tracking',
+      'Compliance reports',
+      'AI record assistant',
+      'Document organization'
+    ],
+    keyBenefits: [
+      'Automated record verification',
+      'Compliance assurance',
+      'Audit readiness',
+      'Document organization',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'basic',
+    href: '/ai-record-keeping-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'maintaining-migrant-contact-compliance',
+    name: 'AI Migrant Contact Maintenance Agent',
+    description: 'Automated monitoring and compliance checking for maintaining migrant worker contact.',
+    icon: <Users className="h-8 w-8" />,
+    price: '£129.99',
+    features: [
+      'Contact maintenance tracking',
+      'Communication monitoring',
+      'Contact verification',
+      'Compliance checking',
+      'Contact reports',
+      'AI contact assistant',
+      'Communication tracking',
+      'Compliance alerts'
+    ],
+    keyBenefits: [
+      'Automated contact monitoring',
+      'Communication tracking',
+      'Compliance assurance',
+      'Contact verification',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'basic',
+    href: '/ai-maintaining-migrant-contact-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'recruitment-practices-compliance',
+    name: 'AI Recruitment Practices Compliance Agent',
+    description: 'Comprehensive monitoring and compliance checking for recruitment practices and policies.',
+    icon: <Users className="h-8 w-8" />,
+    price: '£169.99',
+    features: [
+      'Recruitment practice analysis',
+      'Policy compliance checking',
+      'Process verification',
+      'Compliance monitoring',
+      'Practice reports',
+      'AI recruitment assistant',
+      'Policy guidance',
+      'Compliance tracking'
+    ],
+    keyBenefits: [
+      'Automated practice verification',
+      'Policy compliance assurance',
+      'Process transparency',
+      'Compliance monitoring',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-recruitment-practices-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'migrant-tracking-compliance',
+    name: 'AI Migrant Tracking Compliance Agent',
+    description: 'Comprehensive tracking and compliance monitoring for migrant worker activities.',
+    icon: <Users className="h-8 w-8" />,
+    price: '£189.99',
+    features: [
+      'Migrant activity tracking',
+      'Compliance monitoring',
+      'Activity verification',
+      'Tracking reports',
+      'AI tracking assistant',
+      'Activity monitoring',
+      'Compliance alerts',
+      'Tracking dashboard'
+    ],
+    keyBenefits: [
+      'Automated activity tracking',
+      'Compliance monitoring',
+      'Activity verification',
+      'Real-time tracking',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-migrant-tracking-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'contracted-hours-compliance',
+    name: 'AI Contracted Hours Compliance Agent',
+    description: 'Comprehensive monitoring and compliance checking for contracted working hours.',
+    icon: <Clock className="h-8 w-8" />,
+    price: '£159.99',
+    features: [
+      'Hours compliance monitoring',
+      'Contract verification',
+      'Hours tracking',
+      'Compliance checking',
+      'Hours reports',
+      'AI hours assistant',
+      'Contract monitoring',
+      'Compliance alerts'
+    ],
+    keyBenefits: [
+      'Automated hours monitoring',
+      'Contract compliance assurance',
+      'Hours verification',
+      'Compliance tracking',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'advanced',
+    href: '/ai-contracted-hours-compliance',
+    popular: false,
+    new: false
+  },
+  {
+    id: 'paragraph-c7-26-compliance',
+    name: 'AI Paragraph C7-26 Compliance Agent',
+    description: 'Specialized compliance monitoring for Paragraph C7-26 requirements and obligations.',
+    icon: <FileText className="h-8 w-8" />,
+    price: '£199.99',
+    features: [
+      'C7-26 requirement analysis',
+      'Compliance monitoring',
+      'Requirement verification',
+      'Compliance reports',
+      'AI C7-26 assistant',
+      'Requirement tracking',
+      'Compliance alerts',
+      'Specialized guidance'
+    ],
+    keyBenefits: [
+      'Specialized C7-26 monitoring',
+      'Requirement compliance assurance',
+      'Specialized guidance',
+      'Compliance tracking',
+      'Regulatory compliance'
+    ],
+    status: 'coming-soon',
+    category: 'compliance',
+    complexity: 'enterprise',
+    href: '/ai-paragraph-c7-26-compliance',
+    popular: false,
+    new: false
   }
 ]
 
@@ -422,7 +753,7 @@ export default function AIAgentsProductsPage() {
                 <span className="text-2xl font-bold text-[#263976]">£199.99</span>
                 <span className="text-lg text-gray-500 line-through">£299.99</span>
               </div>
-              <Button onClick={() => window.location.href = '/ai-compliance'} className="w-full max-w-xs">
+              <Button onClick={() => window.location.href = '/ai-qualification-compliance'} className="w-full max-w-xs">
                 Get Started
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
@@ -689,7 +1020,7 @@ export default function AIAgentsProductsPage() {
             <Button 
               size="lg" 
               className="bg-white text-[#263976] hover:bg-gray-100"
-              onClick={() => window.location.href = '/ai-compliance'}
+              onClick={() => window.location.href = '/ai-qualification-compliance'}
             >
               Start with Qualification Agent
               <ArrowRight className="h-5 w-5 ml-2" />

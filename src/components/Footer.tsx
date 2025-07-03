@@ -50,7 +50,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/ai-compliance" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                <Link href="/ai-qualification-compliance" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
                   Qualification Compliance
                 </Link>
               </li>
