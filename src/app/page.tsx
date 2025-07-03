@@ -691,127 +691,143 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Debug: Show all agent image paths above the grid */}
+          <div className="mb-4 p-4 bg-gray-100 text-xs">
+            <h3>Debug: Image Paths</h3>
+            {filteredAgents.map(agent => (
+              <div key={agent.id}>
+                {agent.title}: {agent.image}
+              </div>
+            ))}
+          </div>
+
           {/* Agents Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAgents.map((agent) => (
-              <Card
-                key={agent.id}
-                className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                {/* Image/Video Holder */}
-                <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-                  {agent.image ? (
-                    <img
-                      src={agent.image}
-                      alt={agent.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-slate-100">
-                      <div className="text-center">
-                        <FileText className="w-12 h-12 text-gray-600 mx-auto mb-2" />
-                        <p className="text-sm text-gray-700 font-medium">
-                          {agent.title.split(" ")[1]}
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          Showcase Coming Soon
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {/* Video Play Button Overlay for Available Agents */}
-                  {agent.available &&
-                    ["qualification", "salary"].includes(agent.id) && (
-                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                        <div className="bg-white bg-opacity-90 rounded-full p-3 cursor-pointer">
-                          <Play className="w-6 h-6 text-blue-600" />
+            {filteredAgents.map((agent) => {
+              // Debug: Log image path for each agent
+              console.log(`Agent: ${agent.title}, Image path: ${agent.image}`);
+              return (
+                <Card
+                  key={agent.id}
+                  className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  {/* Image/Video Holder */}
+                  <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                    {agent.image ? (
+                      <img
+                        src={agent.image}
+                        alt={agent.title}
+                        className="w-full h-full object-cover"
+                        onLoad={() => console.log(`✅ Loaded: ${agent.image}`)}
+                        onError={(e) => console.log(`❌ Failed: ${agent.image}`, e)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-slate-100">
+                        <div className="text-center">
+                          <FileText className="w-12 h-12 text-gray-600 mx-auto mb-2" />
+                          <p className="text-sm text-gray-700 font-medium">
+                            {agent.title.split(" ")[1]}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            Showcase Coming Soon
+                          </p>
                         </div>
                       </div>
                     )}
-                </div>
-
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {agent.status !== "Coming Soon" && (
-                          <Badge
-                            variant={
-                              agent.status === "Popular"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {agent.status}
-                          </Badge>
-                        )}
-                        {agent.status === "Coming Soon" && (
-                          <Badge
-                            variant="outline"
-                            className="text-orange-600 border-orange-600"
-                          >
-                            Coming Soon
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className="capitalize">
-                          {agent.level}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-lg mb-2">
-                        {agent.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm">
-                        {agent.description}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent>
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 text-sm">
-                      Key Benefits:
-                    </h4>
-                    <ul className="space-y-1">
-                      {agent.benefits.map((benefit, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center text-xs text-gray-600"
-                        >
-                          <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
-                          {benefit}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-blue-600">
-                        {formatPrice(agent.price)}
-                      </span>
-                      {agent.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(agent.originalPrice)}
-                        </span>
+                    {/* Video Play Button Overlay for Available Agents */}
+                    {agent.available &&
+                      ["qualification", "salary"].includes(agent.id) && (
+                        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-white bg-opacity-90 rounded-full p-3 cursor-pointer">
+                            <Play className="w-6 h-6 text-blue-600" />
+                          </div>
+                        </div>
                       )}
-                    </div>
-                    <Button
-                      size={agent.status ? "lg" : "sm"}
-                      className="bg-blue-600 hover:bg-blue-700"
-                      asChild
-                      disabled={!agent.available}
-                    >
-                      <Link
-                        href={`/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment`}
-                      >
-                        {agent.available ? "Get Started" : "Coming Soon"}
-                      </Link>
-                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          {agent.status !== "Coming Soon" && (
+                            <Badge
+                              variant={
+                                agent.status === "Popular"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {agent.status}
+                            </Badge>
+                          )}
+                          {agent.status === "Coming Soon" && (
+                            <Badge
+                              variant="outline"
+                              className="text-orange-600 border-orange-600"
+                            >
+                              Coming Soon
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className="capitalize">
+                            {agent.level}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg mb-2">
+                          {agent.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {agent.description}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">
+                        Key Benefits:
+                      </h4>
+                      <ul className="space-y-1">
+                        {agent.benefits.map((benefit, index) => (
+                          <li
+                            key={index}
+                            className="flex items-center text-xs text-gray-600"
+                          >
+                            <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl font-bold text-blue-600">
+                          {formatPrice(agent.price)}
+                        </span>
+                        {agent.originalPrice && (
+                          <span className="text-sm text-gray-500 line-through">
+                            {formatPrice(agent.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        size={agent.status ? "lg" : "sm"}
+                        className="bg-blue-600 hover:bg-blue-700"
+                        asChild
+                        disabled={!agent.available}
+                      >
+                        <Link
+                          href={`/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment`}
+                        >
+                          {agent.available ? "Get Started" : "Coming Soon"}
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
