@@ -24,6 +24,7 @@ import {
   HelpCircle
 } from 'lucide-react'
 import AgentAssessmentExplainer from './AgentAssessmentExplainer'
+import { useSearchParams } from 'next/navigation'
 
 // Custom Card Components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -279,7 +280,9 @@ interface ChatMessage {
 }
 
 export default function AIComplianceDashboard() {
-  const [activeTab, setActiveTab] = useState('dashboard')
+  const searchParams = useSearchParams();
+  const initialTab = searchParams?.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [currentAssessment, setCurrentAssessment] = useState<Assessment | null>(null)

@@ -17,6 +17,7 @@ import {
   Bot,
 } from 'lucide-react';
 import AgentAssessmentExplainer from './AgentAssessmentExplainer';
+import { useSearchParams } from 'next/navigation';
 
 // Sample data for demonstration
 const sampleWorkers = [
@@ -77,7 +78,9 @@ const barChartData = [
 ];
 
 export default function SkillsExperienceComplianceDashboard() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const searchParams = useSearchParams();
+  const initialTab = searchParams?.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'assistant',
