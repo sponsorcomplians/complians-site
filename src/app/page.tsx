@@ -92,7 +92,7 @@ const allAgents = [
       "Immediate breach detection",
     ],
     available: true,
-    image: "/images/AI Experience Compliance Agent.png",
+    image: "/images/AI Qualification Compliance Agent.png",
   },
   {
     id: "salary",
