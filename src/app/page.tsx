@@ -285,7 +285,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-brand-dark via-brand-dark to-brand-light text-white py-20">
+      <section className="bg-gradient-to-br from-[#001e70] to-[#00c3ff] text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             AI Compliance Agents
@@ -301,25 +301,25 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Brain className="w-10 h-10 text-brand-dark" />
+                <Brain className="w-10 h-10 text-[#001e70]" />
               </div>
               <h3 className="font-semibold">Expert-Level Analysis</h3>
             </div>
             <div className="text-center">
               <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Zap className="w-10 h-10 text-brand-dark" />
+                <Zap className="w-10 h-10 text-[#001e70]" />
               </div>
               <h3 className="font-semibold">Real-Time Monitoring</h3>
             </div>
             <div className="text-center">
               <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <FileText className="w-10 h-10 text-brand-dark" />
+                <FileText className="w-10 h-10 text-[#001e70]" />
               </div>
               <h3 className="font-semibold">Professional Reporting</h3>
             </div>
             <div className="text-center">
               <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-10 h-10 text-brand-dark" />
+                <Clock className="w-10 h-10 text-[#001e70]" />
               </div>
               <h3 className="font-semibold">24/7 Availability</h3>
             </div>
