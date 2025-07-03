@@ -5,7 +5,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import SessionWrapper from '@/components/SessionWrapper';
 import {
   User, Settings, ShoppingBag, CreditCard, LogOut, Bell, ChevronRight, Package,
   Calendar, Mail, Phone, Building, Briefcase, Users, Building2,
@@ -45,10 +44,15 @@ interface ProductAccess {
 
 // ✅ Only one export default
 export default function UserDashboard() {
+  const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [productAccess, setProductAccess] = useState<ProductAccess[]>([]);
@@ -120,17 +124,15 @@ export default function UserDashboard() {
     }).format(amount / 100);
   };
 
-  if (!session) return null;
+  if (!mounted || !session) return null;
 
   // 👉🏼 Copy your existing JSX here unchanged...
   // Due to character limits, we’ll not repeat the full render again.
 
   return (
-    <SessionWrapper>
-      <div>
-        {/* Your JSX code starts here (header, sidebar, content tabs, etc.) */}
-        {/* All your layout is valid as long as there's only one export default */}
-      </div>
-    </SessionWrapper>
+    <div>
+      {/* Your JSX code starts here (header, sidebar, content tabs, etc.) */}
+      {/* All your layout is valid as long as there's only one export default */}
+    </div>
   );
 }

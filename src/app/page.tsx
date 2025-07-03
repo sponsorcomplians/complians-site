@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import SessionWrapper from '@/components/SessionWrapper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,9 +33,14 @@ interface DashboardStats {
 }
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
@@ -66,9 +70,16 @@ export default function HomePage() {
     toast.success('Report created successfully!');
   };
 
+    if (!mounted || status === 'loading' || loading) {
     return (
-    <SessionWrapper>
-      <div className="container mx-auto py-8 px-4">
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Compliance Dashboard</h1>
           <p className="text-muted-foreground mt-2">
@@ -183,6 +194,5 @@ export default function HomePage() {
         </CardContent>
       </Card>
       </div>
-    </SessionWrapper>
   );
 }

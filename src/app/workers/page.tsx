@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'sonner';
-import SessionWrapper from '@/components/SessionWrapper';
 
 interface Worker {
   id: string;
@@ -22,12 +21,17 @@ interface Worker {
 }
 
 export default function WorkersPage() {
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -97,9 +101,16 @@ export default function WorkersPage() {
     );
   });
 
+  if (!mounted || status === 'loading' || loading) {
+    return (
+      <div className="container mx-auto p-6 text-center text-muted-foreground">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <SessionWrapper>
-      <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Workers</h1>
@@ -189,6 +200,5 @@ export default function WorkersPage() {
         </table>
       </div>
       </div>
-    </SessionWrapper>
   );
 }

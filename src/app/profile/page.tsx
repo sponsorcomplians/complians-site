@@ -5,13 +5,17 @@ import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Building, Phone, Calendar, Shield } from 'lucide-react';
-import SessionWrapper from '@/components/SessionWrapper';
 
 export default function ProfilePage() {
+  const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -120,14 +124,20 @@ export default function ProfilePage() {
     }
   };
 
+    if (!mounted || status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <SessionWrapper>
     <main className="min-h-screen bg-gray-50 py-12">
       {/* You can keep rendering your form UI here using formData, handlers, and JSX */}
       <div className="text-center text-gray-700 font-medium">
         Profile page loaded successfully.
       </div>
     </main>
-    </SessionWrapper>
   );
 }
