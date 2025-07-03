@@ -326,7 +326,16 @@ const agentConfigs: Record<string, AgentConfig> = {
     defaultSocCode: '6145',
     breachType: 'INSUFFICIENT_EXPERIENCE',
     evidenceStatus: 'MISSING_EXPERIENCE_DOCS'
-  }
+  },
+  'ai-genuine-vacancies-compliance': {
+    title: 'AI Genuine Vacancies Compliance System',
+    description: 'AI-powered analysis of genuine vacancy requirements and recruitment compliance for UK sponsors.',
+    chatWelcome: 'Hello! I\'m your AI genuine vacancies compliance assistant. I can help you with questions about vacancy authenticity, recruitment processes, market rate, and compliance. How can I assist you today?',
+    defaultJobTitle: 'Registered Nurse',
+    defaultSocCode: '2231',
+    breachType: 'NOT_GENUINE_VACANCY',
+    evidenceStatus: 'MISSING_VACANCY_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -420,6 +429,46 @@ export default function AIComplianceDashboard() {
           lastAssessment: '2024-06-08',
           redFlag: false,
           assignmentDate: '2024-03-12'
+        }
+      ];
+    }
+    if (agentKey === 'ai-genuine-vacancies-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Olivia Green',
+          jobTitle: 'Registered Nurse',
+          socCode: '2231',
+          cosReference: 'COS444444',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-20'
+        },
+        {
+          id: '2',
+          name: 'James Lee',
+          jobTitle: 'Healthcare Assistant',
+          socCode: '6141',
+          cosReference: 'COS555555',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-25'
+        },
+        {
+          id: '3',
+          name: 'Sophie Brown',
+          jobTitle: 'Care Home Manager',
+          socCode: '1242',
+          cosReference: 'COS666666',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-18'
         }
       ];
     }
@@ -577,6 +626,9 @@ RECOMMENDED ACTIONS:
 5. Consider suspending employment until RTW is verified
 
 This breach constitutes a serious compliance failure that could result in sponsor license suspension or revocation. Immediate remedial action is required.`
+    }
+    if (agentKey === 'ai-genuine-vacancies-compliance') {
+      return `Genuine Vacancy Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Genuine Vacancies Compliance Agent has reviewed the vacancy and recruitment evidence.\n\nKEY FINDINGS:\n- Vacancy authenticity: [summarize evidence]\n- Recruitment process: [summarize process]\n- Market rate: [summarize salary/role]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the vacancy is not genuine or recruitment was not transparent, this is a serious breach.\n2. If market rate is not met, or job description is not accurate, this is a breach.\n3. If all evidence is present and the vacancy is genuine, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment and vacancy evidence is uploaded.\n- Address any concerns about vacancy authenticity or market rate.\n- Review recruitment process for transparency and compliance.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment

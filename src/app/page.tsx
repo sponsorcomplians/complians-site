@@ -113,11 +113,11 @@ const allAgents = [
     title: 'AI Genuine Vacancies Compliance Agent',
     description: 'Intelligent analysis of genuine vacancy requirements and recruitment compliance for UK sponsors.',
     price: 159.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated vacancy verification', 'Recruitment compliance assurance', 'Market rate validation'],
-    available: false
+    available: true
   },
   {
     id: 'third-party-labour',
