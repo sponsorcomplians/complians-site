@@ -92,6 +92,7 @@ const allAgents = [
       "Immediate breach detection",
     ],
     available: true,
+    image: "/images/ai-qualification-showcase.png",
   },
   {
     id: "salary",
@@ -109,6 +110,7 @@ const allAgents = [
       "Underpayment prevention",
     ],
     available: true,
+    image: "/images/ai-salary-showcase.png",
   },
 
   {
@@ -126,6 +128,7 @@ const allAgents = [
       "Compliance monitoring",
     ],
     available: true,
+    image: "/images/ai-right-to-work-showcase.png",
   },
 
   {
@@ -143,6 +146,7 @@ const allAgents = [
       "Professional background checks",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "genuine-vacancies",
@@ -159,6 +163,7 @@ const allAgents = [
       "Market rate validation",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "third-party-labour",
@@ -175,6 +180,7 @@ const allAgents = [
       "Contract verification",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "reporting-duties",
@@ -191,6 +197,7 @@ const allAgents = [
       "Timely reporting assurance",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "immigration-status-monitoring",
@@ -203,10 +210,11 @@ const allAgents = [
     level: "advanced",
     benefits: [
       "Real-time status monitoring",
-      "Automated compliance checking",
-      "Timely alert system",
+      "Immigration compliance assurance",
+      "Status change alerts",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "record-keeping",
@@ -239,6 +247,7 @@ const allAgents = [
       "Compliance assurance",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "recruitment-practices-compliance",
@@ -250,27 +259,29 @@ const allAgents = [
     category: "compliance",
     level: "advanced",
     benefits: [
-      "Automated practice verification",
+      "Recruitment process monitoring",
       "Policy compliance assurance",
-      "Process transparency",
+      "Transparency verification",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "migrant-tracking-compliance",
     title: "AI Migrant Tracking Compliance Agent",
     description:
-      "Comprehensive tracking and compliance monitoring for migrant worker activities.",
+      "Comprehensive tracking and compliance monitoring for migrant worker movements and activities.",
     price: 189.99,
     status: "Available",
     category: "compliance",
-    level: "advanced",
+    level: "enterprise",
     benefits: [
-      "Automated activity tracking",
-      "Compliance monitoring",
-      "Activity verification",
+      "Movement tracking",
+      "Activity monitoring",
+      "Compliance verification",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "contracted-hours",
@@ -287,6 +298,7 @@ const allAgents = [
       "Hours verification",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
   {
     id: "paragraph-c7-26",
@@ -303,6 +315,7 @@ const allAgents = [
       "Specialized guidance",
     ],
     available: true,
+    image: "/images/digital-tools-showcase.png",
   },
 ];
 
@@ -623,36 +636,13 @@ export default function HomePage() {
               >
                 {/* Image/Video Holder */}
                 <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-                  {agent.id === "qualification" && (
+                  {agent.image ? (
                     <img
-                      src="/images/ai-qualification-showcase.png"
-                      alt="AI Qualification Compliance Agent Showcase"
+                      src={agent.image}
+                      alt={`${agent.title} Showcase`}
                       className="w-full h-full object-cover"
                     />
-                  )}
-                  {agent.id === "salary" && (
-                    <img
-                      src="/images/ai-salary-showcase.png"
-                      alt="AI Salary Compliance Agent Showcase"
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  {agent.id === "skills-experience" && (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
-                      <div className="text-center">
-                        <Users className="w-12 h-12 text-green-600 mx-auto mb-2" />
-                        <p className="text-sm text-green-700 font-medium">
-                          Skills & Experience
-                        </p>
-                        <p className="text-xs text-green-600">
-                          Showcase Coming Soon
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {!["qualification", "salary", "skills-experience"].includes(
-                    agent.id,
-                  ) && (
+                  ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-slate-100">
                       <div className="text-center">
                         <FileText className="w-12 h-12 text-gray-600 mx-auto mb-2" />
