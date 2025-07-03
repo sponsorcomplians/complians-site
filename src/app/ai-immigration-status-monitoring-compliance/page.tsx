@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import AIComplianceDashboard from '@/components/AIComplianceDashboard';
+import { Suspense } from "react";
+import AIComplianceDashboard from "@/components/AIComplianceDashboard";
 
 function ImmigrationStatusMonitoringContent() {
   return <AIComplianceDashboard />;
@@ -13,4 +13,4 @@ export default function AIImmigrationStatusMonitoringPage() {
       <ImmigrationStatusMonitoringContent />
     </Suspense>
   );
-} 
+}
