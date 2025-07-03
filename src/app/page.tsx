@@ -340,45 +340,17 @@ const allAgents = [
 
 const categories = [
   { id: "all", name: "All Agents", count: allAgents.length },
-  {
-    id: "compliance",
-    name: "Compliance",
-    count: allAgents.filter((agent) => agent.category === "compliance").length,
-  },
-  {
-    id: "hr",
-    name: "HR Management",
-    count: allAgents.filter((agent) => agent.category === "hr").length,
-  },
-  {
-    id: "finance",
-    name: "Finance",
-    count: allAgents.filter((agent) => agent.category === "finance").length,
-  },
-  {
-    id: "operations",
-    name: "Operations",
-    count: allAgents.filter((agent) => agent.category === "operations").length,
-  },
+  { id: "compliance", name: "Compliance", count: allAgents.filter((agent) => agent.category === "compliance").length },
+  { id: "hr", name: "HR Management", count: allAgents.filter((agent) => agent.category === "hr").length },
+  { id: "finance", name: "Finance", count: allAgents.filter((agent) => agent.category === "finance").length },
+  { id: "operations", name: "Operations", count: allAgents.filter((agent) => agent.category === "operations").length }
 ];
 
 const levels = [
   { id: "all", name: "All Levels", count: allAgents.length },
-  {
-    id: "basic",
-    name: "Basic",
-    count: allAgents.filter((agent) => agent.level === "basic").length,
-  },
-  {
-    id: "advanced",
-    name: "Advanced",
-    count: allAgents.filter((agent) => agent.level === "advanced").length,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    count: allAgents.filter((agent) => agent.level === "enterprise").length,
-  },
+  { id: "basic", name: "Basic", count: allAgents.filter((agent) => agent.level === "basic").length },
+  { id: "advanced", name: "Advanced", count: allAgents.filter((agent) => agent.level === "advanced").length },
+  { id: "enterprise", name: "Enterprise", count: allAgents.filter((agent) => agent.level === "enterprise").length }
 ];
 
 export default function HomePage() {
