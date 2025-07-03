@@ -175,15 +175,15 @@ const allAgents = [
     available: true
   },
   {
-    id: 'recruitment-practices',
+    id: 'recruitment-practices-compliance',
     title: 'AI Recruitment Practices Compliance Agent',
     description: 'Comprehensive monitoring and compliance checking for recruitment practices and policies.',
     price: 169.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated practice verification', 'Policy compliance assurance', 'Process transparency'],
-    available: false
+    available: true
   },
   {
     id: 'migrant-tracking',

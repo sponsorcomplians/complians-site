@@ -381,6 +381,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'CONTACT_MAINTENANCE_BREACH',
     evidenceStatus: 'MISSING_CONTACT_EVIDENCE'
   },
+  'ai-recruitment-practices-compliance': {
+    title: 'AI Recruitment Practices Compliance System',
+    description: 'AI-powered monitoring and compliance checking for recruitment practices and policies.',
+    chatWelcome: 'Hello! I\'m your AI recruitment practices compliance assistant. I can help you with questions about recruitment process, policy compliance, and transparency. How can I assist you today?',
+    defaultJobTitle: 'Recruitment Officer',
+    defaultSocCode: '1136',
+    breachType: 'RECRUITMENT_PRACTICES_BREACH',
+    evidenceStatus: 'MISSING_RECRUITMENT_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -717,6 +726,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-recruitment-practices-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Emily White',
+          jobTitle: 'Recruitment Officer',
+          socCode: '1136',
+          cosReference: 'COS111222',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-10'
+        },
+        {
+          id: '2',
+          name: 'Peter Green',
+          jobTitle: 'HR Manager',
+          socCode: '1135',
+          cosReference: 'COS333444',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-15'
+        },
+        {
+          id: '3',
+          name: 'Aisha Khan',
+          jobTitle: 'Talent Acquisition Specialist',
+          socCode: '1136',
+          cosReference: 'COS555666',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-20'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -889,6 +938,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-migrant-contact-maintenance') {
       return `Migrant Contact Maintenance Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Migrant Contact Maintenance Agent has reviewed the contact record keeping and communication tracking evidence.\n\nKEY FINDINGS:\n- Contact record keeping: [summarize contact record status]\n- Communication tracking: [summarize communication status]\n- Compliance assurance: [summarize compliance status]\n- Concerns: [summarize any red flags or missing contact records]\n\nCOMPLIANCE FINDINGS:\n1. If contact records are missing or not updated, this is a serious breach.\n2. If communication tracking is inadequate, this is a breach.\n3. If all contact records are up to date and communication is tracked, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all contact records are up to date and accurate.\n- Track all communications with migrant workers.\n- Address any missing or outdated contact information immediately.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-recruitment-practices-compliance') {
+      return `Recruitment Practices Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Recruitment Practices Compliance Agent has reviewed the recruitment process and policy compliance evidence.\n\nKEY FINDINGS:\n- Recruitment process: [summarize process]\n- Policy compliance: [summarize policy status]\n- Transparency: [summarize transparency status]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If recruitment practices are not transparent or policies are not followed, this is a serious breach.\n2. If documentation is missing or incomplete, this is a breach.\n3. If all recruitment practices are compliant and transparent, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment policies are followed and documented.\n- Review recruitment process for transparency and compliance.\n- Address any missing or incomplete documentation immediately.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment
