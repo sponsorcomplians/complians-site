@@ -27,7 +27,8 @@ import {
   Calendar,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Play
 } from 'lucide-react';
 
 // AI Agents Data
@@ -342,6 +343,32 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {featuredAgents.map((agent) => (
               <Card key={agent.id} className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                {/* Image/Video Holder */}
+                <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                  {agent.id === 'qualification' && (
+                    <img 
+                      src="/images/ai-qualification-showcase.png" 
+                      alt="AI Qualification Compliance Agent Showcase"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {agent.id === 'salary' && (
+                    <img 
+                      src="/images/ai-salary-showcase.png" 
+                      alt="AI Salary Compliance Agent Showcase"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Video Play Button Overlay for Available Agents */}
+                  {agent.available && (
+                    <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white bg-opacity-90 rounded-full p-4 cursor-pointer">
+                        <Play className="w-8 h-8 text-blue-600" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -484,6 +511,50 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAgents.map((agent) => (
               <Card key={agent.id} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                {/* Image/Video Holder */}
+                <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                  {agent.id === 'qualification' && (
+                    <img 
+                      src="/images/ai-qualification-showcase.png" 
+                      alt="AI Qualification Compliance Agent Showcase"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {agent.id === 'salary' && (
+                    <img 
+                      src="/images/ai-salary-showcase.png" 
+                      alt="AI Salary Compliance Agent Showcase"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {agent.id === 'skills-experience' && (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
+                      <div className="text-center">
+                        <Users className="w-12 h-12 text-green-600 mx-auto mb-2" />
+                        <p className="text-sm text-green-700 font-medium">Skills & Experience</p>
+                        <p className="text-xs text-green-600">Showcase Coming Soon</p>
+                      </div>
+                    </div>
+                  )}
+                  {!['qualification', 'salary', 'skills-experience'].includes(agent.id) && (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-slate-100">
+                      <div className="text-center">
+                        <FileText className="w-12 h-12 text-gray-600 mx-auto mb-2" />
+                        <p className="text-sm text-gray-700 font-medium">{agent.title.split(' ')[1]}</p>
+                        <p className="text-xs text-gray-600">Showcase Coming Soon</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Video Play Button Overlay for Available Agents */}
+                  {agent.available && ['qualification', 'salary'].includes(agent.id) && (
+                    <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white bg-opacity-90 rounded-full p-3 cursor-pointer">
+                        <Play className="w-6 h-6 text-blue-600" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
