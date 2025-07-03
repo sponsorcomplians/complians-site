@@ -380,52 +380,6 @@ const levels = [
   },
 ];
 
-// Add a products array for debugging and card rendering
-const products = [
-  {
-    id: 1,
-    title: "AI Qualification Compliance Agent",
-    description: "Advanced AI-powered qualification verification and compliance checking for UK sponsors with red flag detection and expert-level assessment.",
-    image: "/images/ai-qualification-compliance-agent.png",
-    price: "£199.99",
-    originalPrice: "£299.99",
-    badge: "Popular",
-    benefits: [
-      "Automated compliance checking",
-      "Expert-level analysis quality",
-      "Immediate breach detection"
-    ]
-  },
-  {
-    id: 2,
-    title: "AI Salary Compliance Agent",
-    description: "Comprehensive salary compliance analysis with payslip verification, NMW checking, and Home Office threshold monitoring.",
-    image: "/images/ai-salary-compliance-agent.png",
-    price: "£179.99",
-    originalPrice: "£249.99",
-    badge: "New",
-    benefits: [
-      "Automated salary verification",
-      "NMW compliance assurance",
-      "Underpayment prevention"
-    ]
-  },
-  {
-    id: 3,
-    title: "AI Right to Work Agent",
-    description: "Automated right to work checking and verification with Home Office integration.",
-    image: "/images/ai-right-to-work-agent.png",
-    price: "£159.99",
-    badge: "Available",
-    benefits: [
-      "Automated RTW checking",
-      "Real-time status updates",
-      "Compliance monitoring"
-    ]
-  }
-  // ...add more products/agents as needed
-];
-
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
@@ -1009,37 +963,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-
-      {/* Debugging Output */}
-      <div className="mt-16 p-4 bg-gray-100">
-        {products.map((product) => (
-          <div key={product.id}>
-            <p>Image path: {product.image}</p>
-            <img src={product.image} alt="test" width="50" />
-          </div>
-        ))}
-      </div>
-
-      {/* Render the product cards using the products array */}
-      <div className="mt-16 p-4 bg-gray-100">
-        {products.map((product) => (
-          <div key={product.id} className="product-card">
-            <div className="image-container">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="content">
-              {product.badge && <span className="badge">{product.badge}</span>}
-              <h3>{product.title}</h3>
-              <p>{product.description}</p>
-              {/* ... */}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
