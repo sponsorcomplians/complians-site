@@ -354,6 +354,15 @@ const agentConfigs: Record<string, AgentConfig> = {
     breachType: 'REPORTING_DUTIES_BREACH',
     evidenceStatus: 'MISSING_REPORTING_EVIDENCE'
   },
+  'ai-immigration-status-monitoring': {
+    title: 'AI Immigration Status Monitoring System',
+    description: 'AI-powered real-time monitoring and compliance checking for migrant worker immigration status.',
+    chatWelcome: 'Hello! I\'m your AI immigration status monitoring assistant. I can help you with questions about visa status, immigration compliance, status changes, and real-time monitoring. How can I assist you today?',
+    defaultJobTitle: 'Marketing Manager',
+    defaultSocCode: '1132',
+    breachType: 'IMMIGRATION_STATUS_BREACH',
+    evidenceStatus: 'MISSING_IMMIGRATION_EVIDENCE'
+  },
 };
 
 export default function AIComplianceDashboard() {
@@ -570,6 +579,46 @@ export default function AIComplianceDashboard() {
         }
       ];
     }
+    if (agentKey === 'ai-immigration-status-monitoring') {
+      return [
+        {
+          id: '1',
+          name: 'Lisa Thompson',
+          jobTitle: 'Marketing Manager',
+          socCode: '1132',
+          cosReference: 'COS444444',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-15'
+        },
+        {
+          id: '2',
+          name: 'Raj Patel',
+          jobTitle: 'Business Analyst',
+          socCode: '2425',
+          cosReference: 'COS555555',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-20'
+        },
+        {
+          id: '3',
+          name: 'Anna Kowalski',
+          jobTitle: 'Project Manager',
+          socCode: '1136',
+          cosReference: 'COS666666',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-10'
+        }
+      ];
+    }
     
     // Default qualification compliance workers
     return [
@@ -733,6 +782,9 @@ This breach constitutes a serious compliance failure that could result in sponso
     }
     if (agentKey === 'ai-reporting-duties-compliance') {
       return `Reporting Duties Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Reporting Duties Compliance Agent has reviewed the reporting obligations and compliance status.\n\nKEY FINDINGS:\n- Reporting deadlines: [summarize deadline status]\n- Obligation compliance: [summarize obligation status]\n- Report submissions: [summarize submission status]\n- Compliance alerts: [summarize any alerts or issues]\n- Concerns: [summarize any red flags or missing reports]\n\nCOMPLIANCE FINDINGS:\n1. If reporting deadlines are missed or obligations are not met, this is a serious breach.\n2. If reports are incomplete or late, this is a breach.\n3. If all reporting duties are fulfilled on time, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required reports are submitted on time.\n- Address any missed reporting deadlines immediately.\n- Review and complete any outstanding reporting obligations.\n- Set up automated alerts for future reporting deadlines.\n\nThis assessment is generated for sponsor compliance records.`;
+    }
+    if (agentKey === 'ai-immigration-status-monitoring') {
+      return `Immigration Status Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Immigration Status Monitoring Agent has reviewed the immigration status and compliance evidence.\n\nKEY FINDINGS:\n- Visa status: [summarize current visa status]\n- Immigration compliance: [summarize compliance status]\n- Status changes: [summarize any status changes]\n- Real-time monitoring: [summarize monitoring status]\n- Concerns: [summarize any red flags or status issues]\n\nCOMPLIANCE FINDINGS:\n1. If the worker\'s immigration status is invalid or expired, this is a serious breach.\n2. If status changes are not reported or monitored, this is a breach.\n3. If all immigration requirements are met and status is valid, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all immigration status documentation is current and valid.\n- Monitor for any status changes or visa expirations.\n- Report any immigration status changes immediately.\n- Set up real-time monitoring for immigration compliance.\n\nThis assessment is generated for sponsor compliance records.`;
     }
     
     // Default qualification assessment
