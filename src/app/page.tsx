@@ -92,7 +92,7 @@ const allAgents = [
       "Immediate breach detection",
     ],
     available: true,
-    image: "/images/AI Qualification Compliance Agent.png",
+    image: "/images/ai-qualification-compliance-agent.png",
   },
   {
     id: "salary",
@@ -110,7 +110,7 @@ const allAgents = [
       "Underpayment prevention",
     ],
     available: true,
-    image: "/images/AI Salary Compliance Agent.png",
+    image: "/images/ai-salary-compliance-agent.png",
   },
 
   {
@@ -128,7 +128,7 @@ const allAgents = [
       "Compliance monitoring",
     ],
     available: true,
-    image: "/images/AI Right to Work Agent.png",
+    image: "/images/ai-right-to-work-agent.png",
   },
 
   {
@@ -146,7 +146,7 @@ const allAgents = [
       "Professional background checks",
     ],
     available: true,
-    image: "/images/AI Skills & Experience Compliance Agent.png",
+    image: "/images/ai-skills-&-experience-compliance-agent.png",
   },
   {
     id: "genuine-vacancies",
@@ -163,7 +163,7 @@ const allAgents = [
       "Market rate validation",
     ],
     available: true,
-    image: "/images/AI Genuine Vacancies Compliance Agent.png",
+    image: "/images/ai-genuine-vacancies-compliance-agent.png",
   },
   {
     id: "third-party-labour",
@@ -180,7 +180,7 @@ const allAgents = [
       "Contract verification",
     ],
     available: true,
-    image: "/images/AI Third-Party Labour Compliance Agent.png",
+    image: "/images/ai-third-party-labour-compliance-agent.png",
   },
   {
     id: "reporting-duties",
@@ -197,7 +197,7 @@ const allAgents = [
       "Timely reporting assurance",
     ],
     available: true,
-    image: "/images/AI Reporting Duties Compliance Agent.png",
+    image: "/images/ai-reporting-duties-compliance-agent.png",
   },
   {
     id: "immigration-status-monitoring",
@@ -214,7 +214,7 @@ const allAgents = [
       "Status change alerts",
     ],
     available: true,
-    image: "/images/AI Immigration Status Monitoring Agent.png",
+    image: "/images/ai-immigration-status-monitoring-agent.png",
   },
   {
     id: "record-keeping",
@@ -231,7 +231,7 @@ const allAgents = [
       "Audit readiness",
     ],
     available: true,
-    image: "/images/AI Record Keeping Compliance Agent.png",
+    image: "/images/ai-record-keeping-compliance-agent.png",
   },
   {
     id: "migrant-contact-maintenance",
@@ -248,7 +248,7 @@ const allAgents = [
       "Compliance assurance",
     ],
     available: true,
-    image: "/images/AI Migrant Contact Maintenance Agent.png",
+    image: "/images/ai-migrant-contact-maintenance-agent.png",
   },
   {
     id: "recruitment-practices-compliance",
@@ -265,7 +265,7 @@ const allAgents = [
       "Transparency verification",
     ],
     available: true,
-    image: "/images/AI Recruitment Practices Compliance Agent.png",
+    image: "/images/ai-recruitment-practices-compliance-agent.png",
   },
   {
     id: "migrant-tracking-compliance",
@@ -282,7 +282,7 @@ const allAgents = [
       "Compliance verification",
     ],
     available: true,
-    image: "/images/AI Migrant Tracking Compliance Agent.png",
+    image: "/images/ai-migrant-tracking-compliance-agent.png",
   },
   {
     id: "contracted-hours",
@@ -299,7 +299,7 @@ const allAgents = [
       "Hours verification",
     ],
     available: true,
-    image: "/images/AI Contracted Hours Compliance Agent.png",
+    image: "/images/ai-contracted-hours-compliance-agent.png",
   },
   {
     id: "paragraph-c7-26",
@@ -316,7 +316,7 @@ const allAgents = [
       "Specialized guidance",
     ],
     available: true,
-    image: "/images/AI Paragraph C7-26 Compliance Agent.png",
+    image: "/images/ai-paragraph-c7-26-compliance-agent.png",
   },
   {
     id: "document-compliance",
@@ -333,7 +333,7 @@ const allAgents = [
       "Audit readiness",
     ],
     available: true,
-    image: "/images/AI Document Compliance Agent.png",
+    image: "/images/ai-document-compliance-agent.png",
   },
 ];
 
@@ -657,7 +657,7 @@ export default function HomePage() {
                   {agent.image ? (
                     <img
                       src={agent.image}
-                      alt={`${agent.title} Showcase`}
+                      alt={agent.title}
                       className="w-full h-full object-cover"
                     />
                   ) : (
