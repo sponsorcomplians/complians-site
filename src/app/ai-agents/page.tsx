@@ -270,7 +270,11 @@ const aiAgents: AIAgent[] = [
       'Home Office status checking',
       'Visa expiry monitoring',
       'Automated compliance alerts',
-      'RTW documentation management'
+      'RTW documentation management',
+      'RTW compliance dashboard',
+      'AI RTW assistant',
+      'Report generation and sharing',
+      'Worker RTW management'
     ],
     keyBenefits: [
       'Automated RTW checking',
@@ -278,12 +282,13 @@ const aiAgents: AIAgent[] = [
       'Compliance monitoring',
       'Legal protection'
     ],
-    status: 'coming-soon',
+    status: 'available',
     category: 'compliance',
     complexity: 'advanced',
-    href: '#',
+    href: '/ai-right-to-work-compliance',
     popular: false,
-    new: false
+    new: false,
+    showcaseImage: '/images/ai-right-to-work-showcase.png'
   },
   {
     id: 'hr-compliance',
@@ -796,11 +801,11 @@ export default function AIAgentsProductsPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-[#263976] mb-2">{aiAgents.filter(a => a.status === 'available').length}</div>
+              <div className="text-3xl font-bold text-[#263976] mb-2">3</div>
               <div className="text-gray-600">Available Now</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-[#263976] mb-2">{aiAgents.filter(a => a.status === 'coming-soon').length}</div>
+              <div className="text-3xl font-bold text-[#263976] mb-2">11</div>
               <div className="text-gray-600">Coming Soon</div>
             </div>
             <div>

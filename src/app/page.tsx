@@ -90,11 +90,11 @@ const allAgents = [
     title: 'AI Right to Work Agent',
     description: 'Automated right to work checking and verification with Home Office integration.',
     price: 159.99,
-    status: 'Coming Soon',
+    status: 'Available',
     category: 'compliance',
     level: 'advanced',
     benefits: ['Automated RTW checking', 'Real-time status updates', 'Compliance monitoring'],
-    available: false
+    available: true
   },
 
   {
@@ -404,11 +404,11 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">2</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
               <div className="text-gray-600">Available Now</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-600 mb-2">12</div>
+              <div className="text-3xl font-bold text-gray-600 mb-2">11</div>
               <div className="text-gray-600">Coming Soon</div>
             </div>
             <div>

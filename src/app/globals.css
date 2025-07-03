@@ -104,6 +104,39 @@
   border-color: var(--secondary);
 }
 
+/* Brand color classes */
+.text-brand-light {
+  color: #00c3ff;
+}
+
+.text-brand-dark {
+  color: #001e70;
+}
+
+.bg-brand-light {
+  background-color: #00c3ff;
+}
+
+.bg-brand-dark {
+  background-color: #001e70;
+}
+
+.border-brand-light {
+  border-color: #00c3ff;
+}
+
+.border-brand-dark {
+  border-color: #001e70;
+}
+
+.hover\:bg-brand-light:hover {
+  background-color: #00c3ff;
+}
+
+.hover\:bg-brand-dark:hover {
+  background-color: #001e70;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -24,7 +24,7 @@ import {
   HelpCircle
 } from 'lucide-react'
 import AgentAssessmentExplainer from './AgentAssessmentExplainer'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, usePathname } from 'next/navigation'
 
 // Custom Card Components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -123,7 +123,7 @@ const Tabs = ({
   onValueChange: (value: string) => void;
   className?: string;
 }) => (
-  <div className={className} data-value={value} data-onvaluechange={onValueChange}>
+  <div className={className} data-value={value}>
     {children}
   </div>
 )
@@ -279,59 +279,149 @@ interface ChatMessage {
   timestamp: string
 }
 
+// Agent-specific configurations
+interface AgentConfig {
+  title: string;
+  description: string;
+  chatWelcome: string;
+  defaultJobTitle: string;
+  defaultSocCode: string;
+  breachType: string;
+  evidenceStatus: string;
+}
+
+const agentConfigs: Record<string, AgentConfig> = {
+  'ai-qualification-compliance': {
+    title: 'AI Qualification Compliance System',
+    description: 'AI-powered qualification compliance analysis for UK sponsors with red flag detection',
+    chatWelcome: 'Hello! I\'m your AI compliance assistant. I can help you with questions about qualification requirements, SOC codes, Care Certificates, and compliance obligations. How can I assist you today?',
+    defaultJobTitle: 'Care Assistant',
+    defaultSocCode: '6145',
+    breachType: 'NO_CARE_QUALIFICATIONS',
+    evidenceStatus: 'MISSING_CRITICAL'
+  },
+  'ai-salary-compliance': {
+    title: 'AI Salary Compliance System',
+    description: 'AI-powered salary compliance analysis with NMW and Home Office threshold monitoring',
+    chatWelcome: 'Hello! I\'m your AI salary compliance assistant. I can help you with questions about National Minimum Wage, salary thresholds, payslip verification, and compliance obligations. How can I assist you today?',
+    defaultJobTitle: 'Care Assistant',
+    defaultSocCode: '6145',
+    breachType: 'UNDERPAYMENT',
+    evidenceStatus: 'MISSING_PAYSLIPS'
+  },
+  'ai-right-to-work-compliance': {
+    title: 'AI Right to Work Compliance System',
+    description: 'AI-powered right to work verification with Home Office integration and status monitoring',
+    chatWelcome: 'Hello! I\'m your AI right to work compliance assistant. I can help you with questions about RTW checks, visa status, Home Office verification, and compliance obligations. How can I assist you today?',
+    defaultJobTitle: 'Care Assistant',
+    defaultSocCode: '6145',
+    breachType: 'EXPIRED_RTW',
+    evidenceStatus: 'MISSING_RTW_DOCUMENTS'
+  }
+};
+
 export default function AIComplianceDashboard() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
+  
+  // Extract agent key from pathname
+  const agentKey = pathname?.split('/').find((seg) => seg.startsWith('ai-')) || 'ai-qualification-compliance';
+  const agentConfig = agentConfigs[agentKey] || agentConfigs['ai-qualification-compliance'];
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [currentAssessment, setCurrentAssessment] = useState<Assessment | null>(null)
   const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<Assessment | null>(null)
-  const [workers, setWorkers] = useState<Worker[]>([
-    {
-      id: '1',
-      name: 'John Smith',
-      jobTitle: 'Software Developer',
-      socCode: '2136',
-      cosReference: 'COS123456',
-      complianceStatus: 'COMPLIANT',
-      riskLevel: 'LOW',
-      lastAssessment: '2024-06-10',
-      redFlag: false,
-      assignmentDate: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      jobTitle: 'Care Assistant',
-      socCode: '6145',
-      cosReference: 'COS789012',
-      complianceStatus: 'SERIOUS_BREACH',
-      riskLevel: 'HIGH',
-      lastAssessment: '2024-06-09',
-      redFlag: true,
-      assignmentDate: '2024-02-20'
-    },
-    {
-      id: '3',
-      name: 'Ahmed Hassan',
-      jobTitle: 'Senior Care Worker',
-      socCode: '6146',
-      cosReference: 'COS345678',
-      complianceStatus: 'BREACH',
-      riskLevel: 'MEDIUM',
-      lastAssessment: '2024-06-08',
-      redFlag: false,
-      assignmentDate: '2024-03-10'
+  const [workers, setWorkers] = useState<Worker[]>(() => {
+    if (agentKey === 'ai-right-to-work-compliance') {
+      return [
+        {
+          id: '1',
+          name: 'Maria Rodriguez',
+          jobTitle: 'Care Assistant',
+          socCode: '6145',
+          cosReference: 'COS123456',
+          complianceStatus: 'COMPLIANT',
+          riskLevel: 'LOW',
+          lastAssessment: '2024-06-10',
+          redFlag: false,
+          assignmentDate: '2024-01-15'
+        },
+        {
+          id: '2',
+          name: 'Ahmed Hassan',
+          jobTitle: 'Senior Care Worker',
+          socCode: '6146',
+          cosReference: 'COS789012',
+          complianceStatus: 'SERIOUS_BREACH',
+          riskLevel: 'HIGH',
+          lastAssessment: '2024-06-09',
+          redFlag: true,
+          assignmentDate: '2024-02-20'
+        },
+        {
+          id: '3',
+          name: 'Priya Patel',
+          jobTitle: 'Care Assistant',
+          socCode: '6145',
+          cosReference: 'COS345678',
+          complianceStatus: 'BREACH',
+          riskLevel: 'MEDIUM',
+          lastAssessment: '2024-06-08',
+          redFlag: false,
+          assignmentDate: '2024-03-10'
+        }
+      ];
     }
-  ])
+    
+    // Default qualification compliance workers
+    return [
+      {
+        id: '1',
+        name: 'John Smith',
+        jobTitle: 'Software Developer',
+        socCode: '2136',
+        cosReference: 'COS123456',
+        complianceStatus: 'COMPLIANT',
+        riskLevel: 'LOW',
+        lastAssessment: '2024-06-10',
+        redFlag: false,
+        assignmentDate: '2024-01-15'
+      },
+      {
+        id: '2',
+        name: 'Sarah Johnson',
+        jobTitle: 'Care Assistant',
+        socCode: '6145',
+        cosReference: 'COS789012',
+        complianceStatus: 'SERIOUS_BREACH',
+        riskLevel: 'HIGH',
+        lastAssessment: '2024-06-09',
+        redFlag: true,
+        assignmentDate: '2024-02-20'
+      },
+      {
+        id: '3',
+        name: 'Ahmed Hassan',
+        jobTitle: 'Senior Care Worker',
+        socCode: '6146',
+        cosReference: 'COS345678',
+        complianceStatus: 'BREACH',
+        riskLevel: 'MEDIUM',
+        lastAssessment: '2024-06-08',
+        redFlag: false,
+        assignmentDate: '2024-03-10'
+      }
+    ];
+  })
   
   const [assessments, setAssessments] = useState<Assessment[]>([])
   
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI compliance assistant. I can help you with questions about qualification requirements, SOC codes, Care Certificates, and compliance obligations. How can I assist you today?',
+      content: agentConfig.chatWelcome,
       timestamp: new Date().toISOString()
     }
   ])
@@ -400,6 +490,44 @@ export default function AIComplianceDashboard() {
   }
 
   const generateProfessionalAssessment = (workerName: string, cosRef: string, jobTitle: string, socCode: string, assignmentDate: string) => {
+    if (agentKey === 'ai-right-to-work-compliance') {
+      return `Right to Work Assessment for ${workerName} (${cosRef})
+
+You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
+
+Upon review of the uploaded documents, the AI Right to Work Compliance Agent has identified a serious breach of sponsor duties regarding right to work verification.
+
+CRITICAL FINDINGS:
+1. No valid right to work documentation has been provided for ${workerName}
+2. The file does not contain a current passport, biometric residence permit, or other acceptable RTW evidence
+3. There is no evidence of a Home Office RTW check being conducted
+4. The worker's immigration status cannot be verified through the provided documentation
+
+LEGAL REQUIREMENTS:
+Under the Immigration, Asylum and Nationality Act 2006, employers have a legal obligation to:
+- Conduct right to work checks before employment begins
+- Retain copies of RTW documents for the duration of employment
+- Conduct follow-up checks for time-limited permission to work
+- Report to the Home Office if a worker's permission expires
+
+SPONSOR DUTIES:
+As a licensed sponsor, you are required to:
+- Verify the right to work of all sponsored workers
+- Maintain records of RTW checks
+- Report any changes in immigration status
+- Ensure compliance with all immigration laws
+
+RECOMMENDED ACTIONS:
+1. Immediately conduct a proper RTW check for ${workerName}
+2. Obtain and retain copies of valid RTW documentation
+3. Verify the worker's immigration status with the Home Office
+4. Implement proper RTW checking procedures for all future workers
+5. Consider suspending employment until RTW is verified
+
+This breach constitutes a serious compliance failure that could result in sponsor license suspension or revocation. Immediate remedial action is required.`
+    }
+    
+    // Default qualification assessment
     return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode} Care workers and home carers.
 
 ${workerName}'s file includes a copy of his CV, which confirms that he holds a Bachelor of Engineering in Mechanical Engineering, obtained in 2013, with over seven years of professional experience in HVAC systems, including project and operations management roles in India and South Sudan. This academic and professional background is further supported by the application form he submitted.
@@ -428,8 +556,8 @@ In summary, ${workerName}'s qualifications and work experience are not aligned w
     
     // Simulate AI processing
     setTimeout(() => {
-      const jobTitle = 'Care Assistant'
-      const socCode = '6145'
+      const jobTitle = agentConfig.defaultJobTitle
+      const socCode = agentConfig.defaultSocCode
       const assignmentDate = new Date().toLocaleDateString('en-GB')
       
       // Generate professional assessment
@@ -445,8 +573,8 @@ In summary, ${workerName}'s qualifications and work experience are not aligned w
         socCode,
         complianceStatus: 'SERIOUS_BREACH',
         riskLevel: 'HIGH',
-        evidenceStatus: 'MISSING_CRITICAL',
-        breachType: 'NO_CARE_QUALIFICATIONS',
+        evidenceStatus: agentConfig.evidenceStatus,
+        breachType: agentConfig.breachType,
         redFlag: true,
         assignmentDate,
         professionalAssessment,
@@ -726,10 +854,10 @@ Best regards`
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
           <Bot className="h-8 w-8 text-brand-light" />
-          AI Qualification Compliance System
+          {agentConfig.title}
         </h1>
         <p className="text-gray-600">
-          AI-powered qualification compliance analysis for UK sponsors with red flag detection
+          {agentConfig.description}
         </p>
       </div>
 
@@ -873,9 +1001,11 @@ Best regards`
                        `${worker.name} requires review`}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {worker.redFlag ? `${worker.jobTitle} without qualifications` : 
-                       worker.complianceStatus === 'COMPLIANT' ? 'Compliant status confirmed' :
-                       'Missing training certificates'} - {worker.lastAssessment}
+                      {worker.redFlag ? 
+                        (agentKey === 'ai-right-to-work-compliance' ? `${worker.jobTitle} - RTW verification failed` : `${worker.jobTitle} without qualifications`) : 
+                       worker.complianceStatus === 'COMPLIANT' ? 
+                        (agentKey === 'ai-right-to-work-compliance' ? 'RTW status confirmed' : 'Compliant status confirmed') :
+                        (agentKey === 'ai-right-to-work-compliance' ? 'Missing RTW documents' : 'Missing training certificates')} - {worker.lastAssessment}
                     </p>
                   </div>
                 </div>
@@ -893,7 +1023,13 @@ Best regards`
                   <Users className="h-5 w-5" />
                   Workers
                 </CardTitle>
-                <p className="text-gray-600 text-sm mt-1">Manage sponsored workers and their qualifications</p>
+                <p className="text-gray-600 text-sm mt-1">
+                  {agentKey === 'ai-right-to-work-compliance' 
+                    ? 'Manage sponsored workers and their right to work status' 
+                    : agentKey === 'ai-salary-compliance'
+                    ? 'Manage sponsored workers and their salary compliance'
+                    : 'Manage sponsored workers and their qualifications'}
+                </p>
               </div>
               <Button className="bg-gray-900 hover:bg-gray-800 text-white">
                 <Plus className="h-4 w-4 mr-2" />
@@ -976,7 +1112,11 @@ Best regards`
                   <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium mb-2">Upload Compliance Documents</h3>
                   <p className="text-gray-600 mb-4">
-                    Upload CoS certificate, CV, qualification documents, and application forms for AI analysis
+                    {agentKey === 'ai-right-to-work-compliance' 
+                      ? 'Upload CoS certificate, passport, biometric residence permit, and RTW documents for AI analysis'
+                      : agentKey === 'ai-salary-compliance'
+                      ? 'Upload CoS certificate, payslips, salary documents, and employment contracts for AI analysis'
+                      : 'Upload CoS certificate, CV, qualification documents, and application forms for AI analysis'}
                   </p>
                   
                   <input
@@ -1050,7 +1190,13 @@ Best regards`
                         <span className="font-bold">SERIOUS BREACH DETECTED</span>
                         <AlertTriangle className="h-5 w-5" />
                       </div>
-                      <p>Qualification requirements not met - Immediate review required</p>
+                      <p>
+                        {agentKey === 'ai-right-to-work-compliance' 
+                          ? 'Right to work verification failed - Immediate review required'
+                          : agentKey === 'ai-salary-compliance'
+                          ? 'Salary compliance breach detected - Immediate review required'
+                          : 'Qualification requirements not met - Immediate review required'}
+                      </p>
                     </div>
                   )}
 
