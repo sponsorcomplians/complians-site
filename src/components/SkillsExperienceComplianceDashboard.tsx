@@ -388,14 +388,14 @@ export default function SkillsExperienceComplianceDashboard() {
                     <td className="px-4 py-2">{worker.socCode}</td>
                     <td className="px-4 py-2">
                       <span
-                        className={`px-2 py-1 rounded font-semibold text-xs ${complianceStatusColors[worker.complianceStatus]}`}
+                        className={`px-2 py-1 rounded font-semibold text-xs ${complianceStatusColors[worker.complianceStatus as keyof typeof complianceStatusColors]}`}
                       >
                         {worker.complianceStatus}
                       </span>
                     </td>
                     <td className="px-4 py-2">
                       <span
-                        className={`px-2 py-1 rounded font-semibold text-xs ${riskLevelColors[worker.riskLevel]}`}
+                        className={`px-2 py-1 rounded font-semibold text-xs ${riskLevelColors[worker.riskLevel as keyof typeof riskLevelColors]}`}
                       >
                         {worker.riskLevel}
                       </span>
