@@ -332,7 +332,6 @@ export default function QualificationComplianceDashboard() {
       // If no pattern matched, use fallback extraction
       if (!nameExtracted) {
         console.log('❌ No pattern matched, using fallback extraction');
-        
         // Remove file extension and common terms
         let cleanName = filename
           .replace(/\.(pdf|docx?)$/i, '')
@@ -340,13 +339,13 @@ export default function QualificationComplianceDashboard() {
           .replace(/\s*[-–—]\s*Certificate of Sponsorship$/i, '')
           .replace(/\s*[-–—]\s*CoS$/i, '')
           .trim();
-        
         // If still contains unwanted terms, split and take first part
         if (cleanName.includes('Certificate') || cleanName.includes('Worker')) {
           const parts = cleanName.split(/\s*[-–—]\s*/);
           cleanName = parts[0].replace(/Worker from\s*/i, '').trim();
         }
-        
+        // Remove duplicate commas and trim
+        cleanName = cleanName.replace(/,+/g, ',').replace(/,\s*,/g, ',').replace(/^,|,$/g, '').replace(/\s+/g, ' ').trim();
         workerName = cleanName || 'Unknown Worker';
         console.log('🔄 Fallback name:', workerName);
       }
@@ -697,7 +696,7 @@ Please ask a specific question about qualification compliance.`;
       yPos += 7;
       doc.text(`Qualification: ${assessment?.qualification}`, 10, yPos);
       yPos += 7;
-      doc.text(`Status: ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}`, 10, yPos);
+      doc.text(`Status: ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}`, 10, yPos);
       yPos += 15;
       
       // Professional Assessment
@@ -741,7 +740,7 @@ Please ask a specific question about qualification compliance.`;
       <h2>Qualification Compliance Assessment Report</h2>
       <p><strong>Worker:</strong> ${assessment?.workerName}</p>
       <p><strong>CoS Reference:</strong> ${assessment?.cosReference}</p>
-      <p><strong>Status:</strong> ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}</p>
+      <p><strong>Status:</strong> ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}</p>
       <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
       <hr>
       <div>${assessment?.professionalAssessment.replace(/\n/g, '<br>')}</div>
@@ -779,7 +778,7 @@ Please ask a specific question about qualification compliance.`;
 Job Title: ${assessment?.jobTitle}
 SOC Code: ${assessment?.socCode}
 Qualification: ${assessment?.qualification}
-Status: ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}
+Status: ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}
 Risk Level: ${assessment?.riskLevel}
 Generated: ${new Date().toLocaleDateString('en-GB')}
 
@@ -1230,7 +1229,7 @@ Best regards`;
                       <div><label className="text-gray-600 font-medium">Job Title:</label><p>{(currentAssessment || selectedWorkerAssessment)?.jobTitle || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">Qualification:</label><p>{(currentAssessment || selectedWorkerAssessment)?.qualification || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">SOC Code:</label><p>{(currentAssessment || selectedWorkerAssessment)?.socCode || 'N/A'}</p></div>
-                      <div><label className="text-gray-600 font-medium">Status:</label><p>{(currentAssessment || selectedWorkerAssessment)?.complianceStatus || 'N/A'}</p></div>
+                      <div><label className="text-gray-600 font-medium">Status:</label><p>{((currentAssessment || selectedWorkerAssessment)?.complianceStatus || 'N/A').replace(/_/g, ' ')}</p></div>
                     </div>
                   </div>
                   {/* Report Options */}
