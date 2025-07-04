@@ -293,6 +293,11 @@ export default function HomePage() {
     return categoryMatch && levelMatch;
   });
 
+  // Only show 2 featured agents
+  const featuredAgents = allAgents.filter((agent) => 
+    agent.id === "qualification" || agent.id === "salary"
+  );
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-GB", {
       style: "currency",
@@ -425,7 +430,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {filteredAgents.map((agent) => (
+            {featuredAgents.map((agent) => (
               <Card
                 key={agent.id}
                 className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300"

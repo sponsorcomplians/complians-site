@@ -616,13 +616,24 @@ Please ask a specific question about document compliance.`
                 </CardTitle>
                 <p className="text-gray-600 text-sm mt-1">Manage and monitor all compliance documents</p>
               </div>
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white">
+              <Button 
+                className="bg-gray-900 hover:bg-gray-800 text-white"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Document
               </Button>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept=".pdf,.docx,.doc,.jpg,.jpeg,.png"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
                 <table className="w-full">
                   <thead>
                     <tr className="bg-gray-900 text-white">
@@ -682,6 +693,41 @@ Please ask a specific question about document compliance.`
                   </tbody>
                 </table>
               </div>
+              
+              {/* File Upload Notification */}
+              {selectedFiles.length > 0 && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-medium mb-2 text-blue-900">Selected Files for Upload:</h4>
+                  <ul className="text-sm text-blue-800 mb-4">
+                    {selectedFiles.map((file, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        {file.name}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <Button 
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={handleUpload}
+                      disabled={uploading}
+                    >
+                      {uploading ? 'Uploading...' : 'Upload & Verify Documents'}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedFiles([])
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = ''
+                        }
+                      }}
+                    >
+                      Clear Selection
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
