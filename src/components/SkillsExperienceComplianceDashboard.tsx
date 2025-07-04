@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
-import { createClient } from "@supabase/supabase-js";
 
 // Types for our data structures
 interface SkillsExperienceWorker {
@@ -194,54 +193,10 @@ const riskLevelColors = {
 };
 
 export default function SkillsExperienceComplianceDashboard() {
-  // Temporary debugging: log env vars
-  console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-  console.log('SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_KEY);
-
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>([
-    {
-      id: '1',
-      name: 'John Smith',
-      jobTitle: 'Software Developer',
-      socCode: '2136',
-      complianceStatus: 'COMPLIANT',
-      riskLevel: 'LOW',
-      lastAssessment: '2024-06-10',
-      redFlag: false,
-      assignmentDate: '2024-01-15',
-      skills: 'JavaScript, React',
-      experience: '3 years software development'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      jobTitle: 'Care Assistant',
-      socCode: '6145',
-      complianceStatus: 'SERIOUS_BREACH',
-      riskLevel: 'HIGH',
-      lastAssessment: '2024-06-09',
-      redFlag: true,
-      assignmentDate: '2024-11-05',
-      skills: 'Caregiving, First Aid',
-      experience: '1 year care work'
-    },
-    {
-      id: '3',
-      name: 'Ahmed Hassan',
-      jobTitle: 'Senior Care Worker',
-      socCode: '6146',
-      complianceStatus: 'SERIOUS_BREACH',
-      riskLevel: 'MEDIUM',
-      lastAssessment: '2024-06-08',
-      redFlag: false,
-      assignmentDate: '2024-03-10',
-      skills: 'Leadership, Care Planning',
-      experience: '5 years care work'
-    }
-  ]);
+  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -256,36 +211,25 @@ export default function SkillsExperienceComplianceDashboard() {
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
   const [supabaseClient, setSupabaseClient] = useState<any>(null);
 
+  // Load workers from localStorage on mount
   useEffect(() => {
-    setLoading(true);
-    setSupabaseError(null);
-    try {
-      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const key = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-      if (!url || !key) {
-        setSupabaseError('Supabase configuration error: Environment variables are missing.');
-        setSupabaseClient(null);
-        return;
+    const savedWorkers = localStorage.getItem('skillsExperienceComplianceWorkers');
+    if (savedWorkers) {
+      try {
+        const parsedWorkers = JSON.parse(savedWorkers);
+        setWorkers(parsedWorkers);
+      } catch (error) {
+        console.error('Error loading saved workers:', error);
       }
-      const client = createClient(url, key);
-      setSupabaseClient(client);
-    } catch (err: any) {
-      setSupabaseError(err.message || 'Supabase client failed to initialize');
-      setSupabaseClient(null);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
-  if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
-  }
-  if (supabaseError) {
-    return <div className="p-8 text-center text-red-600">{supabaseError}<br/>Check your Supabase configuration and environment variables.</div>;
-  }
-  if (!supabaseClient) {
-    return <div className="p-8 text-center text-red-600">Supabase client is not available. Please check your configuration.</div>;
-  }
+  // Save workers to localStorage whenever they change
+  useEffect(() => {
+    if (workers.length > 0) {
+      localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(workers));
+    }
+  }, [workers]);
 
   // Dashboard stats
   const dashboardStats = {
@@ -380,31 +324,35 @@ export default function SkillsExperienceComplianceDashboard() {
           AI-powered skills and experience compliance analysis for UK sponsors
         </p>
       </div>
-
-      {/* Tabs */}
-      <div className="flex border-b mb-6">
-        <TabButton
-          value="dashboard"
-          icon={<BarChart3 className="h-5 w-5" />}
-          label="Dashboard"
-        />
-        <TabButton
-          value="workers"
-          icon={<Users className="h-5 w-5" />}
-          label="Workers"
-        />
-        <TabButton
-          value="assessment"
-          icon={<FileText className="h-5 w-5" />}
-          label="Assessment"
-        />
-        <TabButton
-          value="ai-assistant"
-          icon={<MessageSquare className="h-5 w-5" />}
-          label="AI Assistant"
-        />
+      {/* Explainer Module */}
+      <div className="mb-8">
+        <AgentAssessmentExplainer />
       </div>
-
+      {/* Navigation Tabs */}
+      <div className="flex justify-center mb-8">
+        <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500">
+          <TabButton
+            value="dashboard"
+            icon={<BarChart3 className="h-5 w-5" />}
+            label="Dashboard"
+          />
+          <TabButton
+            value="workers"
+            icon={<Users className="h-5 w-5" />}
+            label="Workers"
+          />
+          <TabButton
+            value="assessment"
+            icon={<FileText className="h-5 w-5" />}
+            label="Assessment"
+          />
+          <TabButton
+            value="ai-assistant"
+            icon={<MessageSquare className="h-5 w-5" />}
+            label="AI Assistant"
+          />
+        </div>
+      </div>
       {/* Tab Content */}
       {activeTab === 'dashboard' && (
         <div>
@@ -637,7 +585,6 @@ export default function SkillsExperienceComplianceDashboard() {
 
       {activeTab === 'assessment' && (
         <>
-          <AgentAssessmentExplainer />
           <div className="bg-white rounded-lg p-6 shadow border">
             <div className="font-semibold text-brand-dark flex items-center gap-2 mb-4">
               <FileText className="h-5 w-5" />
