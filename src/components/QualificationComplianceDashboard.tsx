@@ -33,7 +33,7 @@ interface QualificationWorker {
   jobTitle: string;
   socCode: string;
   cosReference: string;
-  complianceStatus: "COMPLIANT" | "NOT_QUALIFIED" | "SERIOUS_BREACH";
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   lastAssessment: string;
   redFlag: boolean;
@@ -49,7 +49,7 @@ interface QualificationAssessment {
   jobTitle: string;
   socCode: string;
   qualification: string;
-  complianceStatus: "COMPLIANT" | "NOT_QUALIFIED" | "SERIOUS_BREACH";
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   redFlag: boolean;
   assignmentDate: string;
@@ -225,7 +225,7 @@ export default function QualificationComplianceDashboard() {
       jobTitle: 'Senior Care Worker',
       socCode: '6146',
       cosReference: 'COS345678',
-      complianceStatus: 'NOT_QUALIFIED',
+      complianceStatus: 'SERIOUS_BREACH',
       riskLevel: 'MEDIUM',
       lastAssessment: '2024-06-08',
       redFlag: false,
@@ -251,7 +251,7 @@ export default function QualificationComplianceDashboard() {
     totalWorkers: workers.length,
     compliantWorkers: workers.filter(w => w.complianceStatus === 'COMPLIANT').length,
     redFlags: workers.filter(w => w.redFlag).length,
-    notQualifiedWorkers: workers.filter(w => w.complianceStatus === 'NOT_QUALIFIED' || w.complianceStatus === 'SERIOUS_BREACH').length,
+    notQualifiedWorkers: workers.filter(w => w.complianceStatus === 'SERIOUS_BREACH').length,
     complianceRate: workers.length > 0 ? Math.round((workers.filter(w => w.complianceStatus === 'COMPLIANT').length / workers.length) * 100) : 0,
     averageRiskLevel: workers.length > 0 ? workers.reduce((sum, w) => {
       const riskValue = w.riskLevel === 'LOW' ? 1 : w.riskLevel === 'MEDIUM' ? 2 : 3;
@@ -262,7 +262,6 @@ export default function QualificationComplianceDashboard() {
   // Chart data - recalculated when workers change
   const pieChartData = [
     { name: 'Compliant', value: workers.filter(w => w.complianceStatus === 'COMPLIANT').length, color: '#10B981' },
-    { name: 'Not Qualified', value: workers.filter(w => w.complianceStatus === 'NOT_QUALIFIED').length, color: '#F59E0B' },
     { name: 'Serious Breach', value: workers.filter(w => w.complianceStatus === 'SERIOUS_BREACH').length, color: '#EF4444' }
   ]
 
@@ -432,19 +431,14 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Qualification breach detected. Please 
                          qualification.toLowerCase().includes('nvq') && qualification.toLowerCase().includes('3') ||
                          qualification.toLowerCase().includes('professional');
       
-      let complianceStatus: 'COMPLIANT' | 'NOT_QUALIFIED' | 'SERIOUS_BREACH' = 'COMPLIANT';
+      let complianceStatus: 'COMPLIANT' | 'SERIOUS_BREACH' = 'COMPLIANT';
       let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
       let redFlag = false;
       
       if (!isQualified) {
-        if (qualification.toLowerCase().includes('no') || qualification.toLowerCase().includes('none')) {
-          complianceStatus = 'SERIOUS_BREACH';
-          riskLevel = 'HIGH';
-          redFlag = true;
-        } else {
-          complianceStatus = 'NOT_QUALIFIED';
-          riskLevel = 'MEDIUM';
-        }
+        complianceStatus = 'SERIOUS_BREACH';
+        riskLevel = 'HIGH';
+        redFlag = true;
       }
       
       // Generate professional assessment
@@ -621,8 +615,6 @@ Please ask a specific question about qualification compliance.`;
     switch (status) {
       case 'COMPLIANT':
         return <Badge className="bg-green-500 text-white">COMPLIANT</Badge>;
-      case 'NOT_QUALIFIED':
-        return <Badge variant="destructive" className="bg-orange-500 text-white">NOT QUALIFIED</Badge>;
       default:
         return <Badge variant="outline">NOT APPLICABLE</Badge>;
     }
@@ -1175,7 +1167,7 @@ Best regards`;
                     </div>
                   )}
                   {/* Professional Assessment */}
-                  <div className={`border-l-4 p-6 ${(currentAssessment?.redFlag || selectedWorkerAssessment?.redFlag) ? 'border-red-300 bg-red-50' : 'border-blue-300 bg-blue-50'}`}>
+                  <div className="border-l-4 border-blue-300 bg-blue-50 p-6">
                     <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{(currentAssessment || selectedWorkerAssessment)?.professionalAssessment || ''}</div>
                   </div>
                   {/* Assessment Summary */}
