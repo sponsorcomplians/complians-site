@@ -215,7 +215,7 @@ interface ChatMessage {
 // Content component that uses useSearchParams
 function DocumentComplianceContent() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams?.get('tab') || 'verification';
+  const initialTab = searchParams?.get('tab') || 'assessment';
   const [activeTab, setActiveTab] = useState(initialTab)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
@@ -491,6 +491,58 @@ Please ask a specific question about document compliance.`
         <AgentAssessmentExplainer />
       </div>
 
+      {/* Document Assessment Upload Card */}
+      <div className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-[#263976] flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              <span className="font-bold">Document Assessment</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">Upload Compliance Documents</h3>
+              <p className="text-gray-600 mb-4">
+                Upload CoS certificate, CV, qualification documents, and application forms for AI analysis
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.docx,.doc,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <Button 
+                className="bg-[#00c3ff] hover:bg-[#0099cc] text-white mb-4"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Choose Files
+              </Button>
+              {selectedFiles.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="font-medium mb-2">Selected Files:</h4>
+                  <ul className="text-sm text-gray-600">
+                    {selectedFiles.map((file, index) => (
+                      <li key={index}>{file.name}</li>
+                    ))}
+                  </ul>
+                  <Button 
+                    className="bg-[#263976] hover:bg-[#1e2a5a] text-white mt-4"
+                    onClick={handleUpload}
+                    disabled={uploading}
+                  >
+                    {uploading ? 'Verifying...' : 'Start Verification'}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 mb-6">
@@ -513,13 +565,13 @@ Please ask a specific question about document compliance.`
             Documents
           </TabsTrigger>
           <TabsTrigger 
-            value="verification" 
+            value="assessment" 
             className="flex items-center gap-2"
             activeTab={activeTab}
             onValueChange={setActiveTab}
           >
             <Search className="h-4 w-4" />
-            Verification
+            Assessment
           </TabsTrigger>
           <TabsTrigger 
             value="ai-assistant" 
@@ -732,61 +784,9 @@ Please ask a specific question about document compliance.`
           </Card>
         </TabsContent>
 
-        {/* Verification Tab */}
-        <TabsContent value="verification" activeTab={activeTab}>
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[#263976] flex items-center gap-2">
-                  <Search className="h-5 w-5" />
-                  Document Verification
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Upload Documents for Verification</h3>
-                  <p className="text-gray-600 mb-4">
-                    Upload documents for AI-powered authenticity verification and compliance checking
-                  </p>
-                  
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept=".pdf,.docx,.doc,.jpg,.jpeg,.png"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  
-                  <Button 
-                    className="bg-[#00c3ff] hover:bg-[#0099cc] text-white mb-4"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Choose Files
-                  </Button>
-                  
-                  {selectedFiles.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="font-medium mb-2">Selected Files:</h4>
-                      <ul className="text-sm text-gray-600">
-                        {selectedFiles.map((file, index) => (
-                          <li key={index}>{file.name}</li>
-                        ))}
-                      </ul>
-                      <Button 
-                        className="bg-[#263976] hover:bg-[#1e2a5a] text-white mt-4"
-                        onClick={handleUpload}
-                        disabled={uploading}
-                      >
-                        {uploading ? 'Verifying...' : 'Start Verification'}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Assessment Tab (was Verification) */}
+        <TabsContent value="assessment" activeTab={activeTab}>
+          <></>
         </TabsContent>
 
         {/* AI Assistant Tab */}
