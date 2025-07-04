@@ -210,6 +210,9 @@ export default function SkillsExperienceComplianceDashboard() {
   const [loading, setLoading] = useState(false);
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
   const [supabaseClient, setSupabaseClient] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load workers from localStorage on mount
   useEffect(() => {
@@ -287,6 +290,22 @@ export default function SkillsExperienceComplianceDashboard() {
       },
     ]);
     setChatInput('');
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = Array.from(event.target.files || []);
+    setSelectedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClearAllFiles = () => {
+    setSelectedFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // UI Components
@@ -584,46 +603,64 @@ export default function SkillsExperienceComplianceDashboard() {
       )}
 
       {activeTab === 'assessment' && (
-        <>
+        <div className="space-y-6">
           <div className="bg-white rounded-lg p-6 shadow border">
-            <div className="font-semibold text-brand-dark flex items-center gap-2 mb-4">
-              <FileText className="h-5 w-5" />
-              Document Assessment
-            </div>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center">
-              <Upload className="h-12 w-12 text-gray-400 mb-4" />
-              <div className="text-xl font-semibold mb-2">
-                Upload Compliance Documents
-              </div>
-              <div className="text-gray-600 mb-4 text-center">
-                Upload CV, qualification certificates, experience documents, and application forms for AI analysis
-              </div>
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                id="file-upload"
-                onChange={handleFileChange}
-              />
-              <label
-                htmlFor="file-upload"
-                className="bg-brand-light text-brand-dark px-6 py-2 rounded cursor-pointer font-medium"
-              >
-                Choose Files
-              </label>
-              {uploadedFiles.length > 0 && (
-                <div className="mt-4 w-full">
-                  <div className="font-medium mb-2">Selected Files:</div>
-                  <ul className="list-disc list-inside text-sm text-gray-700">
-                    {uploadedFiles.map((file, idx) => (
-                      <li key={idx}>{file.name}</li>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
+              <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
+              <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
+              <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
+              {selectedFiles.length > 0 && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium">Selected Files ({selectedFiles.length}):</h4>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleClearAllFiles}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                  <ul className="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto">
+                    {selectedFiles.map((file, index) => (
+                      <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded hover:bg-gray-100 transition">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" /> 
+                          <span className="truncate">{file.name}</span>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => handleRemoveFile(index)}
+                          className="ml-2"
+                        >
+                          <XCircle className="h-3 w-3" />
+                        </Button>
+                      </li>
                     ))}
                   </ul>
+                  <div className="mt-4 space-y-2">
+                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={() => {/* handle upload logic here */}} disabled={uploading || selectedFiles.length === 0}>
+                      {/* Use a brain or sparkles icon if available */}
+                      <GraduationCap className="h-4 w-4 mr-2" />
+                      Analyze Skills & Experience ({selectedFiles.length} files)
+                    </Button>
+                    <Button 
+                      className="bg-black hover:bg-gray-800 text-white w-full" 
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Plus className="h-4 w-4 mr-2" /> 
+                      Add More Files
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {activeTab === 'ai-assistant' && (
