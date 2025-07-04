@@ -7,7 +7,7 @@ import AIComplianceDashboard from '@/components/AIComplianceDashboard'
 function RecordKeepingComplianceContent() {
   return <AIComplianceDashboard />
 }
-
+  
 export default function AIRecordKeepingCompliancePage() {
   return (
     <AIComplianceDashboard 

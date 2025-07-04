@@ -375,8 +375,8 @@ export default function HomePage() {
               </h3>
               <p className="text-gray-600">
                 AI that matches human expert assessment quality
-              </p>
-            </div>
+        </p>
+      </div>
 
             <div className="text-center">
               <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
@@ -459,7 +459,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   )}
-                </div>
+      </div>
 
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
@@ -484,9 +484,9 @@ export default function HomePage() {
                       </CardDescription>
                     </div>
                   </div>
-                </CardHeader>
+            </CardHeader>
 
-                <CardContent>
+            <CardContent>
                   <div className="mb-4">
                     <h4 className="font-semibold text-gray-900 mb-2">
                       Key Benefits:
@@ -528,9 +528,9 @@ export default function HomePage() {
                       </Link>
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+            </CardContent>
+          </Card>
+        ))}
           </div>
         </div>
       </section>
@@ -568,7 +568,7 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-            </div>
+      </div>
 
             <div className="flex flex-wrap gap-4 justify-center mt-4">
               <div className="flex flex-wrap gap-2">
@@ -663,12 +663,12 @@ export default function HomePage() {
                       </CardTitle>
                       <CardDescription className="text-sm">
                         {agent.description}
-                      </CardDescription>
+          </CardDescription>
                     </div>
                   </div>
-                </CardHeader>
+        </CardHeader>
 
-                <CardContent>
+        <CardContent>
                   <div className="mb-4">
                     <h4 className="font-semibold text-gray-900 mb-2 text-sm">
                       Key Benefits:
