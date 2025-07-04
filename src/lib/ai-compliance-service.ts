@@ -335,8 +335,8 @@ export class AIComplianceService {
     let cosReference = 'UNKNOWN';
 
     if (cosFile) {
-      // Try to extract name from pattern: 'Worker from [Name] - Certificate of Sponsorship'
-      const match = cosFile.name.match(/Worker from ([^-]+)- Certificate of Sponsorship/i);
+      // Improved regex: 'Worker from [NAME] - Certificate of Sponsorship'
+      const match = cosFile.name.match(/Worker from (.+?) - Certificate of Sponsorship/i);
       if (match && match[1]) {
         workerName = match[1].trim();
       } else if (cosFile.name.includes('Alen')) {

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  { auth: { persistSession: false } }
-);
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'no-reply@yourdomain.com'; // Set your verified sender
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,15 +11,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Use Supabase email (if configured)
-    if (supabase.functions) {
-      // If you have a Supabase Edge Function for email, call it here
-      // For now, just return a success (simulate)
-      return NextResponse.json({ success: true });
+    // Send email using Resend
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      html,
+      text,
+    });
+
+    if (data.error) {
+      return NextResponse.json({ error: data.error.message || 'Failed to send email' }, { status: 500 });
     }
 
-    // If using SendGrid or another service, implement here
-    // For now, just return a success (simulate)
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Email sending error:', error);
