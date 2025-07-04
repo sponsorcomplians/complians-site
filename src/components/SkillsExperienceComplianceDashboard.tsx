@@ -355,16 +355,48 @@ export default function SkillsExperienceComplianceDashboard() {
     skills: string,
     experience: string
   ) => {
-    // Simulate assessment logic
+    // Enhanced assessment logic for skills & experience
     let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
     let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
     let redFlag = false;
-    // ... logic to determine compliance, risk, etc. ...
+    
+    // Check experience requirements
+    const hasExperience = experience && experience.length > 0;
+    const hasSkills = skills && skills.length > 0;
+    const experienceYears = experience.toLowerCase().includes('year') ? 
+      parseInt(experience.match(/(\d+)\s*year/)?.[1] || '0') : 0;
+    
+    // Determine compliance based on skills & experience
+    if (!hasExperience || !hasSkills || experienceYears < 2) {
+      complianceStatus = "SERIOUS_BREACH";
+      riskLevel = "HIGH";
+      redFlag = true;
+    } else if (experienceYears < 3) {
+      riskLevel = "MEDIUM";
+    }
+    
+    const professionalAssessment = `You assigned Certificate of Sponsorship (CoS) for ${workerName} on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
+
+The summary of job description in the CoS states:
+
+The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
+
+The usual requirement for performing such a role is demonstrable evidence of sufficient skills and experience in health and social care (e.g., minimum 2-3 years of relevant experience), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
+
+Upon review of the documentation provided, we acknowledge that ${workerName} has ${experienceYears} years of experience in the care sector. ${hasSkills ? 'The worker has demonstrated relevant skills for this role.' : 'The worker has not demonstrated sufficient relevant skills for this role.'} ${hasExperience ? 'Experience documentation has been provided.' : 'Experience documentation has not been provided.'}
+
+${complianceStatus === 'SERIOUS_BREACH' ? 
+  `This represents a serious breach of sponsor compliance obligations as the worker does not meet the minimum skills and experience requirements for this role. The Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary skills and experience for the role in question.` :
+  `The worker meets the skills and experience requirements for this role. Compliance is maintained with Home Office standards.`
+}
+
+Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH — immediate remedial action required' : 'COMPLIANT — continue monitoring skills and experience requirements'}.`;
+
     return {
       complianceStatus,
       riskLevel,
       redFlag,
-      professionalAssessment: `Skills & Experience assessment for ${workerName}`
+      professionalAssessment
     };
   };
 
@@ -594,6 +626,35 @@ ${assessment?.professionalAssessment}`;
       {label}
     </button>
   );
+
+  // Get status badge function
+  const getStatusBadge = (status: string, redFlag: boolean = false) => {
+    if (redFlag) {
+      return <Badge className="bg-red-500 text-white animate-pulse">SERIOUS BREACH</Badge>;
+    }
+    switch (status) {
+      case 'COMPLIANT':
+        return <Badge className="bg-green-500 text-white">COMPLIANT</Badge>;
+      case 'SERIOUS_BREACH':
+        return <Badge className="bg-red-500 text-white">SERIOUS BREACH</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
+  // Get risk badge function
+  const getRiskBadge = (risk: string) => {
+    switch (risk) {
+      case 'LOW':
+        return <Badge className="bg-green-100 text-green-800">LOW</Badge>;
+      case 'MEDIUM':
+        return <Badge className="bg-yellow-100 text-yellow-800">MEDIUM</Badge>;
+      case 'HIGH':
+        return <Badge className="bg-red-100 text-red-800">HIGH</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -833,30 +894,20 @@ ${assessment?.professionalAssessment}`;
                     <td className="px-4 py-2">{worker.jobTitle}</td>
                     <td className="px-4 py-2">{worker.socCode}</td>
                     <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded font-semibold text-xs ${complianceStatusColors[worker.complianceStatus as keyof typeof complianceStatusColors]}`}
-                      >
-                        {worker.complianceStatus}
-                      </span>
+                      {getStatusBadge(worker.complianceStatus, worker.redFlag)}
                     </td>
                     <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded font-semibold text-xs ${riskLevelColors[worker.riskLevel as keyof typeof riskLevelColors]}`}
-                      >
-                        {worker.riskLevel}
-                      </span>
+                      {getRiskBadge(worker.riskLevel)}
                     </td>
                     <td className="px-4 py-2">
-                      <button className="bg-gray-900 text-white px-3 py-1 rounded flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        View Report
-                      </button>
+                      <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={() => handleViewWorkerReport(worker.id)}>
+                        <Eye className="h-4 w-4 mr-1" /> View Report
+                      </Button>
                     </td>
                     <td className="px-4 py-2">
-                      <button className="bg-green-500 text-white px-3 py-1 rounded flex items-center gap-1">
-                        <CheckCircle className="h-4 w-4" />
-                        Help with Breach
-                      </button>
+                      <Button size="sm" variant="destructive" onClick={() => handleDeleteWorker(worker.id)}>
+                        <XCircle className="h-4 w-4 mr-1" /> Delete
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -923,6 +974,101 @@ ${assessment?.professionalAssessment}`;
               )}
             </div>
           </div>
+          
+          {/* Assessment Results */}
+          {(currentAssessment || selectedWorkerAssessment) && (
+            <div className={`bg-white rounded-lg p-6 shadow border ${(currentAssessment?.redFlag || selectedWorkerAssessment?.redFlag) ? 'border-red-500 border-2' : ''}`}>
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center mb-2">
+                  <GraduationCap className="h-6 w-6 text-gray-600 mr-2" />
+                  <h3 className="text-xl font-semibold text-brand-dark">Skills & Experience Compliance Analysis Report</h3>
+                </div>
+                <p className="text-sm text-gray-600">Generated on {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleDateString('en-GB')} {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleTimeString('en-GB', { hour12: false })}</p>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Serious Breach Alert */}
+                {(currentAssessment?.redFlag || selectedWorkerAssessment?.redFlag) && (
+                  <div className="bg-red-500 text-white p-4 rounded-lg text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <AlertTriangle className="h-5 w-5" />
+                      <span className="font-bold">SERIOUS SKILLS & EXPERIENCE BREACH DETECTED</span>
+                      <AlertTriangle className="h-5 w-5" />
+                    </div>
+                    <p>Skills and experience requirements not met - Immediate review required</p>
+                  </div>
+                )}
+                
+                {/* Professional Assessment */}
+                <div className="border-l-4 border-blue-300 bg-blue-50 p-6">
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
+                    {(currentAssessment || selectedWorkerAssessment)?.professionalAssessment || ''}
+                  </div>
+                </div>
+                
+                {/* Assessment Summary */}
+                <div>
+                  <h4 className="font-medium mb-3 text-brand-dark flex items-center gap-2">
+                    <FileCheck className="h-4 w-4" /> Assessment Summary
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <label className="text-gray-600 font-medium">Worker:</label>
+                      <p>{(currentAssessment || selectedWorkerAssessment)?.workerName || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-gray-600 font-medium">Job Title:</label>
+                      <p>{(currentAssessment || selectedWorkerAssessment)?.jobTitle || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-gray-600 font-medium">SOC Code:</label>
+                      <p>{(currentAssessment || selectedWorkerAssessment)?.socCode || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-gray-600 font-medium">Skills:</label>
+                      <p>{(currentAssessment || selectedWorkerAssessment)?.skills || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-gray-600 font-medium">Experience:</label>
+                      <p>{(currentAssessment || selectedWorkerAssessment)?.experience || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-gray-600 font-medium">Status:</label>
+                      <p>{((currentAssessment || selectedWorkerAssessment)?.complianceStatus || 'N/A').replace(/_/g, ' ')}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Report Options */}
+                <div className="border-t pt-6">
+                  <h4 className="font-medium mb-4 text-brand-dark flex items-center gap-2">
+                    <Download className="h-4 w-4" /> Report Options
+                  </h4>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Email Address for Report:</label>
+                    <input 
+                      type="email" 
+                      placeholder="Enter email address" 
+                      className="w-full px-3 py-2 border rounded-lg" 
+                      value={recipientEmail} 
+                      onChange={(e) => setRecipientEmail(e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDownloadPDF}>
+                      <Download className="h-4 w-4 mr-2" /> Download PDF
+                    </Button>
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={handleEmailReport}>
+                      <Mail className="h-4 w-4 mr-2" /> Email Report
+                    </Button>
+                    <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={handlePrintReport}>
+                      <Printer className="h-4 w-4 mr-2" /> Print Report
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
