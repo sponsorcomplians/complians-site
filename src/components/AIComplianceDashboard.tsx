@@ -515,6 +515,12 @@ function AIComplianceDashboardContent({
     }
   }, []);
 
+  console.log('Dashboard Debug:', {
+    initialTab,
+    activeTab,
+    currentURL: typeof window !== 'undefined' ? window.location.search : 'SSR',
+  });
+
   // Extract agent key from pathname
   const agentKey =
     pathname?.split("/").find((seg) => seg.startsWith("ai-")) ||
