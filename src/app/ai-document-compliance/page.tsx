@@ -215,7 +215,7 @@ interface ChatMessage {
 // Content component that uses useSearchParams
 function DocumentComplianceContent() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams?.get('tab') || 'dashboard';
+  const initialTab = searchParams?.get('tab') || 'verification';
   const [activeTab, setActiveTab] = useState(initialTab)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
