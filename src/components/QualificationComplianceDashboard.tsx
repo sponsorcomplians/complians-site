@@ -122,6 +122,69 @@ const TabsContent = ({ children, value, activeTab }: { children: React.ReactNode
   return <div className="mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2">{children}</div>;
 };
 
+// Simple Chart Components
+const PieChartComponent = ({ data }: { data: any[] }) => {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let cumulativePercentage = 0;
+
+  return (
+    <div className="flex items-center justify-center">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        {data.map((item, index) => {
+          const percentage = (item.value / total) * 100;
+          const startAngle = (cumulativePercentage / 100) * 360;
+          const endAngle = ((cumulativePercentage + percentage) / 100) * 360;
+          
+          const x1 = 100 + 80 * Math.cos((startAngle - 90) * Math.PI / 180);
+          const y1 = 100 + 80 * Math.sin((startAngle - 90) * Math.PI / 180);
+          const x2 = 100 + 80 * Math.cos((endAngle - 90) * Math.PI / 180);
+          const y2 = 100 + 80 * Math.sin((endAngle - 90) * Math.PI / 180);
+          
+          const largeArcFlag = percentage > 50 ? 1 : 0;
+          
+          const pathData = [
+            `M 100 100`,
+            `L ${x1} ${y1}`,
+            `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+            'Z'
+          ].join(' ');
+          
+          cumulativePercentage += percentage;
+          
+          return (
+            <path
+              key={index}
+              d={pathData}
+              fill={item.color}
+              stroke="white"
+              strokeWidth="2"
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
+const BarChartComponent = ({ data }: { data: any[] }) => {
+  const maxValue = Math.max(...data.map(item => item.value));
+  
+  return (
+    <div className="flex items-end justify-center space-x-2 h-40">
+      {data.map((item, index) => (
+        <div key={index} className="flex flex-col items-center">
+          <div 
+            className="w-12 bg-green-500 rounded-t"
+            style={{ height: `${(item.value / maxValue) * 120}px` }}
+          ></div>
+          <span className="text-xs mt-2 text-center">{item.name}</span>
+          <span className="text-xs text-gray-500">{item.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // Main component
 export default function QualificationComplianceDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -240,23 +303,166 @@ export default function QualificationComplianceDashboard() {
   };
 
   // Chat send handler
-  const handleChatSend = () => {
+  const handleChatSend = async () => {
     if (!chatInput.trim()) return;
-    setChatMessages(prev => [
-      ...prev,
-      { role: 'user', content: chatInput, timestamp: new Date().toISOString() },
-      { role: 'assistant', content: 'Thank you for your question. Our AI will review your query and provide guidance on qualification compliance.', timestamp: new Date().toISOString() },
-    ]);
+
+    const userMessage: ChatMessage = {
+      role: 'user',
+      content: chatInput,
+      timestamp: new Date().toISOString()
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
     setChatInput('');
+    setChatLoading(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+      let response = '';
+      const query = chatInput.toLowerCase();
+
+      if (query.includes('soc code') || query.includes('standard occupational classification')) {
+        response = `SOC Code requirements for Skilled Worker visas:
+
+• SOC codes define job roles and qualification requirements
+• Each SOC code has specific qualification criteria
+• Qualifications must match the SOC code requirements
+• Home Office verifies qualification-SOC code alignment
+
+Key Requirements:
+- Qualifications must be equivalent to UK standards
+- Professional qualifications must be recognized
+- Academic qualifications must be from recognized institutions
+- Work experience can supplement qualifications in some cases`;
+      } else if (query.includes('qualification') || query.includes('certificate')) {
+        response = `Qualification verification requirements:
+
+Essential Checks:
+• Qualification authenticity and recognition
+• Institution accreditation status
+• Qualification level vs SOC code requirements
+• English language proficiency (if applicable)
+
+Red Flags:
+• Unrecognized qualifications
+• Fake or fraudulent certificates
+• Qualifications below required level
+• Expired or invalid certificates
+
+Documentation:
+- Original qualification certificates
+- Institution verification letters
+- Professional body recognition
+- Translation certificates (if needed)`;
+      } else if (query.includes('compliance') || query.includes('breach')) {
+        response = `Qualification compliance requirements:
+
+Compliance Standards:
+• Qualifications must meet SOC code criteria
+• Certificates must be authentic and valid
+• Professional qualifications must be recognized
+• Academic qualifications from recognized institutions
+
+Breach Consequences:
+• Sponsor licence suspension
+• Worker visa cancellation
+• Financial penalties
+• Reputational damage
+
+Prevention Measures:
+- Regular qualification audits
+- Document verification procedures
+- Professional body checks
+- Continuous monitoring systems`;
+      } else {
+        response = `I can help with qualification compliance questions about:
+
+• SOC code requirements and verification
+• Qualification recognition and authenticity
+• Professional body requirements
+• Academic qualification standards
+• Compliance monitoring and audits
+• Breach prevention and remedies
+
+Please ask a specific question about qualification compliance.`;
+      }
+
+      const assistantMessage: ChatMessage = {
+        role: 'assistant',
+        content: response,
+        timestamp: new Date().toISOString()
+      };
+
+      setChatMessages(prev => [...prev, assistantMessage]);
+      setChatLoading(false);
+    }, 1500);
+  };
+
+  const getStatusBadge = (status: string, redFlag: boolean = false) => {
+    if (redFlag || status === 'SERIOUS_BREACH') {
+      return (
+        <Badge variant="destructive" className="bg-red-500 text-white animate-pulse">
+          SERIOUS BREACH
+        </Badge>
+      );
+    }
+    
+    switch (status) {
+      case 'COMPLIANT':
+        return <Badge className="bg-green-500 text-white">COMPLIANT</Badge>;
+      case 'NOT_QUALIFIED':
+        return <Badge variant="destructive" className="bg-orange-500 text-white">NOT QUALIFIED</Badge>;
+      default:
+        return <Badge variant="outline">NOT APPLICABLE</Badge>;
+    }
+  };
+
+  const getRiskBadge = (risk: string) => {
+    switch (risk) {
+      case 'LOW':
+        return <Badge className="bg-green-100 text-green-800">LOW</Badge>;
+      case 'MEDIUM':
+        return <Badge className="bg-yellow-100 text-yellow-800">MEDIUM</Badge>;
+      case 'HIGH':
+        return <Badge className="bg-red-100 text-red-800">HIGH</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
+  // Help with breach - contact support
+  const handleHelpWithBreach = (workerName: string) => {
+    const subject = `Help Required - Qualification Compliance Breach for ${workerName}`;
+    const body = `Dear Complians Support Team,
+
+I need assistance with a qualification compliance breach for worker: ${workerName}
+
+Please provide guidance on:
+- Immediate actions required for qualification issues
+- Remedial steps to ensure compliance
+- Documentation needed for Home Office
+- Sponsor licence protection measures
+
+Thank you for your assistance.
+
+Best regards`;
+    
+    const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoLink);
   };
 
   // Delete worker
   const handleDeleteWorker = (workerId: string) => {
     if (confirm('Are you sure you want to delete this worker?')) {
+      // Remove worker
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
+      localStorage.setItem('qualificationComplianceWorkers', JSON.stringify(updatedWorkers));
+      
+      // Remove associated assessments
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
+      localStorage.setItem('qualificationComplianceAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -433,6 +639,75 @@ export default function QualificationComplianceDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-[#263976] flex items-center gap-2">
+                  <PieChart className="h-5 w-5" />
+                  Qualification Compliance Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PieChartComponent data={pieChartData} />
+                <div className="flex justify-center space-x-4 mt-4">
+                  {pieChartData.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                      <span className="text-sm">{item.name}: {item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-[#263976] flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  SOC Code Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BarChartComponent data={workers.reduce((acc, worker) => {
+                  const existing = acc.find(item => item.name === worker.socCode);
+                  if (existing) {
+                    existing.value++;
+                  } else {
+                    acc.push({ name: worker.socCode, value: 1 });
+                  }
+                  return acc;
+                }, [] as { name: string; value: number }[])} />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-[#263976]">Recent Qualification Activity</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {workers.slice(-3).reverse().map((worker, index) => (
+                <div key={worker.id} className="flex items-center space-x-3">
+                  <div className={`w-2 h-2 rounded-full ${worker.redFlag ? 'bg-red-500 animate-pulse' : worker.complianceStatus === 'COMPLIANT' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">
+                      {worker.redFlag ? `Qualification breach detected for ${worker.name}` : 
+                       worker.complianceStatus === 'COMPLIANT' ? `${worker.name} qualification assessment completed` :
+                       `${worker.name} qualification issue detected`}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {worker.redFlag ? `Qualification: ${worker.qualification}` : 
+                       worker.complianceStatus === 'COMPLIANT' ? 'All qualifications compliant' :
+                       'Qualification verification required'} - {worker.lastAssessment}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </TabsContent>
         {/* Workers Tab */}
         <TabsContent value="workers" activeTab={activeTab}>
@@ -472,8 +747,8 @@ export default function QualificationComplianceDashboard() {
                         <td className="p-4">{worker.jobTitle}</td>
                         <td className="p-4">{worker.qualification}</td>
                         <td className="p-4">{worker.socCode}</td>
-                        <td className="p-4">{worker.complianceStatus}</td>
-                        <td className="p-4">{worker.riskLevel}</td>
+                        <td className="p-4">{getStatusBadge(worker.complianceStatus, worker.redFlag)}</td>
+                        <td className="p-4">{getRiskBadge(worker.riskLevel)}</td>
                         <td className="p-4">
                           <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={() => handleViewWorkerReport(worker.id)}>
                             <Eye className="h-4 w-4 mr-1" /> View Report
