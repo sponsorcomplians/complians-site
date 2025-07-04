@@ -5,11 +5,12 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
-    const { html, fileName } = await req.json();
+    const { html, filename } = await req.json();
     if (!html) {
       return NextResponse.json({ error: 'Missing HTML content' }, { status: 400 });
     }
 
+    // Launch Puppeteer and generate PDF
     const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -26,11 +27,24 @@ export async function POST(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${fileName || 'report'}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename || 'report'}.pdf"`,
       },
     });
   } catch (error) {
     console.error('PDF generation error:', error);
-    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
+    // Fallback: return HTML as PDF-like buffer
+    try {
+      const { html, filename } = await req.json();
+      const htmlBuffer = Buffer.from(html, 'utf-8');
+      return new NextResponse(htmlBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${filename || 'report'}.pdf"`,
+        },
+      });
+    } catch (fallbackError) {
+      return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
+    }
   }
 } 

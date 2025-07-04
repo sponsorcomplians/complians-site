@@ -1102,6 +1102,37 @@ Best regards`
     window.open(mailtoLink)
   }
 
+  // Load workers from localStorage on mount
+  useEffect(() => {
+    const savedWorkers = localStorage.getItem('salaryComplianceWorkers');
+    if (savedWorkers) {
+      try {
+        const parsedWorkers = JSON.parse(savedWorkers);
+        setWorkers(parsedWorkers);
+      } catch (error) {
+        console.error('Error loading saved workers:', error);
+      }
+    }
+  }, []);
+
+  // Save workers to localStorage whenever they change
+  useEffect(() => {
+    if (workers.length > 0) {
+      localStorage.setItem('salaryComplianceWorkers', JSON.stringify(workers));
+    }
+  }, [workers]);
+
+  // After handleHelpWithBreach
+  const handleDeleteWorker = (workerId: string) => {
+    if (confirm('Are you sure you want to delete this worker?')) {
+      setWorkers(prev => prev.filter(w => w.id !== workerId));
+      setAssessments(prev => prev.filter(a => a.workerId !== workerId));
+      // Update localStorage
+      const updatedWorkers = workers.filter(w => w.id !== workerId);
+      localStorage.setItem('salaryComplianceWorkers', JSON.stringify(updatedWorkers));
+    }
+  };
+
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
@@ -1299,7 +1330,7 @@ Best regards`
                       <th className="text-left p-4 font-medium">Status</th>
                       <th className="text-left p-4 font-medium">Risk Level</th>
                       <th className="text-left p-4 font-medium">View Report</th>
-                      <th className="text-left p-4 font-medium">Actions</th>
+                      <th className="text-left p-4 font-medium">Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1332,11 +1363,11 @@ Best regards`
                         <td className="p-4">
                           <Button 
                             size="sm" 
-                            className="bg-green-500 hover:bg-green-600 text-white"
-                            onClick={() => handleHelpWithBreach(worker.name)}
+                            variant="destructive"
+                            onClick={() => handleDeleteWorker(worker.id)}
                           >
-                            <HelpCircle className="h-4 w-4 mr-1" />
-                            Help with Breach
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Delete
                           </Button>
                         </td>
                       </tr>
