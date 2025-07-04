@@ -571,13 +571,13 @@ ${belowThresholdMonths.length > 0 ?
       if (query.includes('minimum wage') || query.includes('nmw')) {
         response = `National Minimum Wage (NMW) rates for 2025:
 
-• **£12.82 per hour** - Minimum for new CoS assignments from April 2025
-• **£11.44 per hour** - Standard adult rate (21+)
-• **£8.60 per hour** - 18-20 year olds
-• **£6.40 per hour** - Under 18s
-• **£6.40 per hour** - Apprentices
+• £12.82 per hour - Minimum for new CoS assignments from April 2025
+• £11.44 per hour - Standard adult rate (21+)
+• £8.60 per hour - 18-20 year olds
+• £6.40 per hour - Under 18s
+• £6.40 per hour - Apprentices
 
-**Key Requirements:**
+Key Requirements:
 - Sponsored workers must receive at least the salary stated in their CoS
 - Monthly payments should be consistent and meet minimum thresholds
 - Irregular payments require documentation and explanation
@@ -585,16 +585,16 @@ ${belowThresholdMonths.length > 0 ?
       } else if (query.includes('salary threshold') || query.includes('threshold')) {
         response = `Salary thresholds for Skilled Worker visas:
 
-**From April 2025:**
+From April 2025:
 • Minimum hourly rate: £12.82
 • Annual minimum: £26,624 (based on 40 hours/week)
 • Monthly minimum: £2,218.67
 
-**Before April 2025:**
+Before April 2025:
 • Lower thresholds applied
 • Existing workers protected under previous rates
 
-**Compliance Requirements:**
+Compliance Requirements:
 - Workers must receive salary stated in CoS
 - Monthly payments should meet minimum thresholds
 - Consistent payment patterns required
@@ -602,19 +602,19 @@ ${belowThresholdMonths.length > 0 ?
       } else if (query.includes('payslip') || query.includes('pay slip')) {
         response = `Payslip analysis requirements:
 
-**Essential Checks:**
+Essential Checks:
 • Monthly gross pay vs CoS salary
 • Consistency of payments
 • NMW compliance verification
 • Hours worked vs contracted hours
 
-**Red Flags:**
+Red Flags:
 • Payments below CoS salary
 • Irregular payment patterns
 • Missing payslip periods
 • Hours significantly below contracted
 
-**Documentation:**
+Documentation:
 - Keep 6 months of payslips minimum
 - Explain any payment variations
 - Maintain employment contracts
