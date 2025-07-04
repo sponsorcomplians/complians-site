@@ -179,3 +179,194 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- AI Compliance Agents Tables
+
+-- Workers table for all AI compliance agents
+CREATE TABLE public.compliance_workers (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  agent_type TEXT NOT NULL, -- 'ai-salary-compliance', 'ai-qualification-compliance', etc.
+  name TEXT NOT NULL,
+  job_title TEXT NOT NULL,
+  soc_code TEXT NOT NULL,
+  cos_reference TEXT NOT NULL,
+  compliance_status TEXT NOT NULL CHECK (compliance_status IN ('COMPLIANT', 'BREACH', 'SERIOUS_BREACH')),
+  risk_level TEXT NOT NULL CHECK (risk_level IN ('LOW', 'MEDIUM', 'HIGH')),
+  red_flag BOOLEAN DEFAULT false,
+  assignment_date DATE NOT NULL,
+  last_assessment_date DATE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Assessments table for detailed compliance assessments
+CREATE TABLE public.compliance_assessments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  worker_id UUID REFERENCES public.compliance_workers(id) ON DELETE CASCADE,
+  agent_type TEXT NOT NULL,
+  worker_name TEXT NOT NULL,
+  cos_reference TEXT NOT NULL,
+  job_title TEXT NOT NULL,
+  soc_code TEXT NOT NULL,
+  compliance_status TEXT NOT NULL CHECK (compliance_status IN ('COMPLIANT', 'BREACH', 'SERIOUS_BREACH')),
+  risk_level TEXT NOT NULL CHECK (risk_level IN ('LOW', 'MEDIUM', 'HIGH')),
+  evidence_status TEXT NOT NULL,
+  breach_type TEXT,
+  red_flag BOOLEAN DEFAULT false,
+  assignment_date DATE NOT NULL,
+  professional_assessment TEXT NOT NULL,
+  generated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Compliance reports table for generated reports
+CREATE TABLE public.compliance_reports (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  assessment_id UUID REFERENCES public.compliance_assessments(id) ON DELETE CASCADE,
+  agent_type TEXT NOT NULL,
+  report_type TEXT NOT NULL, -- 'pdf', 'email', 'print'
+  report_content TEXT, -- HTML content for the report
+  file_path TEXT, -- Path to stored PDF file
+  downloaded_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for better performance
+CREATE INDEX idx_compliance_workers_user_id ON public.compliance_workers(user_id);
+CREATE INDEX idx_compliance_workers_agent_type ON public.compliance_workers(agent_type);
+CREATE INDEX idx_compliance_assessments_user_id ON public.compliance_assessments(user_id);
+CREATE INDEX idx_compliance_assessments_worker_id ON public.compliance_assessments(worker_id);
+CREATE INDEX idx_compliance_assessments_agent_type ON public.compliance_assessments(agent_type);
+CREATE INDEX idx_compliance_reports_user_id ON public.compliance_reports(user_id);
+CREATE INDEX idx_compliance_reports_assessment_id ON public.compliance_reports(assessment_id);
+
+-- Enable RLS on new tables
+ALTER TABLE public.compliance_workers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.compliance_assessments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.compliance_reports ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for compliance_workers
+CREATE POLICY "Users can view their own compliance workers" ON public.compliance_workers
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own compliance workers" ON public.compliance_workers
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own compliance workers" ON public.compliance_workers
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own compliance workers" ON public.compliance_workers
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for compliance_assessments
+CREATE POLICY "Users can view their own compliance assessments" ON public.compliance_assessments
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own compliance assessments" ON public.compliance_assessments
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own compliance assessments" ON public.compliance_assessments
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own compliance assessments" ON public.compliance_assessments
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for compliance_reports
+CREATE POLICY "Users can view their own compliance reports" ON public.compliance_reports
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own compliance reports" ON public.compliance_reports
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own compliance reports" ON public.compliance_reports
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own compliance reports" ON public.compliance_reports
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Triggers for updated_at on new tables
+CREATE TRIGGER handle_updated_at_compliance_workers
+  BEFORE UPDATE ON public.compliance_workers
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- Functions for AI compliance agents
+
+-- Function to get workers by agent type
+CREATE OR REPLACE FUNCTION public.get_compliance_workers_by_agent(user_uuid UUID, agent_type_param TEXT)
+RETURNS TABLE (
+  id UUID,
+  name TEXT,
+  job_title TEXT,
+  soc_code TEXT,
+  cos_reference TEXT,
+  compliance_status TEXT,
+  risk_level TEXT,
+  red_flag BOOLEAN,
+  assignment_date DATE,
+  last_assessment_date DATE,
+  created_at TIMESTAMP WITH TIME ZONE
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    cw.id,
+    cw.name,
+    cw.job_title,
+    cw.soc_code,
+    cw.cos_reference,
+    cw.compliance_status,
+    cw.risk_level,
+    cw.red_flag,
+    cw.assignment_date,
+    cw.last_assessment_date,
+    cw.created_at
+  FROM public.compliance_workers cw
+  WHERE cw.user_id = user_uuid
+  AND cw.agent_type = agent_type_param
+  ORDER BY cw.created_at DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to get assessments by agent type
+CREATE OR REPLACE FUNCTION public.get_compliance_assessments_by_agent(user_uuid UUID, agent_type_param TEXT)
+RETURNS TABLE (
+  id UUID,
+  worker_id UUID,
+  worker_name TEXT,
+  cos_reference TEXT,
+  job_title TEXT,
+  soc_code TEXT,
+  compliance_status TEXT,
+  risk_level TEXT,
+  evidence_status TEXT,
+  breach_type TEXT,
+  red_flag BOOLEAN,
+  assignment_date DATE,
+  professional_assessment TEXT,
+  generated_at TIMESTAMP WITH TIME ZONE
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    ca.id,
+    ca.worker_id,
+    ca.worker_name,
+    ca.cos_reference,
+    ca.job_title,
+    ca.soc_code,
+    ca.compliance_status,
+    ca.risk_level,
+    ca.evidence_status,
+    ca.breach_type,
+    ca.red_flag,
+    ca.assignment_date,
+    ca.professional_assessment,
+    ca.generated_at
+  FROM public.compliance_assessments ca
+  WHERE ca.user_id = user_uuid
+  AND ca.agent_type = agent_type_param
+  ORDER BY ca.generated_at DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

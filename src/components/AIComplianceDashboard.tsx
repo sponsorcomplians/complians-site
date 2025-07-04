@@ -25,6 +25,9 @@ import {
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams, usePathname } from "next/navigation";
+import { AIComplianceService, ComplianceWorker, ComplianceAssessment } from "../lib/ai-compliance-service";
+import { supabase } from "../lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 // Custom Card Components
 const Card = ({
@@ -489,458 +492,21 @@ export default function AIComplianceDashboard() {
     "ai-qualification-compliance";
   const agentConfig =
     agentConfigs[agentKey] || agentConfigs["ai-qualification-compliance"];
+
+  // Authentication and service state
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [service, setService] = useState<AIComplianceService | null>(null);
+
+  // Data state
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [currentAssessment, setCurrentAssessment] = useState<Assessment | null>(
-    null,
-  );
-  const [selectedWorkerAssessment, setSelectedWorkerAssessment] =
-    useState<Assessment | null>(null);
-  const [workers, setWorkers] = useState<Worker[]>(() => {
-    if (agentKey === "ai-right-to-work-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Maria Rodriguez",
-          jobTitle: "Care Assistant",
-          socCode: "6145",
-          cosReference: "COS123456",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-15",
-        },
-        {
-          id: "2",
-          name: "Ahmed Hassan",
-          jobTitle: "Senior Care Worker",
-          socCode: "6146",
-          cosReference: "COS789012",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-20",
-        },
-        {
-          id: "3",
-          name: "Priya Patel",
-          jobTitle: "Care Assistant",
-          socCode: "6145",
-          cosReference: "COS345678",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-10",
-        },
-      ];
-    }
-    if (agentKey === "ai-skills-experience-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Emily Carter",
-          jobTitle: "Care Assistant",
-          socCode: "6145",
-          cosReference: "COS111111",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-10",
-        },
-        {
-          id: "2",
-          name: "Rajesh Kumar",
-          jobTitle: "Senior Care Worker",
-          socCode: "6146",
-          cosReference: "COS222222",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-15",
-        },
-        {
-          id: "3",
-          name: "Anna Nowak",
-          jobTitle: "Care Assistant",
-          socCode: "6145",
-          cosReference: "COS333333",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-12",
-        },
-      ];
-    }
-    if (agentKey === "ai-genuine-vacancies-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Olivia Green",
-          jobTitle: "Registered Nurse",
-          socCode: "2231",
-          cosReference: "COS444444",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-20",
-        },
-        {
-          id: "2",
-          name: "James Lee",
-          jobTitle: "Healthcare Assistant",
-          socCode: "6141",
-          cosReference: "COS555555",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-25",
-        },
-        {
-          id: "3",
-          name: "Sophie Brown",
-          jobTitle: "Care Home Manager",
-          socCode: "1242",
-          cosReference: "COS666666",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-18",
-        },
-      ];
-    }
-    if (agentKey === "ai-third-party-labour-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Maria Rodriguez",
-          jobTitle: "Care Assistant",
-          socCode: "6141",
-          cosReference: "COS777777",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-15",
-        },
-        {
-          id: "2",
-          name: "Ahmed Hassan",
-          jobTitle: "Support Worker",
-          socCode: "6141",
-          cosReference: "COS888888",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-20",
-        },
-        {
-          id: "3",
-          name: "Sarah Johnson",
-          jobTitle: "Healthcare Assistant",
-          socCode: "6141",
-          cosReference: "COS999999",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-10",
-        },
-      ];
-    }
-    if (agentKey === "ai-reporting-duties-compliance") {
-      return [
-        {
-          id: "1",
-          name: "David Chen",
-          jobTitle: "Software Developer",
-          socCode: "2136",
-          cosReference: "COS111111",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-10",
-        },
-        {
-          id: "2",
-          name: "Emma Wilson",
-          jobTitle: "Data Analyst",
-          socCode: "2135",
-          cosReference: "COS222222",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-15",
-        },
-        {
-          id: "3",
-          name: "Michael Brown",
-          jobTitle: "IT Consultant",
-          socCode: "2136",
-          cosReference: "COS333333",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-20",
-        },
-      ];
-    }
-    if (agentKey === "ai-immigration-status-monitoring") {
-      return [
-        {
-          id: "1",
-          name: "Lisa Thompson",
-          jobTitle: "Marketing Manager",
-          socCode: "1132",
-          cosReference: "COS444444",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-15",
-        },
-        {
-          id: "2",
-          name: "Raj Patel",
-          jobTitle: "Business Analyst",
-          socCode: "2425",
-          cosReference: "COS555555",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-20",
-        },
-        {
-          id: "3",
-          name: "Anna Kowalski",
-          jobTitle: "Project Manager",
-          socCode: "1136",
-          cosReference: "COS666666",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-10",
-        },
-      ];
-    }
-    if (agentKey === "ai-record-keeping-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Jennifer Davis",
-          jobTitle: "Accountant",
-          socCode: "2421",
-          cosReference: "COS777777",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-20",
-        },
-        {
-          id: "2",
-          name: "Carlos Rodriguez",
-          jobTitle: "Financial Controller",
-          socCode: "2421",
-          cosReference: "COS888888",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-25",
-        },
-        {
-          id: "3",
-          name: "Sarah Mitchell",
-          jobTitle: "Audit Manager",
-          socCode: "2421",
-          cosReference: "COS999999",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-15",
-        },
-      ];
-    }
-    if (agentKey === "ai-migrant-contact-maintenance") {
-      return [
-        {
-          id: "1",
-          name: "Mohammed Ali",
-          jobTitle: "Support Worker",
-          socCode: "6141",
-          cosReference: "COS123123",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-10",
-        },
-        {
-          id: "2",
-          name: "Elena Petrova",
-          jobTitle: "Care Assistant",
-          socCode: "6141",
-          cosReference: "COS456456",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-15",
-        },
-        {
-          id: "3",
-          name: "John Smith",
-          jobTitle: "Healthcare Assistant",
-          socCode: "6141",
-          cosReference: "COS789789",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-20",
-        },
-      ];
-    }
-    if (agentKey === "ai-recruitment-practices-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Emily White",
-          jobTitle: "Recruitment Officer",
-          socCode: "1136",
-          cosReference: "COS111222",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-10",
-        },
-        {
-          id: "2",
-          name: "Peter Green",
-          jobTitle: "HR Manager",
-          socCode: "1135",
-          cosReference: "COS333444",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-15",
-        },
-        {
-          id: "3",
-          name: "Aisha Khan",
-          jobTitle: "Talent Acquisition Specialist",
-          socCode: "1136",
-          cosReference: "COS555666",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-20",
-        },
-      ];
-    }
-    if (agentKey === "ai-migrant-tracking-compliance") {
-      return [
-        {
-          id: "1",
-          name: "Olga Ivanova",
-          jobTitle: "Logistics Coordinator",
-          socCode: "3541",
-          cosReference: "COS111333",
-          complianceStatus: "COMPLIANT",
-          riskLevel: "LOW",
-          lastAssessment: "2024-06-10",
-          redFlag: false,
-          assignmentDate: "2024-01-10",
-        },
-        {
-          id: "2",
-          name: "Samuel Lee",
-          jobTitle: "Warehouse Supervisor",
-          socCode: "3541",
-          cosReference: "COS444555",
-          complianceStatus: "SERIOUS_BREACH",
-          riskLevel: "HIGH",
-          lastAssessment: "2024-06-09",
-          redFlag: true,
-          assignmentDate: "2024-02-15",
-        },
-        {
-          id: "3",
-          name: "Priya Patel",
-          jobTitle: "Transport Manager",
-          socCode: "3541",
-          cosReference: "COS666777",
-          complianceStatus: "BREACH",
-          riskLevel: "MEDIUM",
-          lastAssessment: "2024-06-08",
-          redFlag: false,
-          assignmentDate: "2024-03-20",
-        },
-      ];
-    }
+  const [currentAssessment, setCurrentAssessment] = useState<ComplianceAssessment | null>(null);
+  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<ComplianceAssessment | null>(null);
+  const [workers, setWorkers] = useState<ComplianceWorker[]>([]);
+  const [assessments, setAssessments] = useState<ComplianceAssessment[]>([]);
 
-    // Default qualification compliance workers
-    return [
-      {
-        id: "1",
-        name: "John Smith",
-        jobTitle: "Software Developer",
-        socCode: "2136",
-        cosReference: "COS123456",
-        complianceStatus: "COMPLIANT",
-        riskLevel: "LOW",
-        lastAssessment: "2024-06-10",
-        redFlag: false,
-        assignmentDate: "2024-01-15",
-      },
-      {
-        id: "2",
-        name: "Sarah Johnson",
-        jobTitle: "Care Assistant",
-        socCode: "6145",
-        cosReference: "COS789012",
-        complianceStatus: "SERIOUS_BREACH",
-        riskLevel: "HIGH",
-        lastAssessment: "2024-06-09",
-        redFlag: true,
-        assignmentDate: "2024-02-20",
-      },
-      {
-        id: "3",
-        name: "Ahmed Hassan",
-        jobTitle: "Senior Care Worker",
-        socCode: "6146",
-        cosReference: "COS345678",
-        complianceStatus: "BREACH",
-        riskLevel: "MEDIUM",
-        lastAssessment: "2024-06-08",
-        redFlag: false,
-        assignmentDate: "2024-03-10",
-      },
-    ];
-  });
-
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
-
+  // Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -952,17 +518,75 @@ export default function AIComplianceDashboard() {
   const [chatLoading, setChatLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Initialize authentication and service
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        // Get current user
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        setUser(currentUser);
+
+        if (currentUser) {
+          const complianceService = new AIComplianceService(currentUser);
+          setService(complianceService);
+          
+          // Load data
+          await loadData(complianceService);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          const complianceService = new AIComplianceService(session.user);
+          setService(complianceService);
+          await loadData(complianceService);
+        } else {
+          setService(null);
+          setWorkers([]);
+          setAssessments([]);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [agentKey]);
+
+  // Load data from Supabase
+  const loadData = async (complianceService: AIComplianceService) => {
+    try {
+      const [workersData, assessmentsData] = await Promise.all([
+        complianceService.getWorkers(agentKey),
+        complianceService.getAssessments(agentKey)
+      ]);
+
+      setWorkers(workersData);
+      setAssessments(assessmentsData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  };
+
   // Calculate dashboard stats dynamically
   const dashboardStats = {
     totalWorkers: workers.length,
-    compliantWorkers: workers.filter((w) => w.complianceStatus === "COMPLIANT")
-      .length,
-    redFlags: workers.filter((w) => w.redFlag).length,
-    highRisk: workers.filter((w) => w.riskLevel === "HIGH").length,
+    compliantWorkers: workers.filter((w) => w.compliance_status === "COMPLIANT").length,
+    redFlags: workers.filter((w) => w.red_flag).length,
+    highRisk: workers.filter((w) => w.risk_level === "HIGH").length,
     complianceRate:
       workers.length > 0
         ? Math.round(
-            (workers.filter((w) => w.complianceStatus === "COMPLIANT").length /
+            (workers.filter((w) => w.compliance_status === "COMPLIANT").length /
               workers.length) *
               100,
           )
@@ -973,18 +597,17 @@ export default function AIComplianceDashboard() {
   const pieChartData = [
     {
       name: "Compliant",
-      value: workers.filter((w) => w.complianceStatus === "COMPLIANT").length,
+      value: workers.filter((w) => w.compliance_status === "COMPLIANT").length,
       color: "#10B981",
     },
     {
       name: "Breach",
-      value: workers.filter((w) => w.complianceStatus === "BREACH").length,
+      value: workers.filter((w) => w.compliance_status === "BREACH").length,
       color: "#F59E0B",
     },
     {
       name: "Serious Breach",
-      value: workers.filter((w) => w.complianceStatus === "SERIOUS_BREACH")
-        .length,
+      value: workers.filter((w) => w.compliance_status === "SERIOUS_BREACH").length,
       color: "#EF4444",
     },
   ];
@@ -992,15 +615,15 @@ export default function AIComplianceDashboard() {
   const barChartData = [
     {
       name: "Low Risk",
-      value: workers.filter((w) => w.riskLevel === "LOW").length,
+      value: workers.filter((w) => w.risk_level === "LOW").length,
     },
     {
       name: "Medium Risk",
-      value: workers.filter((w) => w.riskLevel === "MEDIUM").length,
+      value: workers.filter((w) => w.risk_level === "MEDIUM").length,
     },
     {
       name: "High Risk",
-      value: workers.filter((w) => w.riskLevel === "HIGH").length,
+      value: workers.filter((w) => w.risk_level === "HIGH").length,
     },
   ];
 
@@ -1009,202 +632,45 @@ export default function AIComplianceDashboard() {
     setSelectedFiles(files);
   };
 
-  // Enhanced document processing to extract worker name
-  const extractWorkerInfo = (files: File[]) => {
-    // Simulate document processing to extract worker information
-    const cosFile = files.find(
-      (f) =>
-        f.name.toLowerCase().includes("cos") ||
-        f.name.toLowerCase().includes("certificate"),
-    );
-    const cvFile = files.find(
-      (f) =>
-        f.name.toLowerCase().includes("cv") ||
-        f.name.toLowerCase().includes("resume"),
-    );
-
-    // Mock extraction - in real implementation, this would use OCR/PDF parsing
-    let workerName = "Unknown Worker";
-    let cosReference = "UNKNOWN";
-
-    if (cosFile) {
-      // Extract from filename or simulate OCR
-      if (cosFile.name.includes("Alen")) {
-        workerName = "Alen Thomas";
-        cosReference = "C2G8Y18250Q";
-      } else if (cosFile.name.includes("John")) {
-        workerName = "John Doe";
-        cosReference = "COS987654";
-      } else {
-        // Generate realistic name from filename
-        const nameMatch = cosFile.name.match(/([A-Z][a-z]+\s[A-Z][a-z]+)/);
-        if (nameMatch) {
-          workerName = nameMatch[1];
-        } else {
-          workerName = "Worker from " + cosFile.name.split(".")[0];
-        }
-        cosReference = "COS" + Math.random().toString().substr(2, 6);
-      }
-    }
-
-    return { workerName, cosReference };
-  };
-
-  const generateProfessionalAssessment = (
-    workerName: string,
-    cosRef: string,
-    jobTitle: string,
-    socCode: string,
-    assignmentDate: string,
-  ) => {
-    if (agentKey === "ai-skills-experience-compliance") {
-      return `Skills & Experience Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nUpon review of the uploaded CV and experience documents, the AI Skills & Experience Compliance Agent has identified:\n\n- Relevant experience: [summarize experience]\n- Skills match: [summarize skills]\n- Gaps/concerns: [summarize gaps or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the worker lacks direct care experience or relevant skills, this is a compliance risk.\n2. If references or employment history are missing, this is a breach.\n3. If the worker has strong, relevant experience, they are compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all experience and reference documents are uploaded.\n- Address any skills or experience gaps with training or additional evidence.\n- Review job assignment for suitability.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-right-to-work-compliance") {
-      return `Right to Work Assessment for ${workerName} (${cosRef})
-
-You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
-
-Upon review of the uploaded documents, the AI Right to Work Compliance Agent has identified a serious breach of sponsor duties regarding right to work verification.
-
-CRITICAL FINDINGS:
-1. No valid right to work documentation has been provided for ${workerName}
-2. The file does not contain a current passport, biometric residence permit, or other acceptable RTW evidence
-3. There is no evidence of a Home Office RTW check being conducted
-4. The worker's immigration status cannot be verified through the provided documentation
-
-LEGAL REQUIREMENTS:
-Under the Immigration, Asylum and Nationality Act 2006, employers have a legal obligation to:
-- Conduct right to work checks before employment begins
-- Retain copies of RTW documents for the duration of employment
-- Conduct follow-up checks for time-limited permission to work
-- Report to the Home Office if a worker's permission expires
-
-SPONSOR DUTIES:
-As a licensed sponsor, you are required to:
-- Verify the right to work of all sponsored workers
-- Maintain records of RTW checks
-- Report any changes in immigration status
-- Ensure compliance with all immigration laws
-
-RECOMMENDED ACTIONS:
-1. Immediately conduct a proper RTW check for ${workerName}
-2. Obtain and retain copies of valid RTW documentation
-3. Verify the worker's immigration status with the Home Office
-4. Implement proper RTW checking procedures for all future workers
-5. Consider suspending employment until RTW is verified
-
-This breach constitutes a serious compliance failure that could result in sponsor license suspension or revocation. Immediate remedial action is required.`;
-    }
-    if (agentKey === "ai-genuine-vacancies-compliance") {
-      return `Genuine Vacancy Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Genuine Vacancies Compliance Agent has reviewed the vacancy and recruitment evidence.\n\nKEY FINDINGS:\n- Vacancy authenticity: [summarize evidence]\n- Recruitment process: [summarize process]\n- Market rate: [summarize salary/role]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the vacancy is not genuine or recruitment was not transparent, this is a serious breach.\n2. If market rate is not met, or job description is not accurate, this is a breach.\n3. If all evidence is present and the vacancy is genuine, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment and vacancy evidence is uploaded.\n- Address any concerns about vacancy authenticity or market rate.\n- Review recruitment process for transparency and compliance.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-third-party-labour-compliance") {
-      return `Third-Party Labour Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Third-Party Labour Compliance Agent has reviewed the third-party arrangement and compliance evidence.\n\nKEY FINDINGS:\n- Third-party arrangement: [summarize arrangement]\n- Labour provider verification: [summarize provider status]\n- Contract compliance: [summarize contract status]\n- Worker assignment: [summarize assignment details]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If the third-party arrangement is not properly documented or the labour provider is not compliant, this is a serious breach.\n2. If contract terms are not met or worker assignments are not transparent, this is a breach.\n3. If all evidence is present and the arrangement is compliant, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all third-party arrangement documentation is uploaded.\n- Verify labour provider compliance and registration.\n- Review contract terms and worker assignment transparency.\n- Address any concerns about third-party arrangement legitimacy.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-reporting-duties-compliance") {
-      return `Reporting Duties Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Reporting Duties Compliance Agent has reviewed the reporting obligations and compliance status.\n\nKEY FINDINGS:\n- Reporting deadlines: [summarize deadline status]\n- Obligation compliance: [summarize obligation status]\n- Report submissions: [summarize submission status]\n- Compliance alerts: [summarize any alerts or issues]\n- Concerns: [summarize any red flags or missing reports]\n\nCOMPLIANCE FINDINGS:\n1. If reporting deadlines are missed or obligations are not met, this is a serious breach.\n2. If reports are incomplete or late, this is a breach.\n3. If all reporting duties are fulfilled on time, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required reports are submitted on time.\n- Address any missed reporting deadlines immediately.\n- Review and complete any outstanding reporting obligations.\n- Set up automated alerts for future reporting deadlines.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-immigration-status-monitoring") {
-      return `Immigration Status Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Immigration Status Monitoring Agent has reviewed the immigration status and compliance evidence.\n\nKEY FINDINGS:\n- Visa status: [summarize current visa status]\n- Immigration compliance: [summarize compliance status]\n- Status changes: [summarize any status changes]\n- Real-time monitoring: [summarize monitoring status]\n- Concerns: [summarize any red flags or status issues]\n\nCOMPLIANCE FINDINGS:\n1. If the worker\'s immigration status is invalid or expired, this is a serious breach.\n2. If status changes are not reported or monitored, this is a breach.\n3. If all immigration requirements are met and status is valid, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all immigration status documentation is current and valid.\n- Monitor for any status changes or visa expirations.\n- Report any immigration status changes immediately.\n- Set up real-time monitoring for immigration compliance.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-record-keeping-compliance") {
-      return `Record Keeping Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Record Keeping Compliance Agent has reviewed the record keeping and document management evidence.\n\nKEY FINDINGS:\n- Document management: [summarize document status]\n- Record verification: [summarize record status]\n- Compliance assurance: [summarize compliance status]\n- Audit readiness: [summarize audit readiness]\n- Concerns: [summarize any red flags or missing records]\n\nCOMPLIANCE FINDINGS:\n1. If required records are missing or not properly maintained, this is a serious breach.\n2. If document management is inadequate or records are incomplete, this is a breach.\n3. If all records are properly maintained and documented, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all required records are properly maintained and accessible.\n- Review document management processes and procedures.\n- Address any missing or incomplete records immediately.\n- Prepare for audit readiness with comprehensive documentation.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-migrant-contact-maintenance") {
-      return `Migrant Contact Maintenance Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Migrant Contact Maintenance Agent has reviewed the contact record keeping and communication tracking evidence.\n\nKEY FINDINGS:\n- Contact record keeping: [summarize contact record status]\n- Communication tracking: [summarize communication status]\n- Compliance assurance: [summarize compliance status]\n- Concerns: [summarize any red flags or missing contact records]\n\nCOMPLIANCE FINDINGS:\n1. If contact records are missing or not updated, this is a serious breach.\n2. If communication tracking is inadequate, this is a breach.\n3. If all contact records are up to date and communication is tracked, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all contact records are up to date and accurate.\n- Track all communications with migrant workers.\n- Address any missing or outdated contact information immediately.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-recruitment-practices-compliance") {
-      return `Recruitment Practices Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Recruitment Practices Compliance Agent has reviewed the recruitment process and policy compliance evidence.\n\nKEY FINDINGS:\n- Recruitment process: [summarize process]\n- Policy compliance: [summarize policy status]\n- Transparency: [summarize transparency status]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If recruitment practices are not transparent or policies are not followed, this is a serious breach.\n2. If documentation is missing or incomplete, this is a breach.\n3. If all recruitment practices are compliant and transparent, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all recruitment policies are followed and documented.\n- Review recruitment process for transparency and compliance.\n- Address any missing or incomplete documentation immediately.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-    if (agentKey === "ai-migrant-tracking-compliance") {
-      return `Migrant Tracking Assessment for ${workerName} (${cosRef})\n\nYou assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.\n\nThe AI Migrant Tracking Compliance Agent has reviewed the activity tracking and compliance monitoring evidence.\n\nKEY FINDINGS:\n- Activity tracking: [summarize activity status]\n- Compliance monitoring: [summarize monitoring status]\n- Activity verification: [summarize verification status]\n- Concerns: [summarize any red flags or missing evidence]\n\nCOMPLIANCE FINDINGS:\n1. If activity tracking is missing or not up to date, this is a serious breach.\n2. If compliance monitoring is inadequate, this is a breach.\n3. If all activities are tracked and verified, the sponsor is compliant.\n\nRECOMMENDED ACTIONS:\n- Ensure all activities are tracked and documented.\n- Review compliance monitoring processes.\n- Address any missing or incomplete activity records immediately.\n\nThis assessment is generated for sponsor compliance records.`;
-    }
-
-    // Default qualification assessment
-    return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode} Care workers and home carers.
-
-${workerName}'s file includes a copy of his CV, which confirms that he holds a Bachelor of Engineering in Mechanical Engineering, obtained in 2013, with over seven years of professional experience in HVAC systems, including project and operations management roles in India and South Sudan. This academic and professional background is further supported by the application form he submitted.
-
-However, there is no evidence that he holds any qualifications relevant to health or social care. Specifically, the file does not include proof of completing a Care Certificate, NVQ Level 2 or 3 in Health and Social Care, or any other UK-recognised care qualification. Additionally, there is no indication of training in key care-related courses, such as First Aid, Manual Handling, or Safeguarding, which are typically expected for care roles involving vulnerable individuals.
-
-The summary of job description in his CoS states: Give support and care to residents whilst maintaining their rights to independence, privacy, dignity and choice and assist in their daily living. Assist residents who require help to dress/undress, wash, and bath and use the toilet. Assist residents with mobility problems and other physical disabilities including the use and care of aids and personal equipment. Assist residents who need help with personal hygiene e.g. incontinence. Assist in the care of residents who are unwell or dying. Monitor the needs of the residents, informing a senior member of staff on duty of any emergency situation or concern about their well-being.
-
-Such tasks require not only practical experience but also mandatory training and care qualifications to ensure safe and lawful practice. These duties are not transferable from an engineering background and must only be performed by someone who holds appropriate care-related credentials.
-
-Although an HR meeting document notes that ${workerName} completed a Level 2 Health and Safety course, this is not referenced anywhere in his CV or in his original application form. Moreover, a general health and safety certificate is not a substitute for sector-specific training in adult social care, and does not meet the qualification requirements for the role of ${jobTitle} as defined under SOC code ${socCode}.
-
-In summary, ${workerName}'s qualifications and work experience are not aligned with the requirements of the care role for which he was sponsored. The absence of recognised care qualifications or training indicates that he does not meet the eligibility criteria under Sponsor Guidance Rule C1.38, which requires that all sponsored workers be appropriately qualified, registered, or experienced for the job they are assigned.`;
-  };
-
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       alert("Please select at least one document to upload.");
       return;
     }
 
+    if (!service) {
+      alert("Please sign in to upload documents.");
+      return;
+    }
+
     setUploading(true);
 
-    // Extract worker information from documents
-    const { workerName, cosReference } = extractWorkerInfo(selectedFiles);
+    try {
+      // Use the service to upload documents
+      const { worker, assessment } = await service.uploadDocuments(selectedFiles, agentKey);
 
-    // Simulate AI processing
-    setTimeout(() => {
-      const jobTitle = agentConfig.defaultJobTitle;
-      const socCode = agentConfig.defaultSocCode;
-      const assignmentDate = new Date().toLocaleDateString("en-GB");
+      if (worker && assessment) {
+        // Update local state
+        setWorkers((prev) => [...prev, worker]);
+        setAssessments((prev) => [...prev, assessment]);
+        setCurrentAssessment(assessment);
+        
+        // Clear files
+        setSelectedFiles([]);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
 
-      // Generate professional assessment
-      const professionalAssessment = generateProfessionalAssessment(
-        workerName,
-        cosReference,
-        jobTitle,
-        socCode,
-        assignmentDate,
-      );
-
-      // Mock assessment result
-      const mockAssessment: Assessment = {
-        id: "ASSESS_" + Date.now(),
-        workerId: "WORKER_" + Date.now(),
-        workerName,
-        cosReference,
-        jobTitle,
-        socCode,
-        complianceStatus: "SERIOUS_BREACH",
-        riskLevel: "HIGH",
-        evidenceStatus: agentConfig.evidenceStatus,
-        breachType: agentConfig.breachType,
-        redFlag: true,
-        assignmentDate,
-        professionalAssessment,
-        generatedAt: new Date().toISOString(),
-      };
-
-      // Add worker to the workers list
-      const newWorker: Worker = {
-        id: mockAssessment.workerId,
-        name: workerName,
-        jobTitle,
-        socCode,
-        cosReference,
-        complianceStatus: "SERIOUS_BREACH",
-        riskLevel: "HIGH",
-        lastAssessment: new Date().toISOString().split("T")[0],
-        redFlag: true,
-        assignmentDate,
-      };
-
-      // Update state
-      setWorkers((prev) => [...prev, newWorker]);
-      setAssessments((prev) => [...prev, mockAssessment]);
-      setCurrentAssessment(mockAssessment);
-      setUploading(false);
-      setSelectedFiles([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        alert("Documents uploaded and processed successfully!");
+      } else {
+        alert("Failed to process documents. Please try again.");
       }
-    }, 3000);
+    } catch (error) {
+      console.error('Error uploading documents:', error);
+      alert("Error uploading documents. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleChatSend = async () => {
@@ -1337,9 +803,14 @@ Please ask a specific question about qualification compliance.`;
   };
 
   // Enhanced report functions
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!currentAssessment && !selectedWorkerAssessment) {
       alert("No assessment report available to download.");
+      return;
+    }
+
+    if (!service) {
+      alert("Please sign in to download reports.");
       return;
     }
 
@@ -1349,7 +820,7 @@ Please ask a specific question about qualification compliance.`;
     const reportContent = `
       <html>
         <head>
-          <title>Compliance Assessment Report - ${assessment?.workerName}</title>
+          <title>Compliance Assessment Report - ${assessment?.worker_name}</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             .header { text-align: center; margin-bottom: 30px; }
@@ -1363,72 +834,124 @@ Please ask a specific question about qualification compliance.`;
             <h1>Compliance Analysis Report</h1>
             <p>Generated on ${new Date().toLocaleDateString("en-GB")} ${new Date().toLocaleTimeString("en-GB")}</p>
           </div>
-          ${assessment?.redFlag ? '<div class="alert">🚨 SERIOUS BREACH DETECTED 🚨<br>Qualification requirements not met - Immediate review required</div>' : ""}
+          ${assessment?.red_flag ? '<div class="alert">🚨 SERIOUS BREACH DETECTED 🚨<br>Qualification requirements not met - Immediate review required</div>' : ""}
           <div class="content">
-            ${assessment?.professionalAssessment.replace(/\n/g, "<br><br>")}
+            ${assessment?.professional_assessment.replace(/\n/g, "<br><br>")}
           </div>
           <div class="summary">
             <h3>Assessment Summary</h3>
-            <p><strong>Worker:</strong> ${assessment?.workerName}</p>
-            <p><strong>CoS Reference:</strong> ${assessment?.cosReference}</p>
-            <p><strong>Job Title:</strong> ${assessment?.jobTitle}</p>
-            <p><strong>SOC Code:</strong> ${assessment?.socCode}</p>
-            <p><strong>Assignment Date:</strong> ${assessment?.assignmentDate}</p>
-            <p><strong>Status:</strong> ${assessment?.complianceStatus}</p>
+            <p><strong>Worker:</strong> ${assessment?.worker_name}</p>
+            <p><strong>CoS Reference:</strong> ${assessment?.cos_reference}</p>
+            <p><strong>Job Title:</strong> ${assessment?.job_title}</p>
+            <p><strong>SOC Code:</strong> ${assessment?.soc_code}</p>
+            <p><strong>Assignment Date:</strong> ${assessment?.assignment_date}</p>
+            <p><strong>Status:</strong> ${assessment?.compliance_status}</p>
           </div>
         </body>
       </html>
     `;
 
-    // Create blob and download
-    const blob = new Blob([reportContent], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Compliance_Report_${assessment?.workerName.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      // Save report to Supabase
+      await service.saveReport({
+        assessment_id: assessment!.id,
+        agent_type: agentKey,
+        report_type: 'pdf',
+        report_content: reportContent,
+        downloaded_at: new Date().toISOString()
+      });
 
-    alert("Report downloaded successfully!");
+      // Create blob and download
+      const blob = new Blob([reportContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Salary_Compliance_Report_${assessment?.worker_name.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      alert("Report downloaded successfully!");
+    } catch (error) {
+      console.error('Error saving report:', error);
+      alert("Error saving report. Please try again.");
+    }
   };
 
-  const handleEmailReport = () => {
+  const handleEmailReport = async () => {
     if (!currentAssessment && !selectedWorkerAssessment) {
       alert("No assessment report available to email.");
       return;
     }
 
-    const assessment = currentAssessment || selectedWorkerAssessment;
-    const subject = `Compliance Assessment Report - ${assessment?.workerName}`;
-    const body = `Please find the compliance assessment report for ${assessment?.workerName} (${assessment?.cosReference}).
+    if (!service) {
+      alert("Please sign in to email reports.");
+      return;
+    }
 
-Status: ${assessment?.complianceStatus}
-Risk Level: ${assessment?.riskLevel}
+    const assessment = currentAssessment || selectedWorkerAssessment;
+    const subject = `Compliance Assessment Report - ${assessment?.worker_name}`;
+    const body = `Please find the compliance assessment report for ${assessment?.worker_name} (${assessment?.cos_reference}).
+
+Status: ${assessment?.compliance_status}
+Risk Level: ${assessment?.risk_level}
 Generated: ${new Date().toLocaleDateString("en-GB")}
 
-${assessment?.professionalAssessment}
+${assessment?.professional_assessment}
 
 ---
 This report was generated by the AI Qualification Compliance System.`;
 
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
+    try {
+      // Save report to Supabase
+      await service.saveReport({
+        assessment_id: assessment!.id,
+        agent_type: agentKey,
+        report_type: 'email',
+        report_content: body
+      });
+
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink);
+    } catch (error) {
+      console.error('Error saving report:', error);
+      alert("Error saving report. Please try again.");
+    }
   };
 
-  const handlePrintReport = () => {
+  const handlePrintReport = async () => {
     if (!currentAssessment && !selectedWorkerAssessment) {
       alert("No assessment report available to print.");
       return;
     }
 
-    window.print();
+    if (!service) {
+      alert("Please sign in to print reports.");
+      return;
+    }
+
+    const assessment = currentAssessment || selectedWorkerAssessment;
+
+    try {
+      // Save report to Supabase
+      await service.saveReport({
+        assessment_id: assessment!.id,
+        agent_type: agentKey,
+        report_type: 'print',
+        report_content: assessment?.professional_assessment
+      });
+
+      window.print();
+    } catch (error) {
+      console.error('Error saving report:', error);
+      alert("Error saving report. Please try again.");
+    }
   };
 
   // View specific worker report
   const handleViewWorkerReport = (workerId: string) => {
-    const workerAssessment = assessments.find((a) => a.workerId === workerId);
+    const workerAssessment = assessments.find((a) => a.worker_id === workerId);
     if (workerAssessment) {
       setSelectedWorkerAssessment(workerAssessment);
       setActiveTab("assessment");
@@ -1459,6 +982,45 @@ Best regards`;
     const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading compliance dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show authentication prompt
+  if (!user) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h2>
+              <p className="text-gray-600 mb-4">
+                Please sign in to access the AI Compliance Dashboard and manage your workers and assessments.
+              </p>
+              <Button 
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={() => window.location.href = '/auth/signin'}
+              >
+                Sign In
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -1636,29 +1198,29 @@ Best regards`;
                 .map((worker, index) => (
                   <div key={worker.id} className="flex items-center space-x-3">
                     <div
-                      className={`w-2 h-2 rounded-full ${worker.redFlag ? "bg-red-500 animate-pulse" : worker.complianceStatus === "COMPLIANT" ? "bg-green-500" : "bg-yellow-500"}`}
+                      className={`w-2 h-2 rounded-full ${worker.red_flag ? "bg-red-500 animate-pulse" : worker.compliance_status === "COMPLIANT" ? "bg-green-500" : "bg-yellow-500"}`}
                     ></div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">
-                        {worker.redFlag
+                        {worker.red_flag
                           ? `Red flag detected for ${worker.name}`
-                          : worker.complianceStatus === "COMPLIANT"
+                          : worker.compliance_status === "COMPLIANT"
                             ? `${worker.name} assessment completed`
                             : `${worker.name} requires review`}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {worker.redFlag
+                        {worker.red_flag
                           ? agentKey === "ai-right-to-work-compliance"
-                            ? `${worker.jobTitle} - RTW verification failed`
-                            : `${worker.jobTitle} without qualifications`
-                          : worker.complianceStatus === "COMPLIANT"
+                            ? `${worker.job_title} - RTW verification failed`
+                            : `${worker.job_title} without qualifications`
+                          : worker.compliance_status === "COMPLIANT"
                             ? agentKey === "ai-right-to-work-compliance"
                               ? "RTW status confirmed"
                               : "Compliant status confirmed"
                             : agentKey === "ai-right-to-work-compliance"
                               ? "Missing RTW documents"
                               : "Missing training certificates"}{" "}
-                        - {worker.lastAssessment}
+                        - {worker.last_assessment_date}
                       </p>
                     </div>
                   </div>
@@ -1712,29 +1274,29 @@ Best regards`;
                     {workers.map((worker) => (
                       <tr
                         key={worker.id}
-                        className={`border-b ${worker.redFlag ? "bg-red-50" : ""}`}
+                        className={`border-b ${worker.red_flag ? "bg-red-50" : ""}`}
                       >
                         <td className="p-4">
                           <div className="flex items-center gap-2">
                             {worker.name}
-                            {worker.redFlag && (
+                            {worker.red_flag && (
                               <span className="text-red-500 text-xs animate-pulse">
                                 🚨
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="p-4">{worker.cosReference}</td>
-                        <td className="p-4">{worker.jobTitle}</td>
-                        <td className="p-4">{worker.socCode}</td>
+                        <td className="p-4">{worker.cos_reference}</td>
+                        <td className="p-4">{worker.job_title}</td>
+                        <td className="p-4">{worker.soc_code}</td>
                         <td className="p-4">
                           {getStatusBadge(
-                            worker.complianceStatus,
-                            worker.redFlag,
+                            worker.compliance_status,
+                            worker.red_flag,
                           )}
                         </td>
                         <td className="p-4">
-                          {getRiskBadge(worker.riskLevel)}
+                          {getRiskBadge(worker.risk_level)}
                         </td>
                         <td className="p-4">
                           <Button
@@ -1847,8 +1409,8 @@ Best regards`;
             {(currentAssessment || selectedWorkerAssessment) && (
               <Card
                 className={
-                  currentAssessment?.redFlag ||
-                  selectedWorkerAssessment?.redFlag
+                  currentAssessment?.red_flag ||
+                  selectedWorkerAssessment?.red_flag
                     ? "border-red-500 border-2"
                     : ""
                 }
@@ -1864,18 +1426,18 @@ Best regards`;
                     Generated on{" "}
                     {new Date(
                       (currentAssessment || selectedWorkerAssessment)
-                        ?.generatedAt || "",
+                        ?.generated_at || "",
                     ).toLocaleDateString("en-GB")}{" "}
                     {new Date(
                       (currentAssessment || selectedWorkerAssessment)
-                        ?.generatedAt || "",
+                        ?.generated_at || "",
                     ).toLocaleTimeString("en-GB", { hour12: false })}
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Serious Breach Alert */}
-                  {(currentAssessment?.redFlag ||
-                    selectedWorkerAssessment?.redFlag) && (
+                  {(currentAssessment?.red_flag ||
+                    selectedWorkerAssessment?.red_flag) && (
                     <div className="bg-red-500 text-white p-4 rounded-lg text-center">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <AlertTriangle className="h-5 w-5" />
@@ -1899,7 +1461,7 @@ Best regards`;
                     <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
                       {
                         (currentAssessment || selectedWorkerAssessment)
-                          ?.professionalAssessment
+                          ?.professional_assessment
                       }
                     </div>
                   </div>
@@ -1918,7 +1480,7 @@ Best regards`;
                         <p>
                           {
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.workerName
+                              ?.worker_name
                           }
                         </p>
                       </div>
@@ -1929,7 +1491,7 @@ Best regards`;
                         <p>
                           {
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.cosReference
+                              ?.cos_reference
                           }
                         </p>
                       </div>
@@ -1940,7 +1502,7 @@ Best regards`;
                         <p>
                           {
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.jobTitle
+                              ?.job_title
                           }
                         </p>
                       </div>
@@ -1951,7 +1513,7 @@ Best regards`;
                         <p>
                           {
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.socCode
+                              ?.soc_code
                           }
                         </p>
                       </div>
@@ -1962,7 +1524,7 @@ Best regards`;
                         <p>
                           {
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.assignmentDate
+                              ?.assignment_date
                           }
                         </p>
                       </div>
@@ -1973,9 +1535,9 @@ Best regards`;
                         <div className="mt-1">
                           {getStatusBadge(
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.complianceStatus || "",
+                              ?.compliance_status || "",
                             (currentAssessment || selectedWorkerAssessment)
-                              ?.redFlag,
+                              ?.red_flag,
                           )}
                         </div>
                       </div>
