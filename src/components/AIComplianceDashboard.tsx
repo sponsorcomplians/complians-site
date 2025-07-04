@@ -736,25 +736,25 @@ export default function AIComplianceDashboard({
       return;
     }
     const assessment = currentAssessment || selectedWorkerAssessment;
-    const emailHTML = `
+    const emailHTML = assessment ? `
       <h2>${documentType} ${complianceType} Report</h2>
-      <p><strong>Worker:</strong> ${assessment.workerName || assessment.worker_name}</p>
-      <p><strong>Document:</strong> ${assessment.documentName || assessment.document_name || documentType}</p>
-      <p><strong>Assessment Type:</strong> ${assessment.assessmentType || complianceType}</p>
-      <p><strong>Status:</strong> ${assessment.status || assessment.complianceStatus || assessment.compliance_status}</p>
+      <p><strong>Worker:</strong> ${assessment.worker_name || 'Unknown'}</p>
+      <p><strong>Document:</strong> ${documentType}</p>
+      <p><strong>Assessment Type:</strong> ${complianceType}</p>
+      <p><strong>Status:</strong> ${assessment.compliance_status || 'Unknown'}</p>
+      <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
       <hr>
-      <div><strong>Findings:</strong><br>${(assessment.findings || assessment.professionalAssessment || assessment.professional_assessment || '').replace(/\n/g, '<br>')}</div>
-      <div><strong>Recommendations:</strong><br>${(assessment.recommendations || '').replace(/\n/g, '<br>')}</div>
-    `;
+      <div>${assessment.professional_assessment || 'No details available'}</div>
+    ` : '';
     try {
       const response = await fetch('/api/send-report-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
-          subject: `${documentType} ${complianceType} Report - ${assessment.workerName || assessment.worker_name}`,
+          subject: `${documentType} ${complianceType} Report - ${assessment?.worker_name || 'Unknown'}`,
           html: emailHTML,
-          workerName: assessment.workerName || assessment.worker_name,
+          workerName: assessment?.worker_name || 'Unknown',
         }),
       });
       if (!response.ok) {
@@ -775,7 +775,7 @@ export default function AIComplianceDashboard({
       setWorkers(updatedWorkers);
       localStorage.setItem(workersKey, JSON.stringify(updatedWorkers));
       // Remove associated assessments
-      const updatedAssessments = assessments.filter((a) => a.workerId !== workerId && a.worker_id !== workerId);
+      const updatedAssessments = assessments.filter((a) => a.worker_id !== workerId);
       setAssessments(updatedAssessments);
       localStorage.setItem(assessmentsKey, JSON.stringify(updatedAssessments));
     }
