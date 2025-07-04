@@ -467,11 +467,7 @@ The worker is expected to deliver high-quality care services, provide leadership
 
 The usual requirement for performing such a role is the possession of a relevant qualification in health and social care (e.g., NVQ Level 3 or above), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
 
-Upon review of the documentation provided, we did not find sufficient evidence that ${workerName} holds a qualification relevant to health and social care that was obtained before the CoS assignment date. ${isTimingValid ? "The qualification was obtained before the CoS assignment, which satisfies this requirement." : "The qualification was obtained after the CoS assignment date, which is a serious breach of sponsor compliance obligations."} Additionally, ${relevance ? "the qualification appears relevant to the healthcare sector." : "the qualification is not relevant to the duties described in the CoS, undermining the claim that the worker is suitably qualified."}
-
-Furthermore, ${englishEvidence ? "sufficient English language evidence has been provided, supporting compliance with language requirements." : "no English language evidence has been provided or the evidence is insufficient, representing a significant compliance breach."}
-
-In terms of experience, ${experienceEvidence ? "the references confirm that the worker has previously performed duties consistent with the CoS description, supporting compliance." : "no credible references were provided to substantiate the worker's claimed experience, suggesting that the duties described may not have been genuinely performed."}
+Upon review of the documentation provided, we acknowledge that ${workerName} obtained their qualification ${isTimingValid ? "before" : "after"} the CoS assignment date, ${isTimingValid ? "which satisfies the timing requirement." : "which is a serious breach of sponsor compliance obligations."} However, ${relevance ? "the qualification is relevant to health and social care." : "the qualification is not relevant to health and social care and therefore undermines the claim that the worker is suitably qualified to perform the duties described in the CoS."} As such, there is insufficient evidence that ${workerName} holds a qualification required for this role.
 
 ${missingDocsText}
 
