@@ -733,264 +733,118 @@ Please ask a specific question about salary compliance.`
     
     console.log('📥 Generating PDF for:', assessment?.workerName);
     
-    // Create HTML content for PDF generation
-    const reportHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Salary Compliance Report - ${assessment?.workerName}</title>
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            margin: 40px; 
-            color: #333;
-            line-height: 1.6;
-          }
-          .header { 
-            text-align: center; 
-            margin-bottom: 40px;
-            border-bottom: 3px solid #263976;
-            padding-bottom: 20px;
-          }
-          .header h1 {
-            color: #263976;
-            margin-bottom: 10px;
-          }
-          .alert { 
-            background-color: #ef4444; 
-            color: white; 
-            padding: 20px; 
-            text-align: center; 
-            margin: 20px 0;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 18px;
-          }
-          .section {
-            margin: 30px 0;
-          }
-          .section h2 {
-            color: #263976;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          .assessment-content { 
-            background-color: #f0f9ff;
-            border-left: 4px solid #00c3ff;
-            padding: 20px;
-            margin: 20px 0;
-          }
-          .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-          }
-          .summary-item {
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-          }
-          .summary-label {
-            font-weight: bold;
-            color: #6b7280;
-            margin-bottom: 5px;
-          }
-          .summary-value {
-            font-size: 16px;
-            color: #1f2937;
-          }
-          .payslip-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 20px 0;
-          }
-          .payslip-table th, .payslip-table td { 
-            border: 1px solid #e5e7eb; 
-            padding: 12px; 
-            text-align: left; 
-          }
-          .payslip-table th { 
-            background-color: #f3f4f6; 
-            font-weight: bold;
-            color: #374151;
-          }
-          .payslip-table tr:nth-child(even) {
-            background-color: #f9fafb;
-          }
-          .compliant { 
-            color: #10b981; 
-            font-weight: bold; 
-          }
-          .non-compliant { 
-            color: #ef4444; 
-            font-weight: bold;
-            background-color: #fee2e2;
-          }
-          .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #e5e7eb;
-            text-align: center;
-            color: #6b7280;
-            font-size: 14px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>Salary Compliance Analysis Report</h1>
-          <p>Generated on ${new Date().toLocaleDateString('en-GB', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })} at ${new Date().toLocaleTimeString('en-GB')}</p>
-        </div>
-        
-        ${assessment?.redFlag ? `
-          <div class="alert">
-            🚨 SERIOUS BREACH DETECTED 🚨<br>
-            Salary requirements not met - Immediate review required
-          </div>
-        ` : ''}
-        
-        <div class="section">
-          <h2>Assessment Summary</h2>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="summary-label">Worker Name</div>
-              <div class="summary-value">${assessment?.workerName}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">CoS Reference</div>
-              <div class="summary-value">${assessment?.cosReference}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Job Title</div>
-              <div class="summary-value">${assessment?.jobTitle}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">SOC Code</div>
-              <div class="summary-value">${assessment?.socCode}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Annual Salary</div>
-              <div class="summary-value">£${assessment?.annualSalary.toLocaleString()}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Monthly Salary Requirement</div>
-              <div class="summary-value">£${assessment?.monthlySalary.toLocaleString()}</div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Compliance Status</div>
-              <div class="summary-value" style="color: ${assessment?.complianceStatus === 'COMPLIANT' ? '#10b981' : '#ef4444'}">
-                ${assessment?.complianceStatus.replace('_', ' ')}
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Risk Level</div>
-              <div class="summary-value">${assessment?.riskLevel}</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="section">
-          <h2>Professional Assessment</h2>
-          <div class="assessment-content">
-            ${assessment?.professionalAssessment.split('\n').map(para => 
-              para.trim() ? `<p>${para}</p>` : ''
-            ).join('')}
-          </div>
-        </div>
-        
-        <div class="section">
-          <h2>Payslip Analysis</h2>
-          <table class="payslip-table">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Amount Paid</th>
-                <th>Required Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${assessment?.payslipData.map(p => {
-                const isCompliant = p.amount >= (assessment?.monthlySalary || 0);
-                return `
-                  <tr class="${isCompliant ? '' : 'non-compliant'}">
-                    <td>${p.month}</td>
-                    <td>£${p.amount.toLocaleString()}</td>
-                    <td>£${assessment?.monthlySalary.toLocaleString()}</td>
-                    <td class="${isCompliant ? 'compliant' : 'non-compliant'}">
-                      ${isCompliant ? 'Compliant' : 'Below Threshold'}
-                    </td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="footer">
-          <p>This report was generated by the AI Salary Compliance System</p>
-          <p>© ${new Date().getFullYear()} Sponsor Complians - All rights reserved</p>
-        </div>
-      </body>
-      </html>
-    `;
-    
     try {
-      // Call your PDF generation API
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          html: reportHTML,
-          filename: `Salary_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
-
-      // Check if we got a PDF or HTML
-      const contentType = response.headers.get('content-type');
-      console.log('📄 Response Content-Type:', contentType);
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Salary_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
+      // Dynamic import to avoid SSR issues
+      const jsPDF = (await import('jspdf')).default;
       
-      console.log('✅ PDF download initiated');
+      // Create new PDF document
+      const doc = new jsPDF();
+      
+      // Set font size and add title
+      doc.setFontSize(20);
+      doc.text('Salary Compliance Analysis Report', 105, 20, { align: 'center' });
+      
+      // Add generation date
+      doc.setFontSize(10);
+      doc.text(`Generated on ${new Date().toLocaleDateString('en-GB')} at ${new Date().toLocaleTimeString('en-GB')}`, 105, 30, { align: 'center' });
+      
+      // Add alert if red flag
+      if (assessment?.redFlag) {
+        doc.setFillColor(239, 68, 68);
+        doc.rect(10, 40, 190, 15, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12);
+        doc.text('SERIOUS BREACH DETECTED - Immediate review required', 105, 50, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+      
+      // Assessment Summary
+      let yPos = assessment?.redFlag ? 70 : 50;
+      doc.setFontSize(14);
+      doc.text('Assessment Summary', 10, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(10);
+      doc.text(`Worker: ${assessment?.workerName}`, 10, yPos);
+      yPos += 7;
+      doc.text(`CoS Reference: ${assessment?.cosReference}`, 10, yPos);
+      yPos += 7;
+      doc.text(`Job Title: ${assessment?.jobTitle}`, 10, yPos);
+      yPos += 7;
+      doc.text(`Annual Salary: £${assessment?.annualSalary.toLocaleString()}`, 10, yPos);
+      yPos += 7;
+      doc.text(`Monthly Salary: £${assessment?.monthlySalary.toLocaleString()}`, 10, yPos);
+      yPos += 7;
+      doc.text(`Status: ${assessment?.complianceStatus}`, 10, yPos);
+      yPos += 15;
+      
+      // Professional Assessment
+      doc.setFontSize(14);
+      doc.text('Professional Assessment', 10, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(9);
+      const assessmentLines = doc.splitTextToSize(assessment?.professionalAssessment || '', 180);
+      assessmentLines.forEach((line: string) => {
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.text(line, 10, yPos);
+        yPos += 5;
+      });
+      
+      // Add new page for payslip table if needed
+      if (yPos > 200) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      // Payslip Summary
+      yPos += 10;
+      doc.setFontSize(14);
+      doc.text('Payslip Summary', 10, yPos);
+      yPos += 10;
+      
+      // Table headers
+      doc.setFontSize(10);
+      doc.text('Month', 10, yPos);
+      doc.text('Amount Paid', 60, yPos);
+      doc.text('Required', 110, yPos);
+      doc.text('Status', 160, yPos);
+      yPos += 5;
+      
+      // Draw line under headers
+      doc.line(10, yPos, 200, yPos);
+      yPos += 5;
+      
+      // Table data
+      assessment?.payslipData.forEach(p => {
+        const isCompliant = p.amount >= (assessment?.monthlySalary || 0);
+        
+        doc.text(p.month, 10, yPos);
+        doc.text(`£${p.amount.toLocaleString()}`, 60, yPos);
+        doc.text(`£${assessment?.monthlySalary.toLocaleString()}`, 110, yPos);
+        
+        if (isCompliant) {
+          doc.setTextColor(16, 185, 129);
+          doc.text('Compliant', 160, yPos);
+        } else {
+          doc.setTextColor(239, 68, 68);
+          doc.text('Below Threshold', 160, yPos);
+        }
+        doc.setTextColor(0, 0, 0);
+        
+        yPos += 7;
+      });
+      
+      // Save PDF
+      doc.save(`Salary_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+      
+      console.log('✅ PDF generated and downloaded');
     } catch (error) {
       console.error('❌ PDF generation error:', error);
-      // Show more specific error
-      if (error instanceof Error) {
-        alert(`PDF generation failed: ${error.message}. Downloading as HTML instead.`);
-      }
-      // Continue with HTML fallback...
-      const blob = new Blob([reportHTML], { type: 'text/html' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Salary_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
-      alert('Note: Downloaded as HTML. For PDF generation, ensure the PDF API is configured.');
+      alert('Failed to generate PDF. Please try again.');
     }
   }
 
