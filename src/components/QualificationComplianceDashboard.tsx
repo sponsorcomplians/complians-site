@@ -187,7 +187,7 @@ const BarChartComponent = ({ data }: { data: any[] }) => {
 
 // Main component
 export default function QualificationComplianceDashboard() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('assessment');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [currentAssessment, setCurrentAssessment] = useState<QualificationAssessment | null>(null);
@@ -353,7 +353,7 @@ export default function QualificationComplianceDashboard() {
         cosReference = 'C2G7K98710Q';
         qualification = 'No formal qualification';
         assignmentDate = '2024-11-05';
-      } else if (workerName.toLowerCase().includes('bomere') || workerName.toLowerCase().includes('ogriki')) {
+      } else if (workerName.toLowerCase().includes('bomere') || workerName.includes('ogriki')) {
         cosReference = 'COS030393';
         qualification = 'NVQ Level 2';
         assignmentDate = '2024-03-10';
