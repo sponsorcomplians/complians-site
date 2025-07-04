@@ -377,7 +377,7 @@ export default function HomePage() {
       style: "currency",
       currency: "GBP",
     }).format(price);
-  };
+  }; // formatPrice end
 
   return (
     <div className="min-h-screen bg-gray-50">
