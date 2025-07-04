@@ -288,19 +288,17 @@ export default function QualificationComplianceDashboard() {
     }
   };
 
-  // Enhanced document processing to extract worker and qualification info
+  // Enhanced extractQualificationInfo with deeper logic
   const extractQualificationInfo = (files: File[]) => {
     console.log('📁 Processing qualification files:', files.map(f => f.name));
     
-    // Find CoS and qualification files
-    const cosFile = files.find(f => f.name.toLowerCase().includes('cos') || f.name.toLowerCase().includes('certificate'));
-    const qualificationFiles = files.filter(f => f.name.toLowerCase().includes('qualification') || f.name.toLowerCase().includes('certificate') || f.name.toLowerCase().includes('degree') || f.name.toLowerCase().includes('nvq'));
-    
-    // Initialize default values
-    let workerName = 'Unknown Worker';
-    let cosReference = 'UNKNOWN';
-    let qualification = 'No formal qualification';
-    
+    let workerName = "Unknown Worker";
+    let cosReference = "UNKNOWN";
+    let qualification = "No formal qualification";
+    let qualificationDate = "2023-01-01"; // default example
+    let assignmentDate = "2023-02-01"; // default example
+
+    const cosFile = files.find(f => f.name.toLowerCase().includes("cos"));
     if (cosFile) {
       console.log('🔍 Extracting from CoS file:', cosFile.name);
       
@@ -354,45 +352,103 @@ export default function QualificationComplianceDashboard() {
       if (workerName.toLowerCase().includes('rotimi') || workerName.toLowerCase().includes('owolabi')) {
         cosReference = 'C2G7K98710Q';
         qualification = 'No formal qualification';
+        assignmentDate = '2024-11-05';
       } else if (workerName.toLowerCase().includes('bomere') || workerName.toLowerCase().includes('ogriki')) {
         cosReference = 'COS030393';
         qualification = 'NVQ Level 2';
+        assignmentDate = '2024-03-10';
       } else {
         // Generate random but realistic reference
         cosReference = 'COS' + Math.floor(100000 + Math.random() * 900000);
-        qualification = 'BSc Computer Science';
+        assignmentDate = '2024-01-15';
       }
     }
-    
-    // Check qualification files for qualification info
-    if (qualificationFiles.length > 0) {
-      const qualificationFile = qualificationFiles[0];
-      const filename = qualificationFile.name.toLowerCase();
-      
-      if (filename.includes('degree') || filename.includes('bsc') || filename.includes('ba')) {
-        qualification = 'BSc Computer Science';
-      } else if (filename.includes('nvq') && filename.includes('3')) {
-        qualification = 'NVQ Level 3';
-      } else if (filename.includes('nvq') && filename.includes('2')) {
-        qualification = 'NVQ Level 2';
-      } else if (filename.includes('certificate')) {
-        qualification = 'Professional Certificate';
+
+    const qualificationFile = files.find(f => f.name.toLowerCase().includes("qualification") || f.name.toLowerCase().includes("nvq") || f.name.toLowerCase().includes("degree"));
+    if (qualificationFile) {
+      if (qualificationFile.name.toLowerCase().includes("degree")) {
+        qualification = "BSc Health and Social Care";
+        qualificationDate = "2022-05-15";
+      } else if (qualificationFile.name.toLowerCase().includes("nvq3")) {
+        qualification = "NVQ Level 3 Health and Social Care";
+        qualificationDate = "2022-06-10";
+      } else if (qualificationFile.name.toLowerCase().includes("nvq2")) {
+        qualification = "NVQ Level 2 Health and Social Care";
+        qualificationDate = "2023-03-20"; // simulate a post-CoS example
       }
     }
-    
-    console.log('📊 Extracted qualification data:', { workerName, cosReference, qualification });
-    
-    return { workerName, cosReference, qualification };
+
+    const relevance = qualification.toLowerCase().includes("health") || qualification.toLowerCase().includes("care");
+    const englishEvidence = true; // placeholder, ready to integrate actual parsing
+    const experienceEvidence = true; // placeholder, ready to integrate reference parsing
+
+    console.log('📊 Extracted enhanced qualification data:', { 
+      workerName, 
+      cosReference, 
+      qualification, 
+      qualificationDate, 
+      assignmentDate, 
+      relevance, 
+      englishEvidence, 
+      experienceEvidence 
+    });
+
+    return {
+      workerName,
+      cosReference,
+      qualification,
+      qualificationDate,
+      assignmentDate,
+      relevance,
+      englishEvidence,
+      experienceEvidence,
+    };
   };
 
+  // Enhanced professional assessment generator using deeper checks
   const generateProfessionalQualificationAssessment = (
     workerName: string, 
     cosRef: string, 
     jobTitle: string, 
     socCode: string, 
     assignmentDate: string,
-    qualification: string
+    qualification: string,
+    qualificationDate?: string,
+    relevance?: boolean,
+    englishEvidence?: boolean,
+    experienceEvidence?: boolean
   ) => {
+    // Use enhanced logic if additional parameters are provided
+    if (qualificationDate && relevance !== undefined && englishEvidence !== undefined && experienceEvidence !== undefined) {
+      const qualDate = new Date(qualificationDate);
+      const cosDate = new Date(assignmentDate);
+      const isTimingValid = qualDate <= cosDate;
+
+      let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
+      let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
+      let redFlag = false;
+
+      if (!isTimingValid || !relevance || !englishEvidence || !experienceEvidence) {
+        complianceStatus = "SERIOUS_BREACH";
+        riskLevel = "HIGH";
+        redFlag = true;
+      }
+
+      return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.
+
+Upon review, we assessed the qualification and experience evidence as follows:
+
+• Timing Issue: ${isTimingValid ? "Qualification obtained before CoS assignment date." : "Qualification obtained after CoS assignment, which is a serious breach under sponsor guidance."}
+• Relevance Issue: ${relevance ? "Qualification is relevant to healthcare and care duties." : "Qualification is not relevant to assigned duties, indicating non-compliance."}
+• English Language: ${englishEvidence ? "Valid English language evidence provided." : "No or insufficient English evidence, representing a breach of compliance."}
+• Experience Match: ${experienceEvidence ? "References confirm experience aligned with CoS duties." : "References do not substantiate required duties, suggesting misrepresentation."}
+
+As such, we conclude that you ${complianceStatus === "COMPLIANT" ? "are compliant with" : "have breached"} paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors, which clearly states that sponsors must not employ workers without necessary qualifications obtained before the CoS assignment.
+
+${complianceStatus === "COMPLIANT" ? "Compliance Verdict: COMPLIANT — continue to monitor and retain evidence as required under Appendix D." : "Compliance Verdict: SERIOUS BREACH — immediate remedial action required, and full qualification audit recommended."}`;
+    }
+
+    // Fallback to original logic for backward compatibility
     const isQualified = qualification.toLowerCase().includes('degree') || 
                        qualification.toLowerCase().includes('nvq') && qualification.toLowerCase().includes('3') ||
                        qualification.toLowerCase().includes('professional');
@@ -427,33 +483,52 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Qualification breach detected. Please 
 
     setUploading(true);
     
-    // Extract worker and qualification information from documents
-    const { workerName, cosReference, qualification } = extractQualificationInfo(selectedFiles);
+    // Extract worker and qualification information from documents using enhanced logic
+    const extractedInfo = extractQualificationInfo(selectedFiles);
+    const { 
+      workerName, 
+      cosReference, 
+      qualification, 
+      qualificationDate, 
+      assignmentDate, 
+      relevance, 
+      englishEvidence, 
+      experienceEvidence 
+    } = extractedInfo;
     
     // Simulate AI processing
     setTimeout(() => {
       const jobTitle = 'Care Assistant';
       const socCode = '6145';
-      const assignmentDate = '05 November 2024';
       
-      // Determine compliance status based on qualification
-      const isQualified = qualification.toLowerCase().includes('degree') || 
-                         qualification.toLowerCase().includes('nvq') && qualification.toLowerCase().includes('3') ||
-                         qualification.toLowerCase().includes('professional');
+      // Use enhanced assessment logic
+      const qualDate = new Date(qualificationDate);
+      const cosDate = new Date(assignmentDate);
+      const isTimingValid = qualDate <= cosDate;
       
+      // Determine compliance status using enhanced logic
       let complianceStatus: 'COMPLIANT' | 'SERIOUS_BREACH' = 'COMPLIANT';
       let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
       let redFlag = false;
       
-      if (!isQualified) {
+      if (!isTimingValid || !relevance || !englishEvidence || !experienceEvidence) {
         complianceStatus = 'SERIOUS_BREACH';
         riskLevel = 'HIGH';
         redFlag = true;
       }
       
-      // Generate professional assessment
+      // Generate professional assessment using enhanced logic
       const professionalAssessment = generateProfessionalQualificationAssessment(
-        workerName, cosReference, jobTitle, socCode, assignmentDate, qualification
+        workerName, 
+        cosReference, 
+        jobTitle, 
+        socCode, 
+        assignmentDate, 
+        qualification,
+        qualificationDate,
+        relevance,
+        englishEvidence,
+        experienceEvidence
       );
       
       // Mock assessment result
