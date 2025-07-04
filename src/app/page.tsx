@@ -412,6 +412,124 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Featured AI Agents */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Featured AI Agents
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Our most popular AI-powered compliance solutions
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {filteredAgents.map((agent) => (
+              <Card
+                key={agent.id}
+                className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                {/* Image/Video Holder */}
+                <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                  {agent.id === "qualification" && (
+                    <img
+                      src="/images/ai-qualification-compliance-agent.png"
+                      alt="AI Qualification Compliance Agent"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {agent.id === "salary" && (
+                    <img
+                      src="/images/ai-salary-compliance-agent.png"
+                      alt="AI Salary Compliance Agent"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Video Play Button Overlay for Available Agents */}
+                  {agent.available && (
+                    <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white bg-opacity-90 rounded-full p-4 cursor-pointer">
+                        <Play className="w-8 h-8 text-blue-600" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge
+                          variant={
+                            agent.status === "Popular" ? "default" : "secondary"
+                          }
+                        >
+                          {agent.status}
+                        </Badge>
+                        <Badge variant="outline" className="capitalize">
+                          {agent.level}
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-xl mb-2">
+                        {agent.title}
+                      </CardTitle>
+                      <CardDescription className="text-base">
+                        {agent.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Key Benefits:
+                    </h4>
+                    <ul className="space-y-1">
+                      {agent.benefits.map((benefit, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center text-sm text-gray-600"
+                        >
+                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                          {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-bold text-blue-600">
+                        {formatPrice(agent.price)}
+                      </span>
+                      {agent.originalPrice && (
+                        <span className="text-lg text-gray-500 line-through">
+                          {formatPrice(agent.originalPrice)}
+                        </span>
+                      )}
+                    </div>
+                    <Button
+                      size={agent.status ? "lg" : "sm"}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      asChild
+                      disabled={!agent.available}
+                    >
+                      <Link
+                        href={`/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment`}
+                      >
+                        {agent.available ? "Get Started" : "Coming Soon"}
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Featured Products Section (All AI Compliance Agents) */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">

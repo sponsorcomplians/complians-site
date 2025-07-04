@@ -28,6 +28,7 @@ import {
   Calendar,
   Calculator
 } from 'lucide-react'
+import AgentAssessmentExplainer from "../../components/AgentAssessmentExplainer"
 
 // Custom Card Components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -823,6 +824,10 @@ Best regards`
         <p className="text-gray-600">
           AI-powered salary compliance analysis for UK sponsors with payslip verification and NMW checking
         </p>
+      </div>
+      {/* Explainer Module */}
+      <div className="mb-8">
+        <AgentAssessmentExplainer />
       </div>
 
       {/* Navigation Tabs */}

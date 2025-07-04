@@ -255,7 +255,7 @@ const aiAgents: AIAgent[] = [
     status: 'coming-soon',
     category: 'compliance',
     complexity: 'basic',
-    href: '#',
+    href: '/ai-document-compliance',
     popular: false,
     new: false
   },
