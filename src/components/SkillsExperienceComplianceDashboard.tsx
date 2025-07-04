@@ -1,62 +1,189 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from "react";
 import {
-  Users,
-  CheckCircle,
-  AlertTriangle,
-  TrendingUp,
-  PieChart,
   BarChart3,
+  Users,
   FileText,
   MessageSquare,
   Upload,
-  Plus,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Bot,
+  FileCheck,
+  Clock,
+  Download,
   Eye,
   Send,
-  Bot,
-} from 'lucide-react';
-import AgentAssessmentExplainer from './AgentAssessmentExplainer';
+  Mail,
+  Printer,
+  Plus,
+  PieChart,
+  HelpCircle,
+  GraduationCap,
+  Calendar,
+} from "lucide-react";
+import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
 
-// Sample data for demonstration
-const sampleWorkers = [
-  {
-    id: 1,
-    name: 'John Smith',
-    jobTitle: 'Software Developer',
-    socCode: '2136',
-    complianceStatus: 'COMPLIANT',
-    riskLevel: 'LOW',
-    lastAssessment: '2024-06-10',
-    redFlag: false,
-  },
-  {
-    id: 2,
-    name: 'Sarah Johnson',
-    jobTitle: 'Care Assistant',
-    socCode: '6145',
-    complianceStatus: 'SERIOUS BREACH',
-    riskLevel: 'HIGH',
-    lastAssessment: '2024-06-09',
-    redFlag: true,
-  },
-  {
-    id: 3,
-    name: 'Ahmed Hassan',
-    jobTitle: 'Senior Care Worker',
-    socCode: '6146',
-    complianceStatus: 'BREACH',
-    riskLevel: 'MEDIUM',
-    lastAssessment: '2024-06-08',
-    redFlag: false,
-  },
-];
+// Types for our data structures
+interface SkillsExperienceWorker {
+  id: string;
+  name: string;
+  jobTitle: string;
+  socCode: string;
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  lastAssessment: string;
+  redFlag: boolean;
+  assignmentDate: string;
+  skills: string;
+  experience: string;
+}
 
-const complianceStatusColors = {
-  COMPLIANT: 'bg-green-500 text-white',
-  BREACH: 'bg-yellow-400 text-white',
-  'SERIOUS BREACH': 'bg-red-500 text-white',
+interface SkillsExperienceAssessment {
+  id: string;
+  workerId: string;
+  workerName: string;
+  jobTitle: string;
+  socCode: string;
+  skills: string;
+  experience: string;
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  redFlag: boolean;
+  assignmentDate: string;
+  professionalAssessment: string;
+  generatedAt: string;
+}
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+}
+
+// Custom Card Components
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>{children}</div>
+);
+const CardHeader = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`p-6 pb-2 ${className}`}>{children}</div>
+);
+const CardTitle = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <h3 className={`text-lg font-semibold leading-none tracking-tight ${className}`}>{children}</h3>
+);
+const CardContent = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`p-6 pt-0 ${className}`}>{children}</div>
+);
+
+// Custom Button Component
+const Button = ({ children, className = "", size = "default", variant = "default", onClick, disabled = false, ...props }: { children: React.ReactNode; className?: string; size?: "default" | "sm"; variant?: "default" | "destructive" | "outline"; onClick?: () => void; disabled?: boolean; [key: string]: any; }) => {
+  const sizeClasses = size === "sm" ? "px-3 py-1.5 text-sm" : "px-4 py-2";
+  const variantClasses = variant === "destructive"
+    ? "bg-red-500 hover:bg-red-600 text-white"
+    : variant === "outline"
+      ? "border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      : "bg-gray-900 hover:bg-gray-800 text-white";
+  return (
+    <button className={`inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${sizeClasses} ${variantClasses} ${className}`} onClick={onClick} disabled={disabled} {...props}>
+      {children}
+    </button>
+  );
+};
+
+// Custom Badge Component
+const Badge = ({ children, variant = "default", className = "" }: { children: React.ReactNode; variant?: "default" | "outline" | "destructive"; className?: string; }) => {
+  const variantClasses = variant === "outline"
+    ? "border border-current bg-transparent"
+    : variant === "destructive"
+      ? "bg-red-500 text-white animate-pulse"
+      : "bg-gray-900 text-white";
+  return (
+    <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors ${variantClasses} ${className}`}>{children}</div>
+  );
+};
+
+// Custom Tabs Components
+const Tabs = ({ children, value, onValueChange, className = "" }: { children: React.ReactNode; value: string; onValueChange: (value: string) => void; className?: string; }) => (
+  <div className={className} data-value={value} data-onvaluechange={onValueChange}>{children}</div>
+);
+const TabsList = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500 ${className}`}>{children}</div>
+);
+const TabsTrigger = ({ children, value, className = '', activeTab, onValueChange }: { children: React.ReactNode; value: string; className?: string; activeTab: string; onValueChange: (value: string) => void; }) => {
+  const isActive = activeTab === value;
+  return (
+    <button className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${isActive ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-500 hover:text-gray-900'} ${className}`} onClick={() => onValueChange(value)}>{children}</button>
+  );
+};
+const TabsContent = ({ children, value, activeTab }: { children: React.ReactNode; value: string; activeTab: string; }) => {
+  if (activeTab !== value) return null;
+  return <div className="mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2">{children}</div>;
+};
+
+// Simple Chart Components
+const PieChartComponent = ({ data }: { data: any[] }) => {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let cumulativePercentage = 0;
+
+  return (
+    <div className="flex items-center justify-center">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        {data.map((item, index) => {
+          const percentage = (item.value / total) * 100;
+          const startAngle = (cumulativePercentage / 100) * 360;
+          const endAngle = ((cumulativePercentage + percentage) / 100) * 360;
+          
+          const x1 = 100 + 80 * Math.cos((startAngle - 90) * Math.PI / 180);
+          const y1 = 100 + 80 * Math.sin((startAngle - 90) * Math.PI / 180);
+          const x2 = 100 + 80 * Math.cos((endAngle - 90) * Math.PI / 180);
+          const y2 = 100 + 80 * Math.sin((endAngle - 90) * Math.PI / 180);
+          
+          const largeArcFlag = percentage > 50 ? 1 : 0;
+          
+          const pathData = [
+            `M 100 100`,
+            `L ${x1} ${y1}`,
+            `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+            'Z'
+          ].join(' ');
+          
+          cumulativePercentage += percentage;
+          
+          return (
+            <path
+              key={index}
+              d={pathData}
+              fill={item.color}
+              stroke="white"
+              strokeWidth="2"
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
+const BarChartComponent = ({ data }: { data: any[] }) => {
+  const maxValue = Math.max(...data.map(item => item.value));
+  
+  return (
+    <div className="flex items-end justify-center space-x-2 h-40">
+      {data.map((item, index) => (
+        <div key={index} className="flex flex-col items-center">
+          <div 
+            className="w-12 bg-green-500 rounded-t"
+            style={{ height: `${(item.value / maxValue) * 120}px` }}
+          ></div>
+          <span className="text-xs mt-2 text-center">{item.name}</span>
+          <span className="text-xs text-gray-500">{item.value}</span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const riskLevelColors = {
@@ -65,22 +192,51 @@ const riskLevelColors = {
   HIGH: 'bg-red-100 text-red-800',
 };
 
-const pieChartData = [
-  { name: 'Compliant', value: 1, color: '#22c55e' },
-  { name: 'Breach', value: 1, color: '#facc15' },
-  { name: 'Serious Breach', value: 1, color: '#ef4444' },
-];
-
-const barChartData = [
-  { name: 'Low Risk', value: 1 },
-  { name: 'Medium Risk', value: 1 },
-  { name: 'High Risk', value: 1 },
-];
-
 export default function SkillsExperienceComplianceDashboard() {
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>([
+    {
+      id: '1',
+      name: 'John Smith',
+      jobTitle: 'Software Developer',
+      socCode: '2136',
+      complianceStatus: 'COMPLIANT',
+      riskLevel: 'LOW',
+      lastAssessment: '2024-06-10',
+      redFlag: false,
+      assignmentDate: '2024-01-15',
+      skills: 'JavaScript, React',
+      experience: '3 years software development'
+    },
+    {
+      id: '2',
+      name: 'Sarah Johnson',
+      jobTitle: 'Care Assistant',
+      socCode: '6145',
+      complianceStatus: 'SERIOUS_BREACH',
+      riskLevel: 'HIGH',
+      lastAssessment: '2024-06-09',
+      redFlag: true,
+      assignmentDate: '2024-11-05',
+      skills: 'Caregiving, First Aid',
+      experience: '1 year care work'
+    },
+    {
+      id: '3',
+      name: 'Ahmed Hassan',
+      jobTitle: 'Senior Care Worker',
+      socCode: '6146',
+      complianceStatus: 'SERIOUS_BREACH',
+      riskLevel: 'MEDIUM',
+      lastAssessment: '2024-06-08',
+      redFlag: false,
+      assignmentDate: '2024-03-10',
+      skills: 'Leadership, Care Planning',
+      experience: '5 years care work'
+    }
+  ]);
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'assistant',
@@ -94,17 +250,34 @@ export default function SkillsExperienceComplianceDashboard() {
 
   // Dashboard stats
   const dashboardStats = {
-    totalWorkers: sampleWorkers.length,
+    totalWorkers: workers.length,
     complianceRate: Math.round(
-      (sampleWorkers.filter((w) => w.complianceStatus === 'COMPLIANT').length /
-        sampleWorkers.length) *
+      (workers.filter((w) => w.complianceStatus === 'COMPLIANT').length /
+        workers.length) *
         100
     ),
-    compliantWorkers: sampleWorkers.filter(
+    compliantWorkers: workers.filter(
       (w) => w.complianceStatus === 'COMPLIANT'
     ).length,
-    redFlags: sampleWorkers.filter((w) => w.redFlag).length,
-    highRisk: sampleWorkers.filter((w) => w.riskLevel === 'HIGH').length,
+    redFlags: workers.filter((w) => w.redFlag).length,
+    highRisk: workers.filter((w) => w.riskLevel === 'HIGH').length,
+  };
+
+  // Chart data - recalculated when workers change
+  const pieChartData = [
+    { name: 'Compliant', value: workers.filter(w => w.complianceStatus === 'COMPLIANT').length, color: '#10B981' },
+    { name: 'Serious Breach', value: workers.filter(w => w.complianceStatus === 'SERIOUS_BREACH').length, color: '#EF4444' }
+  ];
+
+  const barChartData = [
+    { name: 'Low Risk', value: workers.filter(w => w.riskLevel === 'LOW').length },
+    { name: 'Medium Risk', value: workers.filter(w => w.riskLevel === 'MEDIUM').length },
+    { name: 'High Risk', value: workers.filter(w => w.riskLevel === 'HIGH').length }
+  ];
+
+  const complianceStatusColors = {
+    COMPLIANT: 'bg-green-500 text-white',
+    'SERIOUS_BREACH': 'bg-red-500 text-white',
   };
 
   // Handlers
@@ -263,7 +436,6 @@ export default function SkillsExperienceComplianceDashboard() {
                     High risk workers
                   </div>
                 </div>
-                <TrendingUp className="h-6 w-6 text-red-500" />
               </div>
             </div>
           </div>
@@ -376,13 +548,13 @@ export default function SkillsExperienceComplianceDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {sampleWorkers.map((worker) => (
+                {workers.map((worker) => (
                   <tr
                     key={worker.id}
                     className={
                       worker.redFlag
                         ? 'bg-red-50'
-                        : worker.complianceStatus === 'BREACH'
+                        : worker.complianceStatus === 'SERIOUS_BREACH'
                         ? 'bg-yellow-50'
                         : ''
                     }
