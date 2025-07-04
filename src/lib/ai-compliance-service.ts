@@ -335,24 +335,10 @@ export class AIComplianceService {
     let cosReference = 'UNKNOWN';
 
     if (cosFile) {
-      // Improved regex: 'Worker from [NAME] - Certificate of Sponsorship'
-      const match = cosFile.name.match(/Worker from (.+?) - Certificate of Sponsorship/i);
-      if (match && match[1]) {
-        workerName = match[1].trim();
-      } else if (cosFile.name.includes('Alen')) {
-        workerName = 'Alen Thomas';
-        cosReference = 'C2G8Y18250Q';
-      } else if (cosFile.name.includes('John')) {
-        workerName = 'John Doe';
-        cosReference = 'COS987654';
-      } else {
-        const nameMatch = cosFile.name.match(/([A-Z][a-z]+\s[A-Z][a-z]+)/);
-        if (nameMatch) {
-          workerName = nameMatch[1];
-        } else {
-          workerName = 'Worker from ' + cosFile.name.split('.')[0];
-        }
-      }
+      const filename = cosFile.name;
+      // Use improved regex and fallback
+      const match = filename.match(/Worker from (.+?) - Certificate of Sponsorship/);
+      workerName = match && match[1] ? match[1].trim() : filename.replace(/\.(pdf|docx?)$/i, '');
       cosReference = 'COS' + Math.random().toString().substr(2, 6);
     }
 
