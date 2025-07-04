@@ -357,6 +357,7 @@ function SalaryComplianceContent() {
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [recipientEmail, setRecipientEmail] = useState('');
 
   // Calculate dashboard stats dynamically
   const dashboardStats = {
@@ -975,8 +976,11 @@ Please ask a specific question about salary compliance.`
       console.log('✅ PDF download initiated');
     } catch (error) {
       console.error('❌ PDF generation error:', error);
-      
-      // Fallback to HTML download
+      // Show more specific error
+      if (error instanceof Error) {
+        alert(`PDF generation failed: ${error.message}. Downloading as HTML instead.`);
+      }
+      // Continue with HTML fallback...
       const blob = new Blob([reportHTML], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1019,7 +1023,7 @@ Please ask a specific question about salary compliance.`
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          to: 'compliance@company.com', // You might want to get this from user settings
+          to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
           subject: `Salary Compliance Assessment Report - ${assessment?.workerName}`,
           html: emailHTML,
           workerName: assessment?.workerName,
@@ -1559,6 +1563,16 @@ Best regards`
                       <Download className="h-4 w-4" />
                       Report Options
                     </h4>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">Email Address for Report:</label>
+                      <input 
+                        type="email"
+                        placeholder="Enter email address"
+                        className="w-full px-3 py-2 border rounded-lg"
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                      />
+                    </div>
                     <div className="flex flex-wrap gap-3 justify-center">
                       <Button 
                         className="bg-red-500 hover:bg-red-600 text-white"
