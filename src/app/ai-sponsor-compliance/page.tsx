@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import AIComplianceDashboard from '@/components/AIComplianceDashboard';
 
 export default function AISponsorCompliancePage() {
