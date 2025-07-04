@@ -1,7 +1,6 @@
 "use client";
-
-import DashboardWrapper from '@/components/SkillsExperienceComplianceDashboard/DashboardWrapper';
+import SkillsExperienceComplianceDashboard from '@/components/SkillsExperienceComplianceDashboard';
 
 export default function AISkillsExperienceCompliancePage() {
-  return <DashboardWrapper />;
+  return <SkillsExperienceComplianceDashboard />;
 } 
