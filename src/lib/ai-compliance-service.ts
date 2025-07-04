@@ -311,6 +311,10 @@ export class AIComplianceService {
         professional_assessment: professionalAssessment
       });
 
+      if (assessment) {
+        console.log('ASSESSMENT WORKER NAME:', assessment.worker_name);
+      }
+
       // Update worker with assessment date
       await this.updateWorker(worker.id, {
         last_assessment_date: new Date().toISOString().split('T')[0]
@@ -340,6 +344,11 @@ export class AIComplianceService {
       const match = filename.match(/Worker from (.+?) - Certificate of Sponsorship/);
       workerName = match && match[1] ? match[1].trim() : filename.replace(/\.(pdf|docx?)$/i, '');
       cosReference = 'COS' + Math.random().toString().substr(2, 6);
+      console.log('EXTRACTION DEBUG:', {
+        originalFilename: filename,
+        extractedName: workerName,
+        regexMatch: match
+      });
     }
 
     return { workerName, cosReference };

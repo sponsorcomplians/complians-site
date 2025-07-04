@@ -1277,55 +1277,58 @@ Best regards`;
                     </tr>
                   </thead>
                   <tbody>
-                    {workers.map((worker) => (
-                      <tr
-                        key={worker.id}
-                        className={`border-b ${worker.red_flag ? "bg-red-50" : ""}`}
-                      >
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            {worker.name}
-                            {worker.red_flag && (
-                              <span className="text-red-500 text-xs animate-pulse">
-                                🚨
-                              </span>
+                    {workers.map((worker) => {
+                      console.log('DISPLAY WORKER NAME:', worker);
+                      return (
+                        <tr
+                          key={worker.id}
+                          className={`border-b ${worker.red_flag ? "bg-red-50" : ""}`}
+                        >
+                          <td className="p-4">
+                            <div className="flex items-center gap-2">
+                              {worker.name}
+                              {worker.red_flag && (
+                                <span className="text-red-500 text-xs animate-pulse">
+                                  🚨
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-4">{worker.cos_reference}</td>
+                          <td className="p-4">{worker.job_title}</td>
+                          <td className="p-4">{worker.soc_code}</td>
+                          <td className="p-4">
+                            {getStatusBadge(
+                              worker.compliance_status,
+                              worker.red_flag,
                             )}
-                          </div>
-                        </td>
-                        <td className="p-4">{worker.cos_reference}</td>
-                        <td className="p-4">{worker.job_title}</td>
-                        <td className="p-4">{worker.soc_code}</td>
-                        <td className="p-4">
-                          {getStatusBadge(
-                            worker.compliance_status,
-                            worker.red_flag,
-                          )}
-                        </td>
-                        <td className="p-4">
-                          {getRiskBadge(worker.risk_level)}
-                        </td>
-                        <td className="p-4">
-                          <Button
-                            size="sm"
-                            className="bg-blue-500 hover:bg-blue-600 text-white"
-                            onClick={() => handleViewWorkerReport(worker.id)}
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View Report
-                          </Button>
-                        </td>
-                        <td className="p-4">
-                          <Button
-                            size="sm"
-                            className="bg-green-500 hover:bg-green-600 text-white"
-                            onClick={() => handleHelpWithBreach(worker.name)}
-                          >
-                            <HelpCircle className="h-4 w-4 mr-1" />
-                            Help with Breach
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="p-4">
+                            {getRiskBadge(worker.risk_level)}
+                          </td>
+                          <td className="p-4">
+                            <Button
+                              size="sm"
+                              className="bg-blue-500 hover:bg-blue-600 text-white"
+                              onClick={() => handleViewWorkerReport(worker.id)}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View Report
+                            </Button>
+                          </td>
+                          <td className="p-4">
+                            <Button
+                              size="sm"
+                              className="bg-green-500 hover:bg-green-600 text-white"
+                              onClick={() => handleHelpWithBreach(worker.name)}
+                            >
+                              <HelpCircle className="h-4 w-4 mr-1" />
+                              Help with Breach
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
