@@ -1175,7 +1175,7 @@ Best regards`;
                     </div>
                   )}
                   {/* Professional Assessment */}
-                  <div className="border-l-4 border-blue-300 bg-blue-50 p-6">
+                  <div className={`border-l-4 p-6 ${(currentAssessment?.redFlag || selectedWorkerAssessment?.redFlag) ? 'border-red-300 bg-red-50' : 'border-blue-300 bg-blue-50'}`}>
                     <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{(currentAssessment || selectedWorkerAssessment)?.professionalAssessment || ''}</div>
                   </div>
                   {/* Assessment Summary */}
