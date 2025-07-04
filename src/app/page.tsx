@@ -335,8 +335,8 @@ const allAgents = [
       "Audit readiness",
     ],
     available: true,
-    image: "/images/ai-document-compliance-agent.png"
-  }
+    image: "/images/ai-document-compliance-agent.png",
+  },
 ];
 
 const categories = [
@@ -355,6 +355,13 @@ const levels = [
 ];
 
 export default function HomePage() {
+  console.log('HomePage component rendering');
+  console.log('Environment variables:', {
+    NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not set',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set'
+  });
+
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
 
