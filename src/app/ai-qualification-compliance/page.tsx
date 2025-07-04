@@ -12,7 +12,13 @@ function QualificationComplianceContent() {
 export default function AIQualificationCompliancePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <QualificationComplianceContent />
+      <AIComplianceDashboard 
+        title="AI Qualification Compliance System"
+        description="AI-powered SOC code verification and job qualification analysis"
+        storagePrefix="qualification"
+        documentType="Qualification Certificate"
+        complianceType="SOC Code Compliance"
+      />
     </Suspense>
   );
 }

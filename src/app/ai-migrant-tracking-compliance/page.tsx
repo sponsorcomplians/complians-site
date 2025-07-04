@@ -9,8 +9,12 @@ function MigrantTrackingComplianceContent() {
 
 export default function AIMigrantTrackingCompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <MigrantTrackingComplianceContent />
-    </Suspense>
+    <AIComplianceDashboard 
+      title="AI Migrant Tracking Compliance System"
+      description="AI-powered migrant activity tracking and compliance monitoring"
+      storagePrefix="migrantTracking"
+      documentType="Migrant Tracking Document"
+      complianceType="Migrant Tracking Compliance"
+    />
   )
 }

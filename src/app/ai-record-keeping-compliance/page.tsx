@@ -9,8 +9,12 @@ function RecordKeepingComplianceContent() {
 
 export default function AIRecordKeepingCompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <RecordKeepingComplianceContent />
-    </Suspense>
+    <AIComplianceDashboard 
+      title="AI Record Keeping Compliance System"
+      description="AI-powered record keeping and document management compliance"
+      storagePrefix="recordKeeping"
+      documentType="Record Keeping Document"
+      complianceType="Record Keeping Compliance"
+    />
   )
 }

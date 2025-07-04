@@ -9,8 +9,12 @@ function ReportingDutiesComplianceContent() {
 
 export default function AIReportingDutiesCompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ReportingDutiesComplianceContent />
-    </Suspense>
+    <AIComplianceDashboard 
+      title="AI Reporting Duties System"
+      description="AI-powered sponsor reporting and compliance monitoring"
+      storagePrefix="reporting"
+      documentType="Report Document"
+      complianceType="Reporting Compliance"
+    />
   );
 }

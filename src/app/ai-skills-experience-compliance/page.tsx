@@ -11,8 +11,12 @@ function SkillsExperienceComplianceContent() {
 // Default export with Suspense wrapper
 export default function AISkillsExperienceCompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <SkillsExperienceComplianceContent />
-    </Suspense>
+    <AIComplianceDashboard 
+      title="AI Skills & Experience Compliance System"
+      description="AI-powered skills assessment and experience verification"
+      storagePrefix="skillsExperience"
+      documentType="Skills/Experience Document"
+      complianceType="Skills & Experience Compliance"
+    />
   );
 } 

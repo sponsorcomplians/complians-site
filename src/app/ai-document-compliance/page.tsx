@@ -473,6 +473,164 @@ Please ask a specific question about document compliance.`
     }
   }
 
+  // Enhanced document info extraction
+  const extractWorkerDocumentInfo = (files: File[]) => {
+    console.log('📁 Processing files:', files.map(f => f.name));
+    const patterns = [
+      /Document for (.+?) - (.+)/, // e.g. Document for John Smith - Passport.pdf
+      /(.+?) - (Passport|Visa|CoS|Certificate|Payslip|Contract)/i, // e.g. John Smith - Passport.pdf
+      /(.+?)_([A-Za-z]+)/, // e.g. JohnSmith_Passport.pdf
+      /(.+?)\.(pdf|docx?|jpg|jpeg|png)$/i // fallback: filename before extension
+    ];
+    return files.map(file => {
+      let workerName = 'Unknown';
+      let documentType = 'OTHER';
+      for (const pattern of patterns) {
+        const match = file.name.match(pattern);
+        if (match) {
+          workerName = match[1].replace(/_/g, ' ').trim();
+          if (match[2]) documentType = match[2].toUpperCase();
+          break;
+        }
+      }
+      if (workerName === 'Unknown') {
+        workerName = file.name.replace(/\.(pdf|docx?|jpg|jpeg|png)$/i, '').replace(/_/g, ' ').trim();
+      }
+      if (!['COS','PASSPORT','VISA','QUALIFICATION','PAYSLIP','CONTRACT'].includes(documentType)) {
+        documentType = 'OTHER';
+      }
+      return {
+        id: 'DOC_' + Date.now() + Math.floor(Math.random()*1000),
+        name: file.name,
+        type: documentType,
+        status: 'PENDING',
+        uploadedDate: new Date().toISOString().split('T')[0],
+        workerName,
+        authenticityScore: Math.floor(Math.random() * 40) + 60,
+        complianceStatus: 'REQUIRES_ATTENTION'
+      };
+    });
+  };
+
+  // PDF generation for document assessment
+  const handleDownloadPDF = async () => {
+    if (!currentAssessment) {
+      alert('No assessment report available to download.');
+      return;
+    }
+    const assessment = currentAssessment;
+    try {
+      const jsPDF = (await import('jspdf')).default;
+      const doc = new jsPDF();
+      doc.setFontSize(20);
+      doc.text('Document Compliance Assessment Report', 105, 20, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text(`Generated on ${new Date().toLocaleDateString('en-GB')} at ${new Date().toLocaleTimeString('en-GB')}`, 105, 30, { align: 'center' });
+      let yPos = 40;
+      doc.setFontSize(14);
+      doc.text('Assessment Summary', 10, yPos);
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.text(`Document: ${assessment.documentName}`, 10, yPos); yPos += 7;
+      doc.text(`Worker: ${assessment.workerName}`, 10, yPos); yPos += 7;
+      doc.text(`Assessment Type: ${assessment.assessmentType}`, 10, yPos); yPos += 7;
+      doc.text(`Status: ${assessment.status}`, 10, yPos); yPos += 7;
+      yPos += 10;
+      doc.setFontSize(14);
+      doc.text('Findings', 10, yPos); yPos += 10;
+      doc.setFontSize(9);
+      const findingsLines = doc.splitTextToSize(assessment.findings || '', 180);
+      findingsLines.forEach((line: string) => { if (yPos > 270) { doc.addPage(); yPos = 20; } doc.text(line, 10, yPos); yPos += 5; });
+      yPos += 10;
+      doc.setFontSize(14);
+      doc.text('Recommendations', 10, yPos); yPos += 10;
+      doc.setFontSize(9);
+      const recLines = doc.splitTextToSize(assessment.recommendations || '', 180);
+      recLines.forEach((line: string) => { if (yPos > 270) { doc.addPage(); yPos = 20; } doc.text(line, 10, yPos); yPos += 5; });
+      doc.save(`Document_Compliance_Report_${assessment.documentName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('❌ PDF generation error:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
+
+  // Email report with recipient input
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const handleEmailReport = async () => {
+    if (!currentAssessment) {
+      alert('No assessment report available to email.');
+      return;
+    }
+    const assessment = currentAssessment;
+    const emailHTML = `
+      <h2>Document Compliance Assessment Report</h2>
+      <p><strong>Document:</strong> ${assessment.documentName}</p>
+      <p><strong>Worker:</strong> ${assessment.workerName}</p>
+      <p><strong>Assessment Type:</strong> ${assessment.assessmentType}</p>
+      <p><strong>Status:</strong> ${assessment.status}</p>
+      <hr>
+      <div><strong>Findings:</strong><br>${assessment.findings.replace(/\n/g, '<br>')}</div>
+      <div><strong>Recommendations:</strong><br>${assessment.recommendations.replace(/\n/g, '<br>')}</div>
+    `;
+    try {
+      const response = await fetch('/api/send-report-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
+          subject: `Document Compliance Assessment Report - ${assessment.documentName}`,
+          html: emailHTML,
+          workerName: assessment.workerName,
+        }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send email');
+      }
+      alert('Report sent successfully via email!');
+    } catch (error) {
+      console.error('❌ Email error:', error);
+      alert('Failed to send email. Please try again.');
+    }
+  };
+
+  // Data persistence for documents and assessments
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('documentComplianceDocuments');
+    if (savedDocs) {
+      try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error('Error loading saved docs:', e); }
+    }
+  }, []);
+  useEffect(() => {
+    if (documents.length > 0) {
+      localStorage.setItem('documentComplianceDocuments', JSON.stringify(documents));
+    }
+  }, [documents]);
+  useEffect(() => {
+    const savedAssessments = localStorage.getItem('documentComplianceAssessments');
+    if (savedAssessments) {
+      try { setAssessments(JSON.parse(savedAssessments)); } catch (e) { console.error('Error loading saved assessments:', e); }
+    }
+  }, []);
+  useEffect(() => {
+    if (assessments.length > 0) {
+      localStorage.setItem('documentComplianceAssessments', JSON.stringify(assessments));
+    }
+  }, [assessments]);
+
+  // Delete document and update localStorage
+  const handleDeleteDocument = (docId: string) => {
+    if (confirm('Are you sure you want to delete this document?')) {
+      const updatedDocs = documents.filter(d => d.id !== docId);
+      setDocuments(updatedDocs);
+      localStorage.setItem('documentComplianceDocuments', JSON.stringify(updatedDocs));
+      // Remove associated assessments
+      const updatedAssessments = assessments.filter(a => a.documentId !== docId);
+      setAssessments(updatedAssessments);
+      localStorage.setItem('documentComplianceAssessments', JSON.stringify(updatedAssessments));
+    }
+  };
+
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
