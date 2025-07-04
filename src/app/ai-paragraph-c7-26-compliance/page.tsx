@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from 'react';
+
 export const dynamic = 'force-dynamic'
 
 import AIComplianceDashboard from "@/components/AIComplianceDashboard";
