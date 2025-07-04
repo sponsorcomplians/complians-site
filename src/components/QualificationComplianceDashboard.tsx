@@ -378,9 +378,25 @@ export default function QualificationComplianceDashboard() {
       }
     }
 
+    // Strict check for English evidence
+    const englishEvidence = files.some(f => 
+      f.name.toLowerCase().includes("english") || 
+      f.name.toLowerCase().includes("ielts") || 
+      f.name.toLowerCase().includes("language") || 
+      f.name.toLowerCase().includes("b1") || 
+      f.name.toLowerCase().includes("proficiency")
+    );
+
+    // Strict check for experience evidence
+    const experienceEvidence = files.some(f => 
+      f.name.toLowerCase().includes("reference") || 
+      f.name.toLowerCase().includes("experience") || 
+      f.name.toLowerCase().includes("letter") || 
+      f.name.toLowerCase().includes("employment") || 
+      f.name.toLowerCase().includes("supervision")
+    );
+
     const relevance = qualification.toLowerCase().includes("health") || qualification.toLowerCase().includes("care");
-    const englishEvidence = true; // placeholder, ready to integrate actual parsing
-    const experienceEvidence = true; // placeholder, ready to integrate reference parsing
 
     console.log('📊 Extracted enhanced qualification data:', { 
       workerName, 
