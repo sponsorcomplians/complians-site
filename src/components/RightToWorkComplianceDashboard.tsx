@@ -179,7 +179,28 @@ const BarChartComponent = ({ data }: { data: any[] }) => {
 
 // Main component
 export default function RightToWorkComplianceDashboard() {
-  // Placeholder UI for now
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [currentAssessment, setCurrentAssessment] = useState<RightToWorkAssessment | null>(null);
+  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<RightToWorkAssessment | null>(null);
+  const [workers, setWorkers] = useState<RightToWorkWorker[]>([]);
+  const [assessments, setAssessments] = useState<RightToWorkAssessment[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [recipientEmail, setRecipientEmail] = useState('');
+
+  // Example dashboard stats (placeholder logic)
+  const dashboardStats = {
+    totalWorkers: workers.length,
+    compliantWorkers: workers.filter(w => w.complianceStatus === 'COMPLIANT').length,
+    redFlags: workers.filter(w => w.redFlag).length,
+    seriousBreaches: workers.filter(w => w.complianceStatus === 'SERIOUS BREACH').length,
+    complianceRate: workers.length > 0 ? Math.round((workers.filter(w => w.complianceStatus === 'COMPLIANT').length / workers.length) * 100) : 0,
+  };
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-[#263976] mb-2 flex items-center gap-3">
@@ -187,9 +208,69 @@ export default function RightToWorkComplianceDashboard() {
         AI Right to Work Compliance System
       </h1>
       <p className="text-gray-600 mb-8">
-        AI-powered right to work verification and compliance analysis (full dashboard coming soon)
+        AI-powered right to work verification and compliance analysis
       </p>
-      {/* The full dashboard will be implemented here following the QualificationComplianceDashboard model */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2" activeTab={activeTab} onValueChange={setActiveTab}>
+            <BarChart3 className="h-4 w-4" /> Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="workers" className="flex items-center gap-2" activeTab={activeTab} onValueChange={setActiveTab}>
+            <Users className="h-4 w-4" /> Workers
+          </TabsTrigger>
+          <TabsTrigger value="assessment" className="flex items-center gap-2" activeTab={activeTab} onValueChange={setActiveTab}>
+            <FileCheck className="h-4 w-4" /> Assessment
+          </TabsTrigger>
+          <TabsTrigger value="ai-assistant" className="flex items-center gap-2" activeTab={activeTab} onValueChange={setActiveTab}>
+            <MessageSquare className="h-4 w-4" /> AI Assistant
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="dashboard" activeTab={activeTab}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Workers</CardTitle>
+                <Users className="h-4 w-4 text-[#00c3ff]" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.totalWorkers}</div>
+                <p className="text-xs text-gray-600">Active workers</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Compliance Rate</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.complianceRate}%</div>
+                <p className="text-xs text-gray-600">{dashboardStats.compliantWorkers} compliant workers</p>
+              </CardContent>
+            </Card>
+            <Card className={dashboardStats.redFlags > 0 ? 'border-red-500 border-2 animate-pulse' : ''}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">🚨 Right to Work Breaches</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">{dashboardStats.redFlags}</div>
+                <p className="text-xs text-red-600">Immediate attention required</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Serious Breaches</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#263976]">{dashboardStats.seriousBreaches}</div>
+                <p className="text-xs text-gray-600">Non-compliant workers</p>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        {/* Other tabs will be implemented in the next steps */}
+      </Tabs>
     </div>
   );
 } 
