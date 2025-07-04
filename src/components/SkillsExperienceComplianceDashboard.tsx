@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
+import { createClient } from "@supabase/supabase-js";
 
 // Types for our data structures
 interface SkillsExperienceWorker {
@@ -193,6 +194,10 @@ const riskLevelColors = {
 };
 
 export default function SkillsExperienceComplianceDashboard() {
+  // Temporary debugging: log env vars
+  console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_KEY);
+
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -237,7 +242,7 @@ export default function SkillsExperienceComplianceDashboard() {
       experience: '5 years care work'
     }
   ]);
-  const [chatMessages, setChatMessages] = useState([
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       content:
@@ -247,6 +252,40 @@ export default function SkillsExperienceComplianceDashboard() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [supabaseError, setSupabaseError] = useState<string | null>(null);
+  const [supabaseClient, setSupabaseClient] = useState<any>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setSupabaseError(null);
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+      if (!url || !key) {
+        setSupabaseError('Supabase configuration error: Environment variables are missing.');
+        setSupabaseClient(null);
+        return;
+      }
+      const client = createClient(url, key);
+      setSupabaseClient(client);
+    } catch (err: any) {
+      setSupabaseError(err.message || 'Supabase client failed to initialize');
+      setSupabaseClient(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
+  }
+  if (supabaseError) {
+    return <div className="p-8 text-center text-red-600">{supabaseError}<br/>Check your Supabase configuration and environment variables.</div>;
+  }
+  if (!supabaseClient) {
+    return <div className="p-8 text-center text-red-600">Supabase client is not available. Please check your configuration.</div>;
+  }
 
   // Dashboard stats
   const dashboardStats = {
