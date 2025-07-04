@@ -335,7 +335,11 @@ export class AIComplianceService {
     let cosReference = 'UNKNOWN';
 
     if (cosFile) {
-      if (cosFile.name.includes('Alen')) {
+      // Try to extract name from pattern: 'Worker from [Name] - Certificate of Sponsorship'
+      const match = cosFile.name.match(/Worker from ([^-]+)- Certificate of Sponsorship/i);
+      if (match && match[1]) {
+        workerName = match[1].trim();
+      } else if (cosFile.name.includes('Alen')) {
         workerName = 'Alen Thomas';
         cosReference = 'C2G8Y18250Q';
       } else if (cosFile.name.includes('John')) {
@@ -348,8 +352,8 @@ export class AIComplianceService {
         } else {
           workerName = 'Worker from ' + cosFile.name.split('.')[0];
         }
-        cosReference = 'COS' + Math.random().toString().substr(2, 6);
       }
+      cosReference = 'COS' + Math.random().toString().substr(2, 6);
     }
 
     return { workerName, cosReference };
