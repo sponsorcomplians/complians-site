@@ -1,3 +1,4 @@
+// Trigger Vercel deployment: trivial change
 "use client";
 
 import { useState, useRef, useEffect } from "react";
