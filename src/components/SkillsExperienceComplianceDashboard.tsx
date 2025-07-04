@@ -213,6 +213,10 @@ export default function SkillsExperienceComplianceDashboard() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [assessments, setAssessments] = useState<SkillsExperienceAssessment[]>([]);
+  const [currentAssessment, setCurrentAssessment] = useState<SkillsExperienceAssessment | null>(null);
+  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<SkillsExperienceAssessment | null>(null);
+  const [recipientEmail, setRecipientEmail] = useState('');
 
   // Load workers from localStorage on mount
   useEffect(() => {
@@ -233,6 +237,26 @@ export default function SkillsExperienceComplianceDashboard() {
       localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(workers));
     }
   }, [workers]);
+
+  // Load assessments from localStorage on mount
+  useEffect(() => {
+    const savedAssessments = localStorage.getItem('skillsExperienceComplianceAssessments');
+    if (savedAssessments) {
+      try {
+        const parsedAssessments = JSON.parse(savedAssessments);
+        setAssessments(parsedAssessments);
+      } catch (error) {
+        console.error('Error loading saved assessments:', error);
+      }
+    }
+  }, []);
+
+  // Save assessments to localStorage whenever they change
+  useEffect(() => {
+    if (assessments.length > 0) {
+      localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(assessments));
+    }
+  }, [assessments]);
 
   // Dashboard stats
   const dashboardStats = {
@@ -305,6 +329,246 @@ export default function SkillsExperienceComplianceDashboard() {
     setSelectedFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  // File extraction logic (adapted for skills/experience)
+  const extractSkillsExperienceInfo = (files: File[]) => {
+    // Simulate extraction logic for skills/experience
+    let workerName = "Unknown Worker";
+    let jobTitle = "Unknown";
+    let socCode = "0000";
+    let assignmentDate = "2024-01-01";
+    let skills = "";
+    let experience = "";
+    // Extraction logic here (e.g., parse filenames, etc.)
+    // ...
+    return { workerName, jobTitle, socCode, assignmentDate, skills, experience };
+  };
+
+  // Assessment logic (adapted)
+  const generateSkillsExperienceAssessment = (
+    workerName: string,
+    jobTitle: string,
+    socCode: string,
+    assignmentDate: string,
+    skills: string,
+    experience: string
+  ) => {
+    // Simulate assessment logic
+    let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
+    let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
+    let redFlag = false;
+    // ... logic to determine compliance, risk, etc. ...
+    return {
+      complianceStatus,
+      riskLevel,
+      redFlag,
+      professionalAssessment: `Skills & Experience assessment for ${workerName}`
+    };
+  };
+
+  // Analyze button handler
+  const handleAnalyze = async () => {
+    if (selectedFiles.length === 0) {
+      alert('Please select at least one document to upload.');
+      return;
+    }
+    setUploading(true);
+    const extracted = extractSkillsExperienceInfo(selectedFiles);
+    setTimeout(() => {
+      const assessmentResult = generateSkillsExperienceAssessment(
+        extracted.workerName,
+        extracted.jobTitle,
+        extracted.socCode,
+        extracted.assignmentDate,
+        extracted.skills,
+        extracted.experience
+      );
+      const newAssessment: SkillsExperienceAssessment = {
+        id: 'ASSESS_' + Date.now(),
+        workerId: 'WORKER_' + Date.now(),
+        workerName: extracted.workerName,
+        jobTitle: extracted.jobTitle,
+        socCode: extracted.socCode,
+        skills: extracted.skills,
+        experience: extracted.experience,
+        complianceStatus: assessmentResult.complianceStatus,
+        riskLevel: assessmentResult.riskLevel,
+        redFlag: assessmentResult.redFlag,
+        assignmentDate: extracted.assignmentDate,
+        professionalAssessment: assessmentResult.professionalAssessment,
+        generatedAt: new Date().toISOString()
+      };
+      // Add worker
+      const newWorker: SkillsExperienceWorker = {
+        id: newAssessment.workerId,
+        name: extracted.workerName,
+        jobTitle: extracted.jobTitle,
+        socCode: extracted.socCode,
+        complianceStatus: assessmentResult.complianceStatus,
+        riskLevel: assessmentResult.riskLevel,
+        lastAssessment: new Date().toISOString().split('T')[0],
+        redFlag: assessmentResult.redFlag,
+        assignmentDate: extracted.assignmentDate,
+        skills: extracted.skills,
+        experience: extracted.experience
+      };
+      setWorkers(prev => [...prev, newWorker]);
+      setAssessments(prev => [...prev, newAssessment]);
+      setCurrentAssessment(newAssessment);
+      setUploading(false);
+      setSelectedFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setActiveTab('assessment');
+    }, 3000);
+  };
+
+  // PDF generation (adapted)
+  const handleDownloadPDF = async () => {
+    if (!currentAssessment && !selectedWorkerAssessment) {
+      alert('No assessment report available to download.');
+      return;
+    }
+    const assessment = currentAssessment || selectedWorkerAssessment;
+    try {
+      const jsPDF = (await import('jspdf')).default;
+      const doc = new jsPDF();
+      doc.setFontSize(20);
+      doc.text('Skills & Experience Compliance Analysis Report', 105, 20, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text(`Generated on ${new Date().toLocaleDateString('en-GB')} at ${new Date().toLocaleTimeString('en-GB')}`, 105, 30, { align: 'center' });
+      if (assessment?.redFlag) {
+        doc.setFillColor(239, 68, 68);
+        doc.rect(10, 40, 190, 15, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(12);
+        doc.text('SERIOUS BREACH DETECTED - Immediate review required', 105, 50, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+      let yPos = assessment?.redFlag ? 70 : 50;
+      doc.setFontSize(14);
+      doc.text('Assessment Summary', 10, yPos);
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.text(`Worker: ${assessment?.workerName}`, 10, yPos); yPos += 7;
+      doc.text(`Job Title: ${assessment?.jobTitle}`, 10, yPos); yPos += 7;
+      doc.text(`SOC Code: ${assessment?.socCode}`, 10, yPos); yPos += 7;
+      doc.text(`Skills: ${assessment?.skills}`, 10, yPos); yPos += 7;
+      doc.text(`Experience: ${assessment?.experience}`, 10, yPos); yPos += 7;
+      doc.text(`Status: ${assessment?.complianceStatus}`, 10, yPos); yPos += 15;
+      doc.setFontSize(14);
+      doc.text('Professional Assessment', 10, yPos); yPos += 10;
+      doc.setFontSize(9);
+      const assessmentLines = doc.splitTextToSize(assessment?.professionalAssessment || '', 180);
+      assessmentLines.forEach((line: string) => {
+        if (yPos > 270) { doc.addPage(); yPos = 20; }
+        doc.text(line, 10, yPos); yPos += 5;
+      });
+      doc.save(`Skills_Experience_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      alert('Failed to generate PDF. Please try again.');
+    }
+  };
+
+  // Email report (adapted)
+  const handleEmailReport = async () => {
+    if (!currentAssessment && !selectedWorkerAssessment) {
+      alert('No assessment report available to email.');
+      return;
+    }
+    const assessment = currentAssessment || selectedWorkerAssessment;
+    const emailHTML = `
+      <h2>Skills & Experience Compliance Assessment Report</h2>
+      <p><strong>Worker:</strong> ${assessment?.workerName}</p>
+      <p><strong>Status:</strong> ${assessment?.complianceStatus}</p>
+      <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
+      <hr>
+      <div>${assessment?.professionalAssessment.replace(/\n/g, '<br>')}</div>
+    `;
+    try {
+      const response = await fetch('/api/send-report-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
+          subject: `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`,
+          html: emailHTML,
+          workerName: assessment?.workerName,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to send email');
+      alert('Report sent successfully via email!');
+    } catch (error) {
+      const subject = `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`;
+      const body = `Please find the skills & experience compliance assessment report for ${assessment?.workerName}.
+
+${assessment?.professionalAssessment}`;
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink);
+      alert('Email service not configured. Opening your email client instead.');
+    }
+  };
+
+  // Print report
+  const handlePrintReport = () => {
+    if (!currentAssessment && !selectedWorkerAssessment) {
+      alert('No assessment report available to print.');
+      return;
+    }
+    window.print();
+  };
+
+  // View specific worker report
+  const handleViewWorkerReport = (workerId: string) => {
+    const workerAssessment = assessments.find(a => a.workerId === workerId);
+    if (workerAssessment) {
+      setSelectedWorkerAssessment(workerAssessment);
+      setActiveTab('assessment');
+    } else {
+      const worker = workers.find(w => w.id === workerId);
+      if (worker) {
+        const mockAssessment: SkillsExperienceAssessment = {
+          id: 'ASSESS_' + Date.now(),
+          workerId: worker.id,
+          workerName: worker.name,
+          jobTitle: worker.jobTitle,
+          socCode: worker.socCode,
+          skills: worker.skills,
+          experience: worker.experience,
+          complianceStatus: worker.complianceStatus,
+          riskLevel: worker.riskLevel,
+          redFlag: worker.redFlag,
+          assignmentDate: worker.assignmentDate,
+          professionalAssessment: `Skills & Experience assessment for ${worker.name}`,
+          generatedAt: new Date().toISOString()
+        };
+        setAssessments(prev => [...prev, mockAssessment]);
+        setSelectedWorkerAssessment(mockAssessment);
+        setActiveTab('assessment');
+      } else {
+        alert('Worker not found.');
+      }
+    }
+  };
+
+  // Help with breach
+  const handleHelpWithBreach = (workerName: string) => {
+    const subject = `Help Required - Skills & Experience Compliance Breach for ${workerName}`;
+    const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
+    const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoLink);
+  };
+
+  // Delete worker
+  const handleDeleteWorker = (workerId: string) => {
+    if (confirm('Are you sure you want to delete this worker?')) {
+      const updatedWorkers = workers.filter(w => w.id !== workerId);
+      setWorkers(updatedWorkers);
+      localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(updatedWorkers));
+      const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
+      setAssessments(updatedAssessments);
+      localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -643,8 +907,7 @@ export default function SkillsExperienceComplianceDashboard() {
                     ))}
                   </ul>
                   <div className="mt-4 space-y-2">
-                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={() => {/* handle upload logic here */}} disabled={uploading || selectedFiles.length === 0}>
-                      {/* Use a brain or sparkles icon if available */}
+                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
                       <GraduationCap className="h-4 w-4 mr-2" />
                       Analyze Skills & Experience ({selectedFiles.length} files)
                     </Button>
