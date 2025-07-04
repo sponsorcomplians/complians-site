@@ -672,6 +672,42 @@ export default function AIComplianceDashboard({
     },
   ];
 
+  // Helper function for status badges
+  const getStatusBadge = (status: string, redFlag: boolean = false) => {
+    if (redFlag || status === 'SERIOUS_BREACH') {
+      return (
+        <Badge variant="destructive" className="bg-red-500 text-white animate-pulse">
+          SERIOUS BREACH
+        </Badge>
+      )
+    }
+    
+    switch (status) {
+      case 'COMPLIANT':
+        return <Badge className="bg-green-500 text-white">COMPLIANT</Badge>
+      case 'UNDERPAID':
+        return <Badge variant="destructive" className="bg-orange-500 text-white">UNDERPAID</Badge>
+      case 'NON_COMPLIANT':
+        return <Badge variant="destructive" className="bg-red-500 text-white">NON-COMPLIANT</Badge>
+      default:
+        return <Badge variant="outline">{status || 'UNKNOWN'}</Badge>
+    }
+  }
+
+  // Helper function for risk badges
+  const getRiskBadge = (risk: string) => {
+    switch (risk) {
+      case 'LOW':
+        return <Badge className="bg-green-500 text-white">LOW RISK</Badge>
+      case 'MEDIUM':
+        return <Badge className="bg-yellow-500 text-white">MEDIUM RISK</Badge>
+      case 'HIGH':
+        return <Badge variant="destructive" className="bg-red-500 text-white">HIGH RISK</Badge>
+      default:
+        return <Badge variant="outline">{risk || 'UNKNOWN'}</Badge>
+    }
+  }
+
   // Name extraction (customizable)
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -778,6 +814,99 @@ export default function AIComplianceDashboard({
       const updatedAssessments = assessments.filter((a) => a.worker_id !== workerId);
       setAssessments(updatedAssessments);
       localStorage.setItem(assessmentsKey, JSON.stringify(updatedAssessments));
+    }
+  };
+
+  // View worker report
+  const handleViewWorkerReport = (workerId: string) => {
+    const worker = workers.find(w => w.id === workerId);
+    const assessment = assessments.find(a => a.worker_id === workerId);
+    if (worker && assessment) {
+      setSelectedWorkerAssessment(assessment);
+      setActiveTab('assessment');
+    }
+  };
+
+  // Help with breach
+  const handleHelpWithBreach = (workerName: string) => {
+    const helpMessage = `I can help you with compliance issues for ${workerName}. What specific breach are you dealing with?`;
+    setChatMessages(prev => [...prev, {
+      role: 'assistant',
+      content: helpMessage,
+      timestamp: new Date().toISOString()
+    }]);
+    setActiveTab('ai-assistant');
+  };
+
+  // Upload handler
+  const handleUpload = async () => {
+    if (!selectedFiles.length) {
+      alert('Please select files to upload.');
+      return;
+    }
+    if (!service) {
+      alert('Service not available. Please try again.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await service.uploadDocuments(selectedFiles, agentKey);
+      if (result.worker) {
+        setWorkers(prev => [...prev, result.worker!]);
+      }
+      if (result.assessment) {
+        setAssessments(prev => [...prev, result.assessment!]);
+        setCurrentAssessment(result.assessment);
+      }
+      setSelectedFiles([]);
+      alert('Upload successful!');
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Print report
+  const handlePrintReport = () => {
+    if (!currentAssessment && !selectedWorkerAssessment) {
+      alert('No assessment report available to print.');
+      return;
+    }
+    window.print();
+  };
+
+  // Chat send handler
+  const handleChatSend = async () => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = {
+      role: 'user' as const,
+      content: chatInput,
+      timestamp: new Date().toISOString(),
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput('');
+    setChatLoading(true);
+
+    try {
+      // Simulate AI response
+      const aiResponse = {
+        role: 'assistant' as const,
+        content: `I understand your question about "${chatInput}". Let me help you with that. This is a simulated response from the AI assistant.`,
+        timestamp: new Date().toISOString(),
+      };
+
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, aiResponse]);
+        setChatLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatLoading(false);
     }
   };
 
