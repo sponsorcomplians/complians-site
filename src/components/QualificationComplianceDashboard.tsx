@@ -450,18 +450,36 @@ export default function QualificationComplianceDashboard() {
         redFlag = true;
       }
 
-      return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under SOC code ${socCode}.
+      const missingDocs: string[] = [];
+      if (!englishEvidence) missingDocs.push("English language evidence");
+      if (!experienceEvidence) missingDocs.push("experience references");
+      if (qualification === "No formal qualification") missingDocs.push("qualification certificate");
 
-Upon review, we assessed the qualification and experience evidence as follows:
+      const missingDocsText = missingDocs.length > 0
+        ? `You have not provided the following documents: ${missingDocs.join(", ")}, and therefore, the absence of these documents demonstrates that there is no evidence in place to support that the worker possesses the qualifications required for this role.`
+        : "";
 
-• Timing Issue: ${isTimingValid ? "Qualification obtained before CoS assignment date." : "Qualification obtained after CoS assignment, which is a serious breach under sponsor guidance."}
-• Relevance Issue: ${relevance ? "Qualification is relevant to healthcare and care duties." : "Qualification is not relevant to assigned duties, indicating non-compliance."}
-• English Language: ${englishEvidence ? "Valid English language evidence provided." : "No or insufficient English evidence, representing a breach of compliance."}
-• Experience Match: ${experienceEvidence ? "References confirm experience aligned with CoS duties." : "References do not substantiate required duties, suggesting misrepresentation."}
+      return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
 
-As such, we conclude that you ${complianceStatus === "COMPLIANT" ? "are compliant with" : "have breached"} paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors, which clearly states that sponsors must not employ workers without necessary qualifications obtained before the CoS assignment.
+The summary of job description in the CoS states:
 
-${complianceStatus === "COMPLIANT" ? "Compliance Verdict: COMPLIANT — continue to monitor and retain evidence as required under Appendix D." : "Compliance Verdict: SERIOUS BREACH — immediate remedial action required, and full qualification audit recommended."}`;
+The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
+
+The usual requirement for performing such a role is the possession of a relevant qualification in health and social care (e.g., NVQ Level 3 or above), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
+
+Upon review of the documentation provided, we did not find sufficient evidence that ${workerName} holds a qualification relevant to health and social care that was obtained before the CoS assignment date. ${isTimingValid ? "The qualification was obtained before the CoS assignment, which satisfies this requirement." : "The qualification was obtained after the CoS assignment date, which is a serious breach of sponsor compliance obligations."} Additionally, ${relevance ? "the qualification appears relevant to the healthcare sector." : "the qualification is not relevant to the duties described in the CoS, undermining the claim that the worker is suitably qualified."}
+
+Furthermore, ${englishEvidence ? "sufficient English language evidence has been provided, supporting compliance with language requirements." : "no English language evidence has been provided or the evidence is insufficient, representing a significant compliance breach."}
+
+In terms of experience, ${experienceEvidence ? "the references confirm that the worker has previously performed duties consistent with the CoS description, supporting compliance." : "no credible references were provided to substantiate the worker's claimed experience, suggesting that the duties described may not have been genuinely performed."}
+
+${missingDocsText}
+
+As such, the Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary qualifications and experience for the role in question.
+
+This breach is further supported by your failure to provide mandatory documentation, and may result in licence suspension or revocation in line with Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
+
+Compliance Verdict: SERIOUS BREACH — immediate remedial action required. A full internal audit of all assigned Certificates of Sponsorship, qualifications, and compliance records is strongly recommended.`;
     }
 
     // Fallback to original logic for backward compatibility
