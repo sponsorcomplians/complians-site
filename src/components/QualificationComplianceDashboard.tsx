@@ -273,8 +273,19 @@ export default function QualificationComplianceDashboard() {
   ]
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles(files);
+    const newFiles = Array.from(event.target.files || []);
+    setSelectedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClearAllFiles = () => {
+    setSelectedFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   // Enhanced document processing to extract worker and qualification info
@@ -686,7 +697,7 @@ Please ask a specific question about qualification compliance.`;
       yPos += 7;
       doc.text(`Qualification: ${assessment?.qualification}`, 10, yPos);
       yPos += 7;
-      doc.text(`Status: ${assessment?.complianceStatus}`, 10, yPos);
+      doc.text(`Status: ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}`, 10, yPos);
       yPos += 15;
       
       // Professional Assessment
@@ -730,7 +741,7 @@ Please ask a specific question about qualification compliance.`;
       <h2>Qualification Compliance Assessment Report</h2>
       <p><strong>Worker:</strong> ${assessment?.workerName}</p>
       <p><strong>CoS Reference:</strong> ${assessment?.cosReference}</p>
-      <p><strong>Status:</strong> ${assessment?.complianceStatus}</p>
+      <p><strong>Status:</strong> ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}</p>
       <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
       <hr>
       <div>${assessment?.professionalAssessment.replace(/\n/g, '<br>')}</div>
@@ -768,7 +779,7 @@ Please ask a specific question about qualification compliance.`;
 Job Title: ${assessment?.jobTitle}
 SOC Code: ${assessment?.socCode}
 Qualification: ${assessment?.qualification}
-Status: ${assessment?.complianceStatus}
+Status: ${assessment?.complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH' : assessment?.complianceStatus}
 Risk Level: ${assessment?.riskLevel}
 Generated: ${new Date().toLocaleDateString('en-GB')}
 
@@ -1128,17 +1139,57 @@ Best regards`;
                   <Button className="bg-[#00c3ff] hover:bg-[#0099cc] text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
                   {selectedFiles.length > 0 && (
                     <div className="mt-4">
-                      <h4 className="font-medium mb-2">Selected Files:</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Selected Files ({selectedFiles.length}):</h4>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={handleClearAllFiles}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                      <ul className="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto">
                         {selectedFiles.map((file, index) => (
-                          <li key={index} className="flex items-center justify-center gap-2">
-                            <FileText className="h-4 w-4" /> {file.name}
+                          <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4" /> 
+                              <span className="truncate">{file.name}</span>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant="destructive" 
+                              onClick={() => handleRemoveFile(index)}
+                              className="ml-2"
+                            >
+                              <XCircle className="h-3 w-3" />
+                            </Button>
                           </li>
                         ))}
                       </ul>
-                      <Button className="bg-green-500 hover:bg-green-600 text-white mt-4" onClick={handleUpload} disabled={uploading}>
-                        {uploading ? (<><Clock className="h-4 w-4 mr-2 animate-spin" /> AI Processing...</>) : (<><GraduationCap className="h-4 w-4 mr-2" /> Analyze Qualifications</>)}
-                      </Button>
+                      <div className="mt-4 space-y-2">
+                        <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleUpload} disabled={uploading}>
+                          {uploading ? (
+                            <>
+                              <Clock className="h-4 w-4 mr-2 animate-spin" /> 
+                              AI Processing...
+                            </>
+                          ) : (
+                            <>
+                              <GraduationCap className="h-4 w-4 mr-2" /> 
+                              Analyze Qualifications ({selectedFiles.length} files)
+                            </>
+                          )}
+                        </Button>
+                        <Button 
+                          className="bg-[#00c3ff] hover:bg-[#0099cc] text-white w-full" 
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Plus className="h-4 w-4 mr-2" /> 
+                          Add More Files
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
