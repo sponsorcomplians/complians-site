@@ -102,6 +102,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
                 <Label htmlFor="firstName">First Name *</Label>
                 <Input
                   id="firstName"
+                  name="firstName"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   required
@@ -111,6 +112,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
                 <Label htmlFor="lastName">Last Name *</Label>
                 <Input
                   id="lastName"
+                  name="lastName"
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   required
@@ -122,6 +124,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
               <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -133,6 +136,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
+                name="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
@@ -142,6 +146,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
               <Label htmlFor="role">Role *</Label>
               <Input
                 id="role"
+                name="role"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 required
@@ -152,6 +157,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
               <Label htmlFor="department">Department</Label>
               <Input
                 id="department"
+                name="department"
                 placeholder="e.g., Engineering, Marketing, Sales"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
@@ -163,6 +169,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
                 <Label htmlFor="nationality">Nationality</Label>
                 <Input
                   id="nationality"
+                  name="nationality"
                   value={formData.nationality}
                   onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                 />
@@ -171,6 +178,7 @@ export default function AddWorkerModal({ isOpen, onClose, onSuccess }: AddWorker
                 <Label htmlFor="passportNumber">Passport Number</Label>
                 <Input
                   id="passportNumber"
+                  name="passportNumber"
                   value={formData.passportNumber}
                   onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
                 />

@@ -148,6 +148,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                 <Label htmlFor="avatar">Profile Photo</Label>
                 <Input
                   id="avatar"
+                  name="avatar"
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
@@ -165,6 +166,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
+                    name="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
                   />
@@ -177,6 +179,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
+                    name="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleChange('lastName', e.target.value)}
                   />
@@ -191,6 +194,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
@@ -204,6 +208,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input
                     id="phone"
+                    name="phone"
                     type="tel"
                     value={formData.phone || ''}
                     onChange={(e) => handleChange('phone', e.target.value)}
@@ -219,6 +224,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                 <Label htmlFor="address">Address</Label>
                 <Input
                   id="address"
+                  name="address"
                   value={formData.address || ''}
                   onChange={(e) => handleChange('address', e.target.value)}
                   placeholder="123 Main St, City, State 12345"
@@ -235,6 +241,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="employeeId">Employee ID</Label>
                   <Input
                     id="employeeId"
+                    name="employeeId"
                     value={formData.employeeId}
                     onChange={(e) => handleChange('employeeId', e.target.value)}
                   />
@@ -272,6 +279,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="position">Position</Label>
                   <Input
                     id="position"
+                    name="position"
                     value={formData.position}
                     onChange={(e) => handleChange('position', e.target.value)}
                   />
@@ -284,6 +292,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="startDate">Start Date</Label>
                   <Input
                     id="startDate"
+                    name="startDate"
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => handleChange('startDate', e.target.value)}
@@ -321,6 +330,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="emergencyContact">Contact Name</Label>
                   <Input
                     id="emergencyContact"
+                    name="emergencyContact"
                     value={formData.emergencyContact || ''}
                     onChange={(e) => handleChange('emergencyContact', e.target.value)}
                     placeholder="Jane Doe"
@@ -331,6 +341,7 @@ export function EditWorkerModal({ worker, isOpen, onClose, onUpdate }: EditWorke
                   <Label htmlFor="emergencyPhone">Contact Phone</Label>
                   <Input
                     id="emergencyPhone"
+                    name="emergencyPhone"
                     type="tel"
                     value={formData.emergencyPhone || ''}
                     onChange={(e) => handleChange('emergencyPhone', e.target.value)}

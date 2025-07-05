@@ -131,6 +131,7 @@ export default function NewReportingDutyModal({ isOpen, onClose, onSuccess }: Ne
             <Label htmlFor="event_date">Event Date *</Label>
             <Input
               id="event_date"
+              name="event_date"
               type="date"
               value={formData.event_date}
               onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
