@@ -169,6 +169,7 @@ export class DocumentExtractionService {
     const references = summary.references;
     const contracts = summary.contracts;
     const payslips = summary.payslips;
+    const trainingCertificates = summary.trainingCertificates;
 
     return {
       // Worker information
@@ -188,6 +189,7 @@ export class DocumentExtractionService {
       hasReferences: references.length > 0,
       hasContracts: contracts.length > 0,
       hasPayslips: payslips.length > 0,
+      hasTraining: trainingCertificates.length > 0,
       
       // Extracted content
       cosDuties: cos?.jobDescriptionSummary || 'Not provided',
