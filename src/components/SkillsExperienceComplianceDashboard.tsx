@@ -362,7 +362,12 @@ export default function SkillsExperienceComplianceDashboard() {
       missingDocsText: string;
       inconsistencies: string;
     }
-  ) => {
+  ): {
+    complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+    riskLevel: "LOW" | "MEDIUM" | "HIGH";
+    redFlag: boolean;
+    professionalAssessment: string;
+  } => {
     let isCompliant = false; // or set based on logic
 
     const narrative = `
