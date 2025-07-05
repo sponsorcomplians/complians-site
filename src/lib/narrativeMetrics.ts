@@ -8,7 +8,7 @@ class NarrativeMetrics {
     // Initialize default experiment
     this.experiments.set('ai_narrative_rollout', {
       enabled: true,
-      percentage: 50,
+      percentage: 100, // Changed from 50 to 100 for full AI rollout
       version: '1.0.0',
       userGroups: []
     });
