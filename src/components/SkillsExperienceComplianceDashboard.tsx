@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
-import { DocumentExtractionService } from '../lib/documentExtractionService';
 
 // Types for our data structures
 interface SkillsExperienceWorker {
@@ -336,6 +335,14 @@ export default function SkillsExperienceComplianceDashboard() {
   // Real document extraction logic using DocumentExtractionService
   const extractSkillsExperienceInfo = async (files: File[]) => {
     try {
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('Document extraction is only available in browser environment');
+      }
+
+      // Dynamically import the DocumentExtractionService to avoid SSR issues
+      const { DocumentExtractionService } = await import('../lib/documentExtractionService');
+      
       // Use the DocumentExtractionService to extract real data from uploaded files
       const documentSummary = await DocumentExtractionService.extractFromFiles(files);
       

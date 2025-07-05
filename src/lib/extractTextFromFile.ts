@@ -1,12 +1,14 @@
-import * as pdfjsLib from "pdfjs-dist";
-import mammoth from "mammoth";
-import * as XLSX from "xlsx";
-
 export async function extractTextFromFile(file: File): Promise<string> {
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') {
+    throw new Error('Document extraction is only available in browser environment');
+  }
+
   const ext = file.name.split('.').pop()?.toLowerCase();
 
   if (ext === "pdf") {
-    // PDF extraction
+    // PDF extraction with dynamic import
+    const pdfjsLib = await import("pdfjs-dist");
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let text = "";
@@ -19,14 +21,16 @@ export async function extractTextFromFile(file: File): Promise<string> {
   }
 
   if (ext === "docx") {
-    // DOCX extraction
+    // DOCX extraction with dynamic import
+    const mammoth = await import("mammoth");
     const arrayBuffer = await file.arrayBuffer();
     const { value } = await mammoth.extractRawText({ arrayBuffer });
     return value;
   }
 
   if (ext === "xlsx" || ext === "xls") {
-    // Excel extraction
+    // Excel extraction with dynamic import
+    const XLSX = await import("xlsx");
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
     let text = "";

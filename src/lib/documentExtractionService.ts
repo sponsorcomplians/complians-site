@@ -1,4 +1,3 @@
-import { extractTextFromFile } from './extractTextFromFile';
 import { extractDocumentInfo } from './extractDocumentInfo';
 
 export interface ExtractedDocumentData {
@@ -32,7 +31,13 @@ export class DocumentExtractionService {
    */
   static async extractFromFile(file: File): Promise<ExtractedDocumentData> {
     try {
-      // Extract text from file (PDF, DOCX, XLSX)
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined') {
+        throw new Error('Document extraction is only available in browser environment');
+      }
+
+      // Extract text from file (PDF, DOCX, XLSX) with dynamic import
+      const { extractTextFromFile } = await import('./extractTextFromFile');
       const rawText = await extractTextFromFile(file);
       
       // Parse the extracted text based on document type
