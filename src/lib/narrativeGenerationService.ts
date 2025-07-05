@@ -2,6 +2,7 @@ import { NarrativeInput, NarrativeAudit, ModelConfig } from '../types/narrative.
 import { CURRENT_LEGAL_REFERENCES, getFormattedLegalReference, getLegalReferencesForComplianceArea } from './legalReferences';
 import { narrativeCache } from './narrativeCache';
 import { narrativeValidator } from './narrativeValidation';
+import { narrativeMetrics } from './narrativeMetrics';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -22,6 +23,13 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
 export class NarrativeGenerationService {
   private static auditLog: NarrativeAudit[] = [];
   private static currentPromptVersion = '1.0.0';
+
+  /**
+   * Check if AI generation should be used based on experiment configuration
+   */
+  static shouldUseAI(experimentName?: string): boolean {
+    return narrativeMetrics.shouldUseAI(experimentName);
+  }
 
   /**
    * Generate a compliance assessment narrative using the structured input
@@ -56,6 +64,10 @@ export class NarrativeGenerationService {
       };
 
       this.auditLog.push(audit);
+      
+      // Log metrics
+      await narrativeMetrics.logGeneration(audit);
+      
       return { narrative: cachedNarrative, audit };
     }
 
@@ -97,6 +109,9 @@ export class NarrativeGenerationService {
       // Store audit log
       this.auditLog.push(audit);
       
+      // Log metrics
+      await narrativeMetrics.logGeneration(audit);
+      
       return { narrative, audit };
     } catch (error) {
       // Fallback to template-based generation
@@ -124,6 +139,9 @@ export class NarrativeGenerationService {
       };
 
       this.auditLog.push(audit);
+      
+      // Log metrics
+      await narrativeMetrics.logGeneration(audit);
       
       return { narrative: fallbackNarrative, audit };
     }
