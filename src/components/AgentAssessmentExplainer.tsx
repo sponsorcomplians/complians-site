@@ -1,9 +1,9 @@
 import { usePathname } from "next/navigation";
-import { Bot } from "lucide-react";
+import { Bot, AlertTriangle } from "lucide-react";
 
 const agentExplainers: Record<
   string,
-  { agentName: string; summary: string; points: string[] }
+  { agentName: string; summary: string; points: string[]; requiredDocuments?: string[]; warning?: string }
 > = {
   "ai-qualification-compliance": {
     agentName: "AI Qualification Compliance Agent",
@@ -30,16 +30,27 @@ const agentExplainers: Record<
     ],
   },
   "ai-skills-experience-compliance": {
-    agentName: "AI Skills & Experience Compliance Agent",
+    agentName: "AI Skills & Experience Compliance System",
     summary:
-      "Reviews CVs and experience records for role suitability and compliance.",
+      "The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements. This system ensures that all sponsored workers possess the necessary competencies and documented experience to fulfill their designated roles effectively and lawfully.",
     points: [
-      "Verifies skills/experience match role",
-      "Detects gaps or missing evidence",
-      "Flags compliance risks",
-      "Generates assessment report",
-      "Guides on remedial actions",
+      "Verifies skills and experience match the specific job role requirements",
+      "Analyses CVs, references, contracts, payslips, and training certificates",
+      "Detects inconsistencies and gaps in employment history and qualifications",
+      "Flags compliance risks under paragraph C1.38 of the Immigration Rules",
+      "Generates legal-style reports with detailed compliance assessments",
+      "Provides remedial action guidance for identified compliance gaps"
     ],
+    requiredDocuments: [
+      "Certificate of Sponsorship (CoS)",
+      "Full job description document",
+      "CV with detailed employment history",
+      "Reference letters from previous employers",
+      "Employment contracts and terms of engagement",
+      "Recent payslips demonstrating salary compliance",
+      "Training certificates and professional qualifications (if applicable)"
+    ],
+    warning: "⚠️ CRITICAL COMPLIANCE WARNING: Missing or incomplete documentation will be marked against compliance and may result in a serious breach of sponsor duties or potential licence suspension. The AI Skills & Experience Compliance System provides essential verification but does not replace the sponsor's legal responsibility to ensure all workers meet the required standards."
   },
   "ai-record-keeping-compliance": {
     agentName: "AI Record Keeping Compliance Agent",
@@ -211,31 +222,62 @@ const agentExplainers: Record<
 
 export default function AgentAssessmentExplainer() {
   const pathname = usePathname();
-  // Extract agent key from the path, e.g. '/ai-qualification-compliance' => 'ai-qualification-compliance'
-  const agentKey =
-    pathname?.split("/").find((seg) => seg.startsWith("ai-")) || "";
-  const explainer = agentExplainers[agentKey];
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const currentPath = pathSegments[pathSegments.length - 1];
 
-  if (!explainer) return null;
+  const explainer = agentExplainers[currentPath];
+
+  if (!explainer) {
+    return null;
+  }
 
   return (
-    <div className="mb-4">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Bot className="h-5 w-5 text-[#00c3ff]" />
-          <span className="font-semibold text-[#263976]">
-            What does this AI Agent do?
-          </span>
-        </div>
-        <div className="text-gray-700 mb-2">
-          <strong>{explainer.agentName}</strong> {explainer.summary}
-        </div>
-        <ul className="list-disc list-inside text-gray-700 pl-4">
-          {explainer.points.map((point, idx) => (
-            <li key={idx}>{point}</li>
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="flex items-center gap-3 mb-4">
+        <Bot className="h-6 w-6 text-[#263976]" />
+        <h2 className="text-xl font-bold text-[#263976]">
+          {explainer.agentName}
+        </h2>
+      </div>
+
+      <p className="text-gray-700 mb-4 leading-relaxed">
+        {explainer.summary}
+      </p>
+
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-[#263976] mb-2">
+          What this agent does:
+        </h3>
+        <ul className="list-disc pl-5 space-y-1 text-gray-700">
+          {explainer.points.map((point, index) => (
+            <li key={index}>{point}</li>
           ))}
         </ul>
       </div>
+
+      {explainer.requiredDocuments && (
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-[#263976] mb-2">
+            Documents required for a full compliance assessment:
+          </h3>
+          <ul className="list-disc pl-5 space-y-1 text-gray-700">
+            {explainer.requiredDocuments.map((doc, index) => (
+              <li key={index}>{doc}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {explainer.warning && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <p className="text-red-600 font-medium text-sm leading-relaxed">
+              {explainer.warning}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
