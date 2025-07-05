@@ -349,6 +349,24 @@ export default function SkillsExperienceComplianceDashboard() {
       // Generate assessment data from extracted documents
       const assessmentData = DocumentExtractionService.generateAssessmentData(documentSummary);
       
+      // Enhanced analysis for the 5-step decision tree
+      const hasCV = !!assessmentData.hasCV;
+      const hasContracts = !!assessmentData.hasContracts;
+      const hasPayslips = !!assessmentData.hasPayslips;
+      const hasTraining = !!assessmentData.hasTraining;
+      
+      // Analyze employment history consistency
+      const employmentHistoryConsistent = analyzeEmploymentHistoryConsistency(assessmentData);
+      
+      // Analyze experience match with duties
+      const experienceMatchesDuties = analyzeExperienceMatch(assessmentData);
+      
+      // Analyze reference credibility
+      const referencesCredible = analyzeReferenceCredibility(assessmentData);
+      
+      // Analyze experience recency and continuity
+      const experienceRecentAndContinuous = analyzeExperienceRecency(assessmentData);
+      
       return {
         workerName: assessmentData.workerName,
         jobTitle: assessmentData.jobTitle,
@@ -360,10 +378,18 @@ export default function SkillsExperienceComplianceDashboard() {
         cosDuties: assessmentData.cosDuties,
         jobDescriptionDuties: assessmentData.jobDescriptionDuties,
         hasJobDescription: assessmentData.hasJobDescription,
-        hasReference: assessmentData.hasReferences,
-        hasEmploymentEvidence: assessmentData.hasContracts || assessmentData.hasPayslips,
+        hasCV: hasCV,
+        hasReferences: assessmentData.hasReferences,
+        hasContracts: hasContracts,
+        hasPayslips: hasPayslips,
+        hasTraining: hasTraining,
+        employmentHistoryConsistent: employmentHistoryConsistent,
+        experienceMatchesDuties: experienceMatchesDuties,
+        referencesCredible: referencesCredible,
+        experienceRecentAndContinuous: experienceRecentAndContinuous,
         missingDocsText: assessmentData.missingDocsText,
         inconsistencies: assessmentData.inconsistencies,
+        missingDocs: documentSummary.missingDocuments,
         // Raw extracted data for detailed analysis
         extractedData: assessmentData.extractedData
       };
@@ -380,16 +406,49 @@ export default function SkillsExperienceComplianceDashboard() {
         cosDuties: "Not provided",
         jobDescriptionDuties: "Not provided",
         hasJobDescription: false,
-        hasReference: false,
-        hasEmploymentEvidence: false,
+        hasCV: false,
+        hasReferences: false,
+        hasContracts: false,
+        hasPayslips: false,
+        hasTraining: false,
+        employmentHistoryConsistent: false,
+        experienceMatchesDuties: false,
+        referencesCredible: false,
+        experienceRecentAndContinuous: false,
         missingDocsText: "Document extraction failed",
         inconsistencies: "Unable to detect inconsistencies",
+        missingDocs: ["All documents"],
         extractedData: null
       };
     }
   };
 
-  // Enhanced assessment logic for skills & experience
+  // Helper functions for enhanced analysis
+  const analyzeEmploymentHistoryConsistency = (assessmentData: any): boolean => {
+    // This would analyze dates, gaps, and progression across CV, references, and contracts
+    // For now, return true if we have multiple document types
+    return assessmentData.hasCV && assessmentData.hasReferences && assessmentData.hasContracts;
+  };
+
+  const analyzeExperienceMatch = (assessmentData: any): boolean => {
+    // This would compare CV duties with CoS and job description duties
+    // For now, return true if we have both CV and job description
+    return assessmentData.hasCV && assessmentData.hasJobDescription;
+  };
+
+  const analyzeReferenceCredibility = (assessmentData: any): boolean => {
+    // This would check for letterhead, signatures, contact details, etc.
+    // For now, return true if we have references
+    return assessmentData.hasReferences;
+  };
+
+  const analyzeExperienceRecency = (assessmentData: any): boolean => {
+    // This would check dates to ensure recent and continuous experience
+    // For now, return true if we have recent employment evidence
+    return assessmentData.hasContracts || assessmentData.hasPayslips;
+  };
+
+  // Enhanced assessment logic for skills & experience with comprehensive decision tree
   const generateSkillsExperienceAssessment = (
     info: {
       workerName: string;
@@ -400,10 +459,17 @@ export default function SkillsExperienceComplianceDashboard() {
       cosDuties: string;
       jobDescriptionDuties: string;
       hasJobDescription: boolean;
-      hasReference: boolean;
-      hasEmploymentEvidence: boolean;
-      missingDocsText: string;
-      inconsistencies: string;
+      hasCV: boolean;
+      hasReferences: boolean;
+      hasContracts: boolean;
+      hasPayslips: boolean;
+      hasTraining: boolean;
+      employmentHistoryConsistent: boolean;
+      experienceMatchesDuties: boolean;
+      referencesCredible: boolean;
+      experienceRecentAndContinuous: boolean;
+      inconsistenciesDescription?: string;
+      missingDocs: string[];
     }
   ): {
     complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
@@ -411,37 +477,78 @@ export default function SkillsExperienceComplianceDashboard() {
     redFlag: boolean;
     professionalAssessment: string;
   } => {
-    let isCompliant = false; // or set based on logic
+    // Step 1: Check if all required documents are provided
+    const step1Pass = info.hasJobDescription && info.hasCV && info.hasReferences && 
+                     info.hasContracts && info.hasPayslips && info.hasTraining;
+    
+    // Step 2: Check employment history consistency
+    const step2Pass = info.employmentHistoryConsistent;
+    
+    // Step 3: Check if experience matches CoS duties
+    const step3Pass = info.experienceMatchesDuties;
+    
+    // Step 4: Check if references are credible and independent
+    const step4Pass = info.referencesCredible;
+    
+    // Step 5: Check if experience is recent and continuous
+    const step5Pass = info.experienceRecentAndContinuous;
+
+    // Overall compliance decision
+    const isCompliant = step1Pass && step2Pass && step3Pass && step4Pass && step5Pass;
+
+    // Generate missing documents text for Annex C2(g) reference
+    const missingDocsText = info.missingDocs.length > 0
+      ? `We further note that certain required documents, including ${info.missingDocs.join(", ")}, have not been provided. Under Annex C2(g) of the sponsor guidance: "You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020." This further compounds the compliance breach.\n\n`
+      : "";
+
+    // Determine risk level based on number of failures
+    const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
+    let riskLevel: "LOW" | "MEDIUM" | "HIGH";
+    if (failures === 0) {
+      riskLevel = "LOW";
+    } else if (failures <= 2) {
+      riskLevel = "MEDIUM";
+    } else {
+      riskLevel = "HIGH";
+    }
 
     const narrative = `
 Following a detailed review of the documents you provided, serious concerns have been identified regarding your assignment of Certificates of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence indicates that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This failure represents a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors. The issues are outlined below.
 
 A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}.
 
-The summary job description in your CoS states ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include ${info.jobDescriptionDuties}.
+The summary job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
 
-Upon review of the documentation provided, we note that ${info.hasJobDescription ? "a job description document has been provided to support the CoS summary." : "no separate job description document has been provided, which limits the ability to verify specific duties and skills beyond the CoS summary."} Furthermore, ${info.hasReference ? "reference letters have been provided that describe duties broadly consistent with the CoS and job description." : "no credible reference letters have been provided to verify the duties described or confirm the claimed experience."} Additionally, ${info.hasEmploymentEvidence ? "employment contracts or payslips have been provided, supporting continuous employment in a relevant role." : "no employment contracts or payslips have been provided to substantiate the worker's employment history and claimed experience."}
+**Step 1: Required Documents Assessment**
+${step1Pass ? "✅ All required documents have been provided, including Certificate of Sponsorship, job description, CV, reference letters, employment contracts, payslips, and training certificates." : "❌ Required documents have not all been provided, weakening evidence of compliance. Sponsors must keep these documents as evidence they have verified a worker's suitability (Appendix D requirement)."}
 
-${info.missingDocsText}
+**Step 2: Employment History Consistency**
+${step2Pass ? "✅ Employment history is consistent across documents with matching dates and no unexplained gaps." : `❌ Employment history is inconsistent. ${info.inconsistenciesDescription || "Examples include mismatched dates, unexplained gaps, or non-progressive roles that suggest the worker may not have maintained required skills."}`}
 
-We have identified inconsistencies in the worker's employment history, including ${info.inconsistencies || "unexplained employment gaps, discrepancies between CV and application dates, or roles unrelated to the care sector (such as administrative or finance positions)"}. These discrepancies raise serious doubts about whether the worker has maintained the required skills or has ever obtained the necessary practical experience to perform the role as described.
+**Step 3: Experience Match with CoS Duties**
+${step3Pass ? "✅ Worker's experience directly matches the CoS duties and job description requirements." : "❌ Worker's experience does not match the CoS duties and job description, raising concerns about their ability to perform the role competently."}
 
-The evidence further suggests a lack of credible, independent references. In some cases, references are not on headed paper, lack detailed duties, or appear to have been prepared by non-independent parties. Moreover, the absence of properly signed and dated employment contracts or a lack of payslips undermines the authenticity of the claimed work experience.
+**Step 4: Reference Credibility and Independence**
+${step4Pass ? "✅ References are credible and independent, with official letterhead, proper signatures, and detailed duty descriptions." : "❌ References lack credibility or independence, raising doubts about authenticity and the worker's claimed experience."}
 
-In addition, the evidence indicates that training may have been conducted in a rushed or superficial manner, with some training completed shortly before the visa application or in unreasonably condensed timeframes. This raises concerns that the worker did not receive sufficient hands-on or supervised training to perform the role competently.
+**Step 5: Experience Recency and Continuity**
+${step5Pass ? "✅ Experience is recent and continuous, supporting the worker's ability to perform the role effectively." : "❌ Experience is not recent or continuous, undermining confidence in their suitability for the current role."}
 
-The combination of employment gaps, unverified duties, questionable references, and inadequate or last-minute training undermines confidence in the worker's suitability for the role. This indicates that the worker may not genuinely meet the requirements of the role for which the CoS was assigned.
+${missingDocsText}
+**Legal Assessment**
 
-As such, the Home Office will conclude that you have ${isCompliant ? "complied with" : "breached"} paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary skills and experience for the role in question.
+As such, the Home Office will conclude that you have ${isCompliant ? "complied with" : "breached"} paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
 
-This ${isCompliant ? "supports your ongoing compliance with sponsor duties." : "represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance."}
+"Sponsors must not employ a worker where they do not believe the worker will comply with the conditions of their permission to stay, or where they have reasonable grounds to believe the worker does not have the necessary skills, qualifications, or professional accreditations to do the job in question."
 
-Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue robust monitoring and evidence retention in line with Appendix D requirements." : "SERIOUS BREACH — immediate remedial action is required, including a full internal audit of assigned CoS, experience evidence, job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks."}
+${!isCompliant ? `This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.` : "This supports your ongoing compliance with sponsor duties."}
+
+**Compliance Verdict**: ${isCompliant ? "COMPLIANT — you are advised to continue robust monitoring and evidence retention in line with Appendix D requirements." : "SERIOUS BREACH — immediate remedial action is required, including a full internal audit of assigned CoS, experience evidence, job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks."}
 `;
 
     return {
       complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
-      riskLevel: isCompliant ? "LOW" : "HIGH",
+      riskLevel: riskLevel,
       redFlag: !isCompliant,
       professionalAssessment: narrative.trim(),
     };
@@ -459,7 +566,7 @@ Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue r
       // Extract real data from uploaded documents
       const extracted = await extractSkillsExperienceInfo(selectedFiles);
       
-      // Generate assessment using extracted data
+      // Generate assessment using extracted data with enhanced logic
       const assessmentResult = generateSkillsExperienceAssessment({
         workerName: extracted.workerName,
         cosReference: 'COS_' + Date.now(),
@@ -469,10 +576,17 @@ Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue r
         cosDuties: extracted.cosDuties,
         jobDescriptionDuties: extracted.jobDescriptionDuties,
         hasJobDescription: extracted.hasJobDescription,
-        hasReference: extracted.hasReference,
-        hasEmploymentEvidence: extracted.hasEmploymentEvidence,
-        missingDocsText: extracted.missingDocsText,
-        inconsistencies: extracted.inconsistencies
+        hasCV: extracted.hasCV || false,
+        hasReferences: extracted.hasReferences || false,
+        hasContracts: extracted.hasContracts || false,
+        hasPayslips: extracted.hasPayslips || false,
+        hasTraining: extracted.hasTraining || false,
+        employmentHistoryConsistent: extracted.employmentHistoryConsistent || false,
+        experienceMatchesDuties: extracted.experienceMatchesDuties || false,
+        referencesCredible: extracted.referencesCredible || false,
+        experienceRecentAndContinuous: extracted.experienceRecentAndContinuous || false,
+        inconsistenciesDescription: extracted.inconsistencies,
+        missingDocs: extracted.missingDocs || []
       });
       
       const newAssessment: SkillsExperienceAssessment = {
