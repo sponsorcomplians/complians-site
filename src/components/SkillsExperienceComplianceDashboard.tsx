@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
+import { DocumentExtractionService } from '../lib/documentExtractionService';
 
 // Types for our data structures
 interface SkillsExperienceWorker {
@@ -332,18 +333,53 @@ export default function SkillsExperienceComplianceDashboard() {
     }
   };
 
-  // File extraction logic (adapted for skills/experience)
-  const extractSkillsExperienceInfo = (files: File[]) => {
-    // Simulate extraction logic for skills/experience
-    let workerName = "Unknown Worker";
-    let jobTitle = "Unknown";
-    let socCode = "0000";
-    let assignmentDate = "2024-01-01";
-    let skills = "";
-    let experience = "";
-    // Extraction logic here (e.g., parse filenames, etc.)
-    // ...
-    return { workerName, jobTitle, socCode, assignmentDate, skills, experience };
+  // Real document extraction logic using DocumentExtractionService
+  const extractSkillsExperienceInfo = async (files: File[]) => {
+    try {
+      // Use the DocumentExtractionService to extract real data from uploaded files
+      const documentSummary = await DocumentExtractionService.extractFromFiles(files);
+      
+      // Generate assessment data from extracted documents
+      const assessmentData = DocumentExtractionService.generateAssessmentData(documentSummary);
+      
+      return {
+        workerName: assessmentData.workerName,
+        jobTitle: assessmentData.jobTitle,
+        socCode: assessmentData.socCode,
+        assignmentDate: assessmentData.assignmentDate,
+        skills: "Extracted from CV and job description",
+        experience: "Extracted from employment history",
+        // Additional extracted data for assessment
+        cosDuties: assessmentData.cosDuties,
+        jobDescriptionDuties: assessmentData.jobDescriptionDuties,
+        hasJobDescription: assessmentData.hasJobDescription,
+        hasReference: assessmentData.hasReferences,
+        hasEmploymentEvidence: assessmentData.hasContracts || assessmentData.hasPayslips,
+        missingDocsText: assessmentData.missingDocsText,
+        inconsistencies: assessmentData.inconsistencies,
+        // Raw extracted data for detailed analysis
+        extractedData: assessmentData.extractedData
+      };
+    } catch (error) {
+      console.error('Error extracting document information:', error);
+      // Fallback to placeholder data if extraction fails
+      return {
+        workerName: "Extraction Failed",
+        jobTitle: "Unknown",
+        socCode: "Unknown",
+        assignmentDate: "Unknown",
+        skills: "Not extracted",
+        experience: "Not extracted",
+        cosDuties: "Not provided",
+        jobDescriptionDuties: "Not provided",
+        hasJobDescription: false,
+        hasReference: false,
+        hasEmploymentEvidence: false,
+        missingDocsText: "Document extraction failed",
+        inconsistencies: "Unable to detect inconsistencies",
+        extractedData: null
+      };
+    }
   };
 
   // Enhanced assessment logic for skills & experience
@@ -411,22 +447,27 @@ Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue r
       return;
     }
     setUploading(true);
-    const extracted = extractSkillsExperienceInfo(selectedFiles);
-    setTimeout(() => {
+    
+    try {
+      // Extract real data from uploaded documents
+      const extracted = await extractSkillsExperienceInfo(selectedFiles);
+      
+      // Generate assessment using extracted data
       const assessmentResult = generateSkillsExperienceAssessment({
         workerName: extracted.workerName,
         cosReference: 'COS_' + Date.now(),
         assignmentDate: extracted.assignmentDate,
         jobTitle: extracted.jobTitle,
         socCode: extracted.socCode,
-        cosDuties: 'Care and support duties as described in the job description',
-        jobDescriptionDuties: 'Providing personal care, support with daily living activities, and maintaining care records',
-        hasJobDescription: true,
-        hasReference: false,
-        hasEmploymentEvidence: false,
-        missingDocsText: 'The following required documents are missing: Certificate of Sponsorship (CoS), reference letters, employment contracts, recent payslips, and training certificates.',
-        inconsistencies: 'unexplained employment gaps, discrepancies between CV and application dates, or roles unrelated to the care sector (such as administrative or finance positions)'
+        cosDuties: extracted.cosDuties,
+        jobDescriptionDuties: extracted.jobDescriptionDuties,
+        hasJobDescription: extracted.hasJobDescription,
+        hasReference: extracted.hasReference,
+        hasEmploymentEvidence: extracted.hasEmploymentEvidence,
+        missingDocsText: extracted.missingDocsText,
+        inconsistencies: extracted.inconsistencies
       });
+      
       const newAssessment: SkillsExperienceAssessment = {
         id: 'ASSESS_' + Date.now(),
         workerId: 'WORKER_' + Date.now(),
@@ -442,6 +483,7 @@ Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue r
         professionalAssessment: assessmentResult.professionalAssessment,
         generatedAt: new Date().toISOString()
       };
+      
       // Add worker
       const newWorker: SkillsExperienceWorker = {
         id: newAssessment.workerId,
@@ -456,14 +498,19 @@ Compliance Verdict: ${isCompliant ? "COMPLIANT — you are advised to continue r
         skills: extracted.skills,
         experience: extracted.experience
       };
+      
       setWorkers(prev => [...prev, newWorker]);
       setAssessments(prev => [...prev, newAssessment]);
       setCurrentAssessment(newAssessment);
-      setUploading(false);
       setSelectedFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
       setActiveTab('assessment');
-    }, 3000);
+    } catch (error) {
+      console.error('Error during analysis:', error);
+      alert('Error analyzing documents. Please try again.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   // PDF generation (adapted)
