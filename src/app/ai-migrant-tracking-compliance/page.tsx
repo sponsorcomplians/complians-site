@@ -2,20 +2,12 @@
 
 export const dynamic = 'force-dynamic'
 
-import AIComplianceDashboard from '@/components/AIComplianceDashboard'
+import MigrantTrackingComplianceDashboard from '@/components/MigrantTrackingComplianceDashboard'
 
-function MigrantTrackingComplianceContent() {
-  return <AIComplianceDashboard />
-}
-
-export default function AIMigrantTrackingCompliancePage() {
+export default function MigrantTrackingCompliancePage() {
   return (
-    <AIComplianceDashboard 
-      title="AI Migrant Tracking Compliance System"
-      description="AI-powered migrant activity tracking and compliance monitoring"
-      storagePrefix="migrantTracking"
-      documentType="Migrant Tracking Document"
-      complianceType="Migrant Tracking Compliance"
-    />
+    <div className="min-h-screen bg-gray-50">
+      <MigrantTrackingComplianceDashboard />
+    </div>
   )
 }
