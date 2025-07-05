@@ -54,10 +54,14 @@ export async function generateAINarrative(input: NarrativeInput): Promise<string
       const narrative = await generateWithModel(input, model);
       const duration = Date.now() - startTime;
       
+      // Log the generated narrative and validation result
+      console.log('Generated narrative:', narrative);
+      
       // Validate the output
       const validation = input.riskLevel === 'HIGH' 
         ? narrativeValidator.validateHighRisk(narrative, input)
         : narrativeValidator.validate(narrative, input);
+      console.log('Validation result:', validation);
       
       if (!validation.isValid) {
         console.error('Validation failed:', validation);
@@ -99,7 +103,10 @@ async function generateWithModel(input: NarrativeInput, model: ModelConfig): Pro
   
   const response = await fetch('/api/generate-narrative', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json' // Request JSON, not streaming
+    },
     body: JSON.stringify({ 
       input,
       prompt,
@@ -110,11 +117,12 @@ async function generateWithModel(input: NarrativeInput, model: ModelConfig): Pro
   });
   
   if (!response.ok) {
-    throw new Error(`API call failed: ${response.statusText}`);
+    const error = await response.text();
+    throw new Error(`API failed: ${error}`);
   }
   
-  const { narrative } = await response.json();
-  return narrative;
+  const data = await response.json();
+  return data.narrative;
 }
 
 function buildEnhancedPrompt(input: NarrativeInput): string {

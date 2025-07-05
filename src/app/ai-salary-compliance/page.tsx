@@ -1328,9 +1328,14 @@ Best regards`
                     Upload CoS certificate, payslips, employment contracts, and salary documentation for AI analysis
                   </p>
                   
+                  <label htmlFor="salary-documents" className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload Salary Documents
+                  </label>
                   <input
                     ref={fileInputRef}
                     type="file"
+                    id="salary-documents"
+                    name="salary-documents"
                     multiple
                     accept=".pdf,.docx,.doc,.xlsx,.xls"
                     onChange={handleFileSelect}
@@ -1570,8 +1575,13 @@ Best regards`
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <label htmlFor="salary-chat-input" className="block text-sm font-medium text-gray-700 mb-2">
+                    Ask a question about salary compliance
+                  </label>
                   <input 
                     type="text" 
+                    id="salary-chat-input"
+                    name="salary-chat-input"
                     placeholder="Ask about salary thresholds, NMW rates, payslip analysis..."
                     className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c3ff]"
                     value={chatInput}

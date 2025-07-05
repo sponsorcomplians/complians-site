@@ -18,12 +18,16 @@ export async function POST(request: NextRequest) {
           { role: "user", content: JSON.stringify(input) }
         ],
         temperature,
-        max_tokens: maxTokens,
-        response_format: { type: "json_object" }
+        max_tokens: maxTokens
       });
       
+      const content = completion.choices[0].message.content;
+      if (!content) {
+        throw new Error('No content received from OpenAI');
+      }
+      
       return NextResponse.json({ 
-        narrative: completion.choices[0].message.content 
+        narrative: content 
       });
     }
     

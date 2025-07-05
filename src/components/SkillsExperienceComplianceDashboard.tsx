@@ -915,27 +915,27 @@ ${assessment?.professionalAssessment}`;
       {/* Navigation Tabs */}
       <div className="flex justify-center mb-8">
         <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500">
-          <TabButton
-            value="dashboard"
-            icon={<BarChart3 className="h-5 w-5" />}
-            label="Dashboard"
-          />
-          <TabButton
-            value="workers"
-            icon={<Users className="h-5 w-5" />}
-            label="Workers"
-          />
-          <TabButton
-            value="assessment"
-            icon={<FileText className="h-5 w-5" />}
-            label="Assessment"
-          />
-          <TabButton
-            value="ai-assistant"
-            icon={<MessageSquare className="h-5 w-5" />}
-            label="AI Assistant"
-          />
-        </div>
+        <TabButton
+          value="dashboard"
+          icon={<BarChart3 className="h-5 w-5" />}
+          label="Dashboard"
+        />
+        <TabButton
+          value="workers"
+          icon={<Users className="h-5 w-5" />}
+          label="Workers"
+        />
+        <TabButton
+          value="assessment"
+          icon={<FileText className="h-5 w-5" />}
+          label="Assessment"
+        />
+        <TabButton
+          value="ai-assistant"
+          icon={<MessageSquare className="h-5 w-5" />}
+          label="AI Assistant"
+        />
+      </div>
       </div>
       {/* Tab Content */}
       {activeTab === 'dashboard' && (
@@ -1100,7 +1100,7 @@ ${assessment?.professionalAssessment}`;
                 Manage sponsored workers and their skills/experience
               </div>
             </div>
-            <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium">
+            <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium" aria-label="Add Worker">
               <Plus className="h-4 w-4" />
               Add Worker
             </button>
@@ -1164,8 +1164,8 @@ ${assessment?.professionalAssessment}`;
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
               <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
-              <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
-              <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
+              <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" aria-label="Upload Skills & Experience Documents" />
+              <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()} aria-label="Choose Files">Choose Files</Button>
               {selectedFiles.length > 0 && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between mb-2">
@@ -1178,33 +1178,34 @@ ${assessment?.professionalAssessment}`;
                     >
                       Clear All
                     </Button>
-                  </div>
+            </div>
                   <ul className="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto">
                     {selectedFiles.map((file, index) => (
                       <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded hover:bg-gray-100 transition">
                         <div className="flex items-center gap-2">
                           <FileText className="h-4 w-4" /> 
                           <span className="truncate">{file.name}</span>
-                        </div>
+              </div>
                         <Button 
                           size="sm" 
                           variant="destructive" 
                           onClick={() => handleRemoveFile(index)}
                           className="ml-2"
-                        >
+              >
                           <XCircle className="h-3 w-3" />
                         </Button>
                       </li>
                     ))}
                   </ul>
                   <div className="mt-4 space-y-2">
-                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
+                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0} aria-label="Analyze Skills & Experience">
                       <GraduationCap className="h-4 w-4 mr-2" />
                       Analyze Skills & Experience ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
                       onClick={() => fileInputRef.current?.click()}
+                      aria-label="Add More Files"
                     >
                       <Plus className="h-4 w-4 mr-2" /> 
                       Add More Files
@@ -1295,13 +1296,13 @@ ${assessment?.professionalAssessment}`;
                     />
                   </div>
                   <div className="flex flex-wrap gap-3 justify-center">
-                    <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDownloadPDF}>
+                    <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDownloadPDF} aria-label="Download PDF">
                       <Download className="h-4 w-4 mr-2" /> Download PDF
                     </Button>
-                    <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={handleEmailReport}>
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={handleEmailReport} aria-label="Email Report">
                       <Mail className="h-4 w-4 mr-2" /> Email Report
                     </Button>
-                    <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={handlePrintReport}>
+                    <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={handlePrintReport} aria-label="Print Report">
                       <Printer className="h-4 w-4 mr-2" /> Print Report
                     </Button>
                   </div>
