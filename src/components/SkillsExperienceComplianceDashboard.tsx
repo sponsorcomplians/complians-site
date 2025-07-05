@@ -513,37 +513,52 @@ export default function SkillsExperienceComplianceDashboard() {
     }
 
     const narrative = `
-Following a detailed review of the documents you provided, serious concerns have been identified regarding your assignment of Certificates of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence indicates that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This failure represents a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors. The issues are outlined below.
+Following a detailed review of the documents you have provided, serious concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
 
-A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}.
+A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}. The summary of job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
 
-The summary job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
+Upon examining the submitted documentation, we note that ${info.missingDocs.length === 0
+  ? "all required supporting documents have been provided, including the CoS, job description, CV, references, employment contracts, payslips, and training certificates, demonstrating a comprehensive record of assessment"
+  : `certain required documents have not been provided, including ${info.missingDocs.join(", ")}, thereby undermining the evidence of a thorough compliance check as required under Appendix D.`}
 
-**Step 1: Required Documents Assessment**
-${step1Pass ? "✅ All required documents have been provided, including Certificate of Sponsorship, job description, CV, reference letters, employment contracts, payslips, and training certificates." : "❌ Required documents have not all been provided, weakening evidence of compliance. Sponsors must keep these documents as evidence they have verified a worker's suitability (Appendix D requirement)."}
+Our analysis of the worker's employment history revealed ${info.employmentHistoryConsistent
+  ? "a consistent and logical progression toward the current role, with no unexplained gaps or inconsistencies"
+  : "significant inconsistencies and unexplained gaps, raising concerns about the authenticity of the claimed experience and whether the worker has maintained relevant skills"}.
 
-**Step 2: Employment History Consistency**
-${step2Pass ? "✅ Employment history is consistent across documents with matching dates and no unexplained gaps." : `❌ Employment history is inconsistent. ${info.inconsistenciesDescription || "Examples include mismatched dates, unexplained gaps, or non-progressive roles that suggest the worker may not have maintained required skills."}`}
+A review of the worker's prior roles and duties suggests that ${info.experienceMatchesDuties
+  ? "the experience aligns closely with the tasks described in the CoS and job description, indicating practical readiness for the role"
+  : "the experience does not match the specific duties required, with past roles appearing unrelated or insufficiently detailed to support the current appointment"}.
 
-**Step 3: Experience Match with CoS Duties**
-${step3Pass ? "✅ Worker's experience directly matches the CoS duties and job description requirements." : "❌ Worker's experience does not match the CoS duties and job description, raising concerns about their ability to perform the role competently."}
+We further note that the reference letters provided were ${info.referencesCredible
+  ? "credible and independently prepared, containing specific details of duties, dates, and performance, thus supporting the claimed experience"
+  : "lacking credibility, with concerns such as missing signatures, absence of official letterheads, or the appearance of being prepared by non-independent parties"}.
 
-**Step 4: Reference Credibility and Independence**
-${step4Pass ? "✅ References are credible and independent, with official letterhead, proper signatures, and detailed duty descriptions." : "❌ References lack credibility or independence, raising doubts about authenticity and the worker's claimed experience."}
+Regarding the recency and continuity of experience, the evidence indicates that ${info.experienceRecentAndContinuous
+  ? "the worker has been continuously active in the relevant sector up to the CoS assignment date, reinforcing confidence in their current skills"
+  : "the worker's experience is not recent or continuous, with long breaks or sector switches undermining confidence in their suitability for the role"}.
 
-**Step 5: Experience Recency and Continuity**
-${step5Pass ? "✅ Experience is recent and continuous, supporting the worker's ability to perform the role effectively." : "❌ Experience is not recent or continuous, undermining confidence in their suitability for the current role."}
+${info.missingDocs.length > 0 ? `In addition to the above concerns, we note that certain key documents, including ${info.missingDocs.join(", ")}, have not been provided. Under Annex C2(g) of the sponsor guidance:\n\n"You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020."\n` : ""}
 
-${missingDocsText}
-**Legal Assessment**
-
-As such, the Home Office will conclude that you have ${isCompliant ? "complied with" : "breached"} paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
+Based on these findings, the Home Office would conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
 
 "Sponsors must not employ a worker where they do not believe the worker will comply with the conditions of their permission to stay, or where they have reasonable grounds to believe the worker does not have the necessary skills, qualifications, or professional accreditations to do the job in question."
 
-${!isCompliant ? `This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.` : "This supports your ongoing compliance with sponsor duties."}
+This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
 
-**Compliance Verdict**: ${isCompliant ? "COMPLIANT — you are advised to continue robust monitoring and evidence retention in line with Appendix D requirements." : "SERIOUS BREACH — immediate remedial action is required, including a full internal audit of assigned CoS, experience evidence, job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks."}
+Compliance Verdict: SERIOUS BREACH — immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks.
+
+---
+
+**Decision Tree Compliance Summary:**
+
+- **Step 1: Required Documents Provided:** ${step1Pass ? "✅ Yes" : "❌ No"}
+- **Step 2: Employment History Consistent:** ${step2Pass ? "✅ Yes" : "❌ No"}
+- **Step 3: Experience Matches CoS Duties:** ${step3Pass ? "✅ Yes" : "❌ No"}
+- **Step 4: References Credible & Independent:** ${step4Pass ? "✅ Yes" : "❌ No"}
+- **Step 5: Experience Recent & Continuous:** ${step5Pass ? "✅ Yes" : "❌ No"}
+
+**Overall Risk Level:** ${riskLevel}
+**Final Compliance Status:** ${isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
 `;
 
     return {
