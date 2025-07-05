@@ -508,53 +508,52 @@ export default function SkillsExperienceComplianceDashboard() {
       riskLevel = "HIGH";
     }
 
-    // Use the new narrative generation service
+    let narrative: string;
+    const aiStartTime = Date.now();
+    
     try {
-      const { NarrativeGenerationService } = await import('../lib/narrativeGenerationService');
+      // Try AI narrative generation
+      console.log('Attempting AI narrative generation...');
+      const { generateAINarrative } = await import('@/lib/aiNarrativeService');
+      const { narrativeMetrics } = await import('@/lib/narrativeMetrics');
       
-      const narrativeInput = {
-        workerName: info.workerName,
-        cosReference: info.cosReference,
-        assignmentDate: info.assignmentDate,
-        jobTitle: info.jobTitle,
-        socCode: info.socCode,
-        cosDuties: info.cosDuties,
-        jobDescriptionDuties: info.jobDescriptionDuties,
+      narrative = await generateAINarrative({
+        ...info,
         step1Pass,
         step2Pass,
         step3Pass,
         step4Pass,
         step5Pass,
-        hasJobDescription: info.hasJobDescription,
-        hasCV: info.hasCV,
-        hasReferences: info.hasReferences,
-        hasContracts: info.hasContracts,
-        hasPayslips: info.hasPayslips,
-        hasTraining: info.hasTraining,
-        employmentHistoryConsistent: info.employmentHistoryConsistent,
-        experienceMatchesDuties: info.experienceMatchesDuties,
-        referencesCredible: info.referencesCredible,
-        experienceRecentAndContinuous: info.experienceRecentAndContinuous,
-        inconsistenciesDescription: info.inconsistenciesDescription,
-        missingDocs: info.missingDocs,
         isCompliant,
         riskLevel
-      };
-
-      const { narrative, audit } = await NarrativeGenerationService.generateNarrative(narrativeInput);
-
-      return {
-        complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
-        riskLevel: riskLevel,
-        redFlag: !isCompliant,
-        professionalAssessment: narrative,
-        auditId: audit.id
-      };
+      });
+      console.log('AI narrative generated successfully');
     } catch (error) {
-      console.error('Error generating narrative:', error);
+      console.error('AI generation failed, using fallback:', error);
       
-      // Fallback to original logic if service fails
-      const narrative = `
+      // Log fallback usage
+      try {
+        const { narrativeMetrics } = await import('@/lib/narrativeMetrics');
+        await narrativeMetrics.logGeneration({
+          id: `NAR_${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          input: { ...info, step1Pass, step2Pass, step3Pass, step4Pass, step5Pass, isCompliant, riskLevel },
+          output: '',
+          model: 'fallback',
+          promptVersion: '1.0.0',
+          temperature: 0,
+          duration: Date.now() - aiStartTime,
+          tokenCount: 0,
+          validationPassed: true,
+          fallbackUsed: true,
+          costEstimate: 0
+        });
+      } catch (metricsError) {
+        console.error('Failed to log metrics:', metricsError);
+      }
+      
+      // Use existing template literal as fallback
+      narrative = `
 Following a detailed review of the documents you have provided, serious concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
 
 A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}. The summary of job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
@@ -602,14 +601,14 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
 **Overall Risk Level:** ${riskLevel}
 **Final Compliance Status:** ${isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
 `;
-
-      return {
-        complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
-        riskLevel: riskLevel,
-        redFlag: !isCompliant,
-        professionalAssessment: narrative.trim(),
-      };
     }
+
+    return {
+      complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
+      riskLevel: riskLevel,
+      redFlag: !isCompliant,
+      professionalAssessment: narrative.trim(),
+    };
   };
 
   // Analyze button handler
