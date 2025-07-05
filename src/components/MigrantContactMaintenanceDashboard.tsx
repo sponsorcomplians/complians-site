@@ -23,7 +23,6 @@ import {
   HelpCircle,
   GraduationCap,
   Calendar,
-  Loader2,
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
@@ -235,7 +234,7 @@ export default function MigrantContactMaintenanceDashboard() {
   // Save workers to localStorage whenever they change
   useEffect(() => {
     if (workers.length > 0) {
-      localStorage.setItem('migrantContactMaintenanceDataWorkers', JSON.stringify(workers));
+              localStorage.setItem('migrantContactMaintenanceDataWorkers', JSON.stringify(workers));
     }
   }, [workers]);
 
@@ -255,7 +254,7 @@ export default function MigrantContactMaintenanceDashboard() {
   // Save assessments to localStorage whenever they change
   useEffect(() => {
     if (assessments.length > 0) {
-      localStorage.setItem('migrantContactMaintenanceDataAssessments', JSON.stringify(assessments));
+              localStorage.setItem('migrantContactMaintenanceDataAssessments', JSON.stringify(assessments));
     }
   }, [assessments]);
 
@@ -598,10 +597,10 @@ ${assessment?.professionalAssessment}`;
     if (confirm('Are you sure you want to delete this worker?')) {
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('migrantContactMaintenanceDataWorkers', JSON.stringify(updatedWorkers));
+              localStorage.setItem('migrantContactMaintenanceDataWorkers', JSON.stringify(updatedWorkers));
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('migrantContactMaintenanceDataAssessments', JSON.stringify(updatedAssessments));
+              localStorage.setItem('migrantContactMaintenanceDataAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -870,9 +869,9 @@ ${assessment?.professionalAssessment}`;
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Worker Name</th>
-                  <th className="px-4 py-2 text-left">Current Address</th>
-                  <th className="px-4 py-2 text-left">Last Contact Update</th>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Job Title</th>
+                  <th className="px-4 py-2 text-left">SOC Code</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Risk Level</th>
                   <th className="px-4 py-2 text-left">View Report</th>
@@ -959,22 +958,9 @@ ${assessment?.professionalAssessment}`;
                     ))}
                   </ul>
                   <div className="mt-4 space-y-2">
-                    <Button 
-                      onClick={handleAnalyze}
-                      disabled={!selectedFiles.length || uploading}
-                      className="w-full bg-brand-light hover:bg-brand-dark text-white"
-                    >
-                      {uploading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          Analyze Contact Records ({selectedFiles.length} files)
-                        </>
-                      )}
+                    <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
+                      <GraduationCap className="h-4 w-4 mr-2" />
+                      Analyze Contact Records ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
