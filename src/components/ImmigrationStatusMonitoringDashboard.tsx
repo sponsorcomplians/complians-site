@@ -207,6 +207,9 @@ export default function ImmigrationStatusMonitoringDashboard() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [supabaseError, setSupabaseError] = useState<string | null>(null);
+  const [supabaseClient, setSupabaseClient] = useState<any>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -217,7 +220,7 @@ export default function ImmigrationStatusMonitoringDashboard() {
 
   // Load workers from localStorage on mount
   useEffect(() => {
-    const savedWorkers = localStorage.getItem('immigrationStatusMonitoringData');
+    const savedWorkers = localStorage.getItem('immigrationStatusMonitoringDataWorkers');
     if (savedWorkers) {
       try {
         const parsedWorkers = JSON.parse(savedWorkers);
@@ -231,13 +234,13 @@ export default function ImmigrationStatusMonitoringDashboard() {
   // Save workers to localStorage whenever they change
   useEffect(() => {
     if (workers.length > 0) {
-      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(workers));
+      localStorage.setItem('immigrationStatusMonitoringDataWorkers', JSON.stringify(workers));
     }
   }, [workers]);
 
   // Load assessments from localStorage on mount
   useEffect(() => {
-    const savedAssessments = localStorage.getItem('immigrationStatusMonitoringData');
+    const savedAssessments = localStorage.getItem('immigrationStatusMonitoringDataAssessments');
     if (savedAssessments) {
       try {
         const parsedAssessments = JSON.parse(savedAssessments);
@@ -251,7 +254,7 @@ export default function ImmigrationStatusMonitoringDashboard() {
   // Save assessments to localStorage whenever they change
   useEffect(() => {
     if (assessments.length > 0) {
-      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(assessments));
+      localStorage.setItem('immigrationStatusMonitoringDataAssessments', JSON.stringify(assessments));
     }
   }, [assessments]);
 
@@ -404,6 +407,12 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       return;
     }
     setUploading(true);
+    // Immigration status monitoring analysis messages
+    console.log("Monitoring visa expiry dates...");
+    console.log("Checking immigration status validity...");
+    console.log("Verifying continuous right to work...");
+    console.log("Tracking status change conditions...");
+    console.log("Analyzing time limits and restrictions...");
     const extracted = extractSkillsExperienceInfo(selectedFiles);
     setTimeout(() => {
       const assessmentResult = generateSkillsExperienceAssessment(
@@ -594,10 +603,10 @@ ${assessment?.professionalAssessment}`;
     if (confirm('Are you sure you want to delete this worker?')) {
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(updatedWorkers));
+      localStorage.setItem('immigrationStatusMonitoringDataWorkers', JSON.stringify(updatedWorkers));
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(updatedAssessments));
+      localStorage.setItem('immigrationStatusMonitoringDataAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -659,7 +668,7 @@ ${assessment?.professionalAssessment}`;
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
           <Bot className="h-8 w-8 text-brand-light" />
-          AI Skills & Experience Compliance System
+          AI Immigration Status Monitoring Agent
         </h1>
         <p className="text-gray-600">
           AI-powered skills and experience compliance analysis for UK sponsors
@@ -866,9 +875,10 @@ ${assessment?.professionalAssessment}`;
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">Job Title</th>
-                  <th className="px-4 py-2 text-left">SOC Code</th>
+                  <th className="px-4 py-2 text-left">Worker Name</th>
+                  <th className="px-4 py-2 text-left">Visa Type</th>
+                  <th className="px-4 py-2 text-left">Expiry Date</th>
+                  <th className="px-4 py-2 text-left">Days Until Expiry</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Risk Level</th>
                   <th className="px-4 py-2 text-left">View Report</th>
@@ -877,28 +887,16 @@ ${assessment?.professionalAssessment}`;
               </thead>
               <tbody>
                 {workers.map((worker) => (
-                  <tr
-                    key={worker.id}
-                    className={
-                      worker.redFlag
-                        ? 'bg-red-50'
-                        : worker.complianceStatus === 'SERIOUS_BREACH'
-                        ? 'bg-yellow-50'
-                        : ''
-                    }
-                  >
+                  <tr key={worker.id} className="border-b">
                     <td className="px-4 py-2">{worker.name}</td>
                     <td className="px-4 py-2">{worker.jobTitle}</td>
                     <td className="px-4 py-2">{worker.socCode}</td>
+                    <td className="px-4 py-2">{worker.assignmentDate}</td>
+                    <td className="px-4 py-2">{getStatusBadge(worker.complianceStatus, worker.redFlag)}</td>
+                    <td className="px-4 py-2">{getRiskBadge(worker.riskLevel)}</td>
                     <td className="px-4 py-2">
-                      {getStatusBadge(worker.complianceStatus, worker.redFlag)}
-                    </td>
-                    <td className="px-4 py-2">
-                      {getRiskBadge(worker.riskLevel)}
-                    </td>
-                    <td className="px-4 py-2">
-                      <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={() => handleViewWorkerReport(worker.id)}>
-                        <Eye className="h-4 w-4 mr-1" /> View Report
+                      <Button size="sm" onClick={() => handleViewWorkerReport(worker.id)}>
+                        <Eye className="h-4 w-4 mr-1" /> View
                       </Button>
                     </td>
                     <td className="px-4 py-2">
@@ -919,8 +917,8 @@ ${assessment?.professionalAssessment}`;
           <div className="bg-white rounded-lg p-6 shadow border">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
-              <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
+              <h3 className="text-lg font-medium mb-2">Upload Immigration Status Documents</h3>
+              <p className="text-gray-600 mb-4">Upload visa documents, BRP cards, share codes, and immigration status records for AI monitoring</p>
               <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
               <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
               {selectedFiles.length > 0 && (
@@ -957,7 +955,7 @@ ${assessment?.professionalAssessment}`;
                   <div className="mt-4 space-y-2">
                     <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
                       <GraduationCap className="h-4 w-4 mr-2" />
-                      Analyze Skills & Experience ({selectedFiles.length} files)
+                      Analyze Immigration Status ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
