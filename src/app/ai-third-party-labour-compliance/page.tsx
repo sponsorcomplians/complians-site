@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
-import AIComplianceDashboard from '@/components/AIComplianceDashboard'
+import ThirdPartyLabourComplianceDashboard from '@/components/ThirdPartyLabourComplianceDashboard'
 
 function ThirdPartyLabourComplianceContent() {
-  return <AIComplianceDashboard />
+  return <ThirdPartyLabourComplianceDashboard />
 }
 
 export default function AIThirdPartyLabourCompliancePage() {
