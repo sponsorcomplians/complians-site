@@ -1,19 +1,16 @@
 "use client";
 
 import { Suspense } from 'react';
+import ParagraphC726ComplianceDashboard from '@/components/ParagraphC726ComplianceDashboard';
 
 export const dynamic = 'force-dynamic'
 
-import AIComplianceDashboard from "@/components/AIComplianceDashboard";
-
-function ParagraphC726ComplianceContent() {
-  return <AIComplianceDashboard />;
-}
-
-export default function AIParagraphC726CompliancePage() {
+export default function ParagraphC726CompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ParagraphC726ComplianceContent />
-    </Suspense>
+    <div className="min-h-screen bg-gray-50">
+      <Suspense fallback={<div>Loading...</div>}>
+        <ParagraphC726ComplianceDashboard />
+      </Suspense>
+    </div>
   );
 }
