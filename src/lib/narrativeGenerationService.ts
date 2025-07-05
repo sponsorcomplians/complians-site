@@ -1,6 +1,7 @@
 import { NarrativeInput, NarrativeAudit, ModelConfig } from '../types/narrative.types';
 import { CURRENT_LEGAL_REFERENCES, getFormattedLegalReference, getLegalReferencesForComplianceArea } from './legalReferences';
 import { narrativeCache } from './narrativeCache';
+import { narrativeValidator } from './narrativeValidation';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -32,6 +33,9 @@ export class NarrativeGenerationService {
     // Check cache first
     const cachedNarrative = narrativeCache.get(input);
     if (cachedNarrative) {
+      // Validate cached narrative
+      const validation = narrativeValidator.validate(cachedNarrative, input);
+      
       const audit: NarrativeAudit = {
         id: auditId,
         timestamp: new Date().toISOString(),
@@ -42,10 +46,13 @@ export class NarrativeGenerationService {
         temperature: 0,
         duration: Date.now() - startTime,
         tokenCount: Math.ceil(cachedNarrative.length / 4),
-        validationPassed: this.validateNarrative(cachedNarrative, input),
+        validationPassed: validation.isValid,
         fallbackUsed: false,
         costEstimate: 0,
-        cacheHit: true
+        cacheHit: true,
+        validationScore: validation.score,
+        validationErrors: validation.errors,
+        validationWarnings: validation.warnings
       };
 
       this.auditLog.push(audit);
@@ -58,6 +65,9 @@ export class NarrativeGenerationService {
       
       // Cache the generated narrative
       narrativeCache.set(input, narrative);
+      
+      // Validate the generated narrative
+      const validation = narrativeValidator.validate(narrative, input);
       
       // Estimate token count (rough approximation)
       const tokenCount = Math.ceil(narrative.length / 4);
@@ -76,9 +86,12 @@ export class NarrativeGenerationService {
         temperature: modelConfig.temperature,
         duration: Date.now() - startTime,
         tokenCount,
-        validationPassed: this.validateNarrative(narrative, input),
+        validationPassed: validation.isValid,
         fallbackUsed: false,
-        costEstimate
+        costEstimate,
+        validationScore: validation.score,
+        validationErrors: validation.errors,
+        validationWarnings: validation.warnings
       };
 
       // Store audit log
@@ -88,6 +101,9 @@ export class NarrativeGenerationService {
     } catch (error) {
       // Fallback to template-based generation
       const fallbackNarrative = this.generateFallbackNarrative(input);
+      
+      // Validate fallback narrative
+      const validation = narrativeValidator.validate(fallbackNarrative, input);
       
       const audit: NarrativeAudit = {
         id: auditId,
@@ -99,9 +115,12 @@ export class NarrativeGenerationService {
         temperature: 0,
         duration: Date.now() - startTime,
         tokenCount: Math.ceil(fallbackNarrative.length / 4),
-        validationPassed: true,
+        validationPassed: validation.isValid,
         fallbackUsed: true,
-        costEstimate: 0
+        costEstimate: 0,
+        validationScore: validation.score,
+        validationErrors: validation.errors,
+        validationWarnings: validation.warnings
       };
 
       this.auditLog.push(audit);
@@ -205,19 +224,7 @@ Legal Framework: ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
 This assessment was generated using fallback template due to system constraints.`;
   }
 
-  /**
-   * Validate generated narrative against input data
-   */
-  private static validateNarrative(narrative: string, input: NarrativeInput): boolean {
-    // Basic validation checks
-    const hasWorkerName = narrative.includes(input.workerName);
-    const hasJobTitle = narrative.includes(input.jobTitle);
-    const hasSocCode = narrative.includes(input.socCode);
-    const hasComplianceStatus = narrative.includes(input.isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH');
-    const hasRiskLevel = narrative.includes(input.riskLevel);
-    
-    return hasWorkerName && hasJobTitle && hasSocCode && hasComplianceStatus && hasRiskLevel;
-  }
+
 
   /**
    * Get audit log for compliance reporting

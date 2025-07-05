@@ -50,6 +50,9 @@ export interface NarrativeAudit {
   experimentGroup?: string;
   costEstimate?: number;
   cacheHit?: boolean;
+  validationScore?: number;
+  validationErrors?: string[];
+  validationWarnings?: string[];
 }
 
 export interface ExperimentConfig {
