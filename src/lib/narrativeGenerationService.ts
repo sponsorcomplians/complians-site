@@ -1,5 +1,6 @@
 import { NarrativeInput, NarrativeAudit, ModelConfig } from '../types/narrative.types';
 import { CURRENT_LEGAL_REFERENCES, getFormattedLegalReference, getLegalReferencesForComplianceArea } from './legalReferences';
+import { narrativeCache } from './narrativeCache';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -28,9 +29,35 @@ export class NarrativeGenerationService {
     const startTime = Date.now();
     const auditId = `AUDIT_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+    // Check cache first
+    const cachedNarrative = narrativeCache.get(input);
+    if (cachedNarrative) {
+      const audit: NarrativeAudit = {
+        id: auditId,
+        timestamp: new Date().toISOString(),
+        input,
+        output: cachedNarrative,
+        model: 'cache-hit',
+        promptVersion: this.currentPromptVersion,
+        temperature: 0,
+        duration: Date.now() - startTime,
+        tokenCount: Math.ceil(cachedNarrative.length / 4),
+        validationPassed: this.validateNarrative(cachedNarrative, input),
+        fallbackUsed: false,
+        costEstimate: 0,
+        cacheHit: true
+      };
+
+      this.auditLog.push(audit);
+      return { narrative: cachedNarrative, audit };
+    }
+
     try {
       // Generate the narrative using the decision tree logic
       const narrative = this.buildNarrativeFromDecisionTree(input);
+      
+      // Cache the generated narrative
+      narrativeCache.set(input, narrative);
       
       // Estimate token count (rough approximation)
       const tokenCount = Math.ceil(narrative.length / 4);

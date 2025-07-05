@@ -49,6 +49,7 @@ export interface NarrativeAudit {
   fallbackUsed: boolean;
   experimentGroup?: string;
   costEstimate?: number;
+  cacheHit?: boolean;
 }
 
 export interface ExperimentConfig {
