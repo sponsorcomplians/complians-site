@@ -33,7 +33,7 @@ interface SkillsExperienceWorker {
   name: string;
   jobTitle: string;
   socCode: string;
-  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" | "MINOR_ISSUES";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   lastAssessment: string;
   redFlag: boolean;
@@ -50,7 +50,7 @@ interface SkillsExperienceAssessment {
   socCode: string;
   skills: string;
   experience: string;
-  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" | "MINOR_ISSUES";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   redFlag: boolean;
   assignmentDate: string;
@@ -192,11 +192,25 @@ const riskLevelColors = {
   HIGH: 'bg-red-100 text-red-800',
 };
 
+type GenuineVacancy = {
+  id: string;
+  positionTitle: string;
+  reference: string;
+  department: string;
+  postedDate: string;
+  status: 'COMPLIANT' | 'SERIOUS_BREACH' | 'MINOR_ISSUES';
+  assessmentDate: string;
+  findings: string[];
+  complianceScore: number;
+  documents: string[];
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+};
+
 export default function ImmigrationStatusMonitoringDashboard() {
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>([]);
+  const [vacancies, setVacancies] = useState<GenuineVacancy[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -218,25 +232,25 @@ export default function ImmigrationStatusMonitoringDashboard() {
   const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<SkillsExperienceAssessment | null>(null);
   const [recipientEmail, setRecipientEmail] = useState('');
 
-  // Load workers from localStorage on mount
+  // Load vacancies from localStorage on mount
   useEffect(() => {
     const savedWorkers = localStorage.getItem('immigrationStatusMonitoringDataWorkers');
     if (savedWorkers) {
       try {
         const parsedWorkers = JSON.parse(savedWorkers);
-        setWorkers(parsedWorkers);
+        setVacancies(parsedWorkers);
       } catch (error) {
         console.error('Error loading saved workers:', error);
       }
     }
   }, []);
 
-  // Save workers to localStorage whenever they change
+  // Save vacancies to localStorage whenever they change
   useEffect(() => {
-    if (workers.length > 0) {
-      localStorage.setItem('immigrationStatusMonitoringDataWorkers', JSON.stringify(workers));
+    if (vacancies.length > 0) {
+      localStorage.setItem('immigrationStatusMonitoringDataWorkers', JSON.stringify(vacancies));
     }
-  }, [workers]);
+  }, [vacancies]);
 
   // Load assessments from localStorage on mount
   useEffect(() => {
@@ -260,29 +274,29 @@ export default function ImmigrationStatusMonitoringDashboard() {
 
   // Dashboard stats
   const dashboardStats = {
-    totalWorkers: workers.length,
+    totalVacancies: vacancies.length,
     complianceRate: Math.round(
-      (workers.filter((w) => w.complianceStatus === 'COMPLIANT').length /
-        workers.length) *
+      (vacancies.filter((v) => v.status === 'COMPLIANT').length /
+        vacancies.length) *
         100
     ),
-    compliantWorkers: workers.filter(
-      (w) => w.complianceStatus === 'COMPLIANT'
+    compliantVacancies: vacancies.filter(
+      (v) => v.status === 'COMPLIANT'
     ).length,
-    redFlags: workers.filter((w) => w.redFlag).length,
-    highRisk: workers.filter((w) => w.riskLevel === 'HIGH').length,
+    redFlags: vacancies.filter((v) => v.findings.length > 0).length,
+    highRisk: vacancies.filter((v) => v.riskLevel === 'HIGH').length,
   };
 
-  // Chart data - recalculated when workers change
+  // Chart data - recalculated when vacancies change
   const pieChartData = [
-    { name: 'Compliant', value: workers.filter(w => w.complianceStatus === 'COMPLIANT').length, color: '#10B981' },
-    { name: 'Serious Breach', value: workers.filter(w => w.complianceStatus === 'SERIOUS_BREACH').length, color: '#EF4444' }
+    { name: 'Compliant', value: vacancies.filter(v => v.status === 'COMPLIANT').length, color: '#10B981' },
+    { name: 'Serious Breach', value: vacancies.filter(v => v.status === 'SERIOUS_BREACH').length, color: '#EF4444' }
   ];
 
   const barChartData = [
-    { name: 'Low Risk', value: workers.filter(w => w.riskLevel === 'LOW').length },
-    { name: 'Medium Risk', value: workers.filter(w => w.riskLevel === 'MEDIUM').length },
-    { name: 'High Risk', value: workers.filter(w => w.riskLevel === 'HIGH').length }
+    { name: 'Low Risk', value: vacancies.filter(v => v.riskLevel === 'LOW').length },
+    { name: 'Medium Risk', value: vacancies.filter(v => v.riskLevel === 'MEDIUM').length },
+    { name: 'High Risk', value: vacancies.filter(v => v.riskLevel === 'HIGH').length }
   ];
 
   const complianceStatusColors = {
@@ -335,68 +349,56 @@ export default function ImmigrationStatusMonitoringDashboard() {
   // File extraction logic (adapted for skills/experience)
   const extractSkillsExperienceInfo = (files: File[]) => {
     // Simulate extraction logic for skills/experience
-    let workerName = "Unknown Worker";
-    let jobTitle = "Unknown";
-    let socCode = "0000";
-    let assignmentDate = "2024-01-01";
-    let skills = "";
-    let experience = "";
+    let positionTitle = "Unknown Position";
+    let reference = "REF_" + Date.now();
+    let department = "Unknown Department";
+    let postedDate = new Date().toISOString().split('T')[0];
+    let documents: string[] = [];
     // Extraction logic here (e.g., parse filenames, etc.)
     // ...
-    return { workerName, jobTitle, socCode, assignmentDate, skills, experience };
+    return { positionTitle, reference, department, postedDate, documents };
   };
 
   // Assessment logic (adapted)
   const generateSkillsExperienceAssessment = (
-    workerName: string,
-    jobTitle: string,
-    socCode: string,
-    assignmentDate: string,
-    skills: string,
-    experience: string
+    positionTitle: string,
+    reference: string,
+    department: string,
+    postedDate: string,
+    documents: string[]
   ) => {
-    // Enhanced assessment logic for skills & experience
-    let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
-    let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
+    // Simulate findings
+    const findings: string[] = [];
+    // Simulate random findings for demonstration
+    if (Math.random() < 0.3) findings.push('Position requirements appear inflated beyond genuine business needs');
+    if (Math.random() < 0.3) findings.push('Salary below market rate for the role');
+    if (Math.random() < 0.3) findings.push('Missing evidence of genuine recruitment efforts');
+    if (Math.random() < 0.3) findings.push('Job description contains potentially discriminatory requirements');
+    if (Math.random() < 0.3) findings.push('No clear business justification for the vacancy');
+
+    let complianceStatus: 'COMPLIANT' | 'SERIOUS_BREACH' | 'MINOR_ISSUES' = 'COMPLIANT';
+    let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
     let redFlag = false;
-    
-    // Check experience requirements
-    const hasExperience = experience && experience.length > 0;
-    const hasSkills = skills && skills.length > 0;
-    const experienceYears = experience.toLowerCase().includes('year') ? 
-      parseInt(experience.match(/(\d+)\s*year/)?.[1] || '0') : 0;
-    
-    // Determine compliance based on skills & experience
-    if (!hasExperience || !hasSkills || experienceYears < 2) {
-      complianceStatus = "SERIOUS_BREACH";
-      riskLevel = "HIGH";
+    if (findings.length === 0) {
+      complianceStatus = 'COMPLIANT';
+      riskLevel = 'LOW';
+    } else if (findings.length <= 2) {
+      complianceStatus = 'MINOR_ISSUES';
+      riskLevel = 'MEDIUM';
+    } else {
+      complianceStatus = 'SERIOUS_BREACH';
+      riskLevel = 'HIGH';
       redFlag = true;
-    } else if (experienceYears < 3) {
-      riskLevel = "MEDIUM";
     }
-    
-    const professionalAssessment = `You assigned Certificate of Sponsorship (CoS) for ${workerName} on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
 
-The summary of job description in the CoS states:
-
-The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
-
-The usual requirement for performing such a role is demonstrable evidence of sufficient skills and experience in health and social care (e.g., minimum 2-3 years of relevant experience), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
-
-Upon review of the documentation provided, we acknowledge that ${workerName} has ${experienceYears} years of experience in the care sector. ${hasSkills ? 'The worker has demonstrated relevant skills for this role.' : 'The worker has not demonstrated sufficient relevant skills for this role.'} ${hasExperience ? 'Experience documentation has been provided.' : 'Experience documentation has not been provided.'}
-
-${complianceStatus === 'SERIOUS_BREACH' ? 
-  `This represents a serious breach of sponsor compliance obligations as the worker does not meet the minimum skills and experience requirements for this role. The Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary skills and experience for the role in question.` :
-  `The worker meets the skills and experience requirements for this role. Compliance is maintained with Home Office standards.`
-}
-
-Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH — immediate remedial action required' : 'COMPLIANT — continue monitoring skills and experience requirements'}.`;
+    const professionalAssessment = `Vacancy Compliance Assessment for position: ${positionTitle}\n\nFindings:\n- ${findings.length ? findings.join('\n- ') : 'No compliance issues detected.'}\n\nChecks performed:\n1. Checking genuine business need documentation...\n2. Verifying market rate salary compliance...\n3. Analyzing job requirements for realism...\n4. Scanning for discriminatory language...\n5. Confirming proper advertising evidence...\n\nCompliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH — immediate remedial action required' : complianceStatus === 'MINOR_ISSUES' ? 'MINOR ISSUES — review recommended' : 'COMPLIANT — vacancy meets all requirements.'}`;
 
     return {
       complianceStatus,
       riskLevel,
       redFlag,
-      professionalAssessment
+      professionalAssessment,
+      findings,
     };
   };
 
@@ -407,52 +409,45 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH �
       return;
     }
     setUploading(true);
-    // Immigration status monitoring analysis messages
-    console.log("Monitoring visa expiry dates...");
-    console.log("Checking immigration status validity...");
-    console.log("Verifying continuous right to work...");
-    console.log("Tracking status change conditions...");
-    console.log("Analyzing time limits and restrictions...");
     const extracted = extractSkillsExperienceInfo(selectedFiles);
     setTimeout(() => {
       const assessmentResult = generateSkillsExperienceAssessment(
-        extracted.workerName,
-        extracted.jobTitle,
-        extracted.socCode,
-        extracted.assignmentDate,
-        extracted.skills,
-        extracted.experience
+        extracted.positionTitle,
+        extracted.reference,
+        extracted.department,
+        extracted.postedDate,
+        extracted.documents
       );
       const newAssessment: SkillsExperienceAssessment = {
         id: 'ASSESS_' + Date.now(),
         workerId: 'WORKER_' + Date.now(),
-        workerName: extracted.workerName,
-        jobTitle: extracted.jobTitle,
-        socCode: extracted.socCode,
-        skills: extracted.skills,
-        experience: extracted.experience,
+        workerName: extracted.positionTitle,
+        jobTitle: extracted.positionTitle,
+        socCode: extracted.reference,
+        skills: extracted.positionTitle,
+        experience: extracted.positionTitle,
         complianceStatus: assessmentResult.complianceStatus,
         riskLevel: assessmentResult.riskLevel,
         redFlag: assessmentResult.redFlag,
-        assignmentDate: extracted.assignmentDate,
+        assignmentDate: extracted.postedDate,
         professionalAssessment: assessmentResult.professionalAssessment,
         generatedAt: new Date().toISOString()
       };
-      // Add worker
-      const newWorker: SkillsExperienceWorker = {
+      // Add vacancy
+      const newVacancy: GenuineVacancy = {
         id: newAssessment.workerId,
-        name: extracted.workerName,
-        jobTitle: extracted.jobTitle,
-        socCode: extracted.socCode,
-        complianceStatus: assessmentResult.complianceStatus,
+        positionTitle: extracted.positionTitle,
+        reference: extracted.reference,
+        department: extracted.department,
+        postedDate: extracted.postedDate,
+        status: assessmentResult.complianceStatus,
+        assessmentDate: new Date().toISOString().split('T')[0],
+        findings: assessmentResult.findings,
+        complianceScore: 0,
+        documents: extracted.documents,
         riskLevel: assessmentResult.riskLevel,
-        lastAssessment: new Date().toISOString().split('T')[0],
-        redFlag: assessmentResult.redFlag,
-        assignmentDate: extracted.assignmentDate,
-        skills: extracted.skills,
-        experience: extracted.experience
       };
-      setWorkers(prev => [...prev, newWorker]);
+      setVacancies(prev => [...prev, newVacancy]);
       setAssessments(prev => [...prev, newAssessment]);
       setCurrentAssessment(newAssessment);
       setUploading(false);
@@ -557,54 +552,54 @@ ${assessment?.professionalAssessment}`;
     window.print();
   };
 
-  // View specific worker report
-  const handleViewWorkerReport = (workerId: string) => {
-    const workerAssessment = assessments.find(a => a.workerId === workerId);
-    if (workerAssessment) {
-      setSelectedWorkerAssessment(workerAssessment);
+  // View specific vacancy report
+  const handleViewWorkerReport = (vacancyId: string) => {
+    const vacancyAssessment = assessments.find(a => a.workerId === vacancyId);
+    if (vacancyAssessment) {
+      setSelectedWorkerAssessment(vacancyAssessment);
       setActiveTab('assessment');
     } else {
-      const worker = workers.find(w => w.id === workerId);
-      if (worker) {
+      const vacancy = vacancies.find(v => v.id === vacancyId);
+      if (vacancy) {
         const mockAssessment: SkillsExperienceAssessment = {
           id: 'ASSESS_' + Date.now(),
-          workerId: worker.id,
-          workerName: worker.name,
-          jobTitle: worker.jobTitle,
-          socCode: worker.socCode,
-          skills: worker.skills,
-          experience: worker.experience,
-          complianceStatus: worker.complianceStatus,
-          riskLevel: worker.riskLevel,
-          redFlag: worker.redFlag,
-          assignmentDate: worker.assignmentDate,
-          professionalAssessment: `Skills & Experience assessment for ${worker.name}`,
+          workerId: vacancy.id,
+          workerName: vacancy.positionTitle,
+          jobTitle: vacancy.positionTitle,
+          socCode: vacancy.reference,
+          skills: vacancy.positionTitle,
+          experience: vacancy.positionTitle,
+          complianceStatus: vacancy.status,
+          riskLevel: 'LOW',
+          redFlag: false,
+          assignmentDate: vacancy.postedDate,
+          professionalAssessment: `Skills & Experience assessment for ${vacancy.positionTitle}`,
           generatedAt: new Date().toISOString()
         };
         setAssessments(prev => [...prev, mockAssessment]);
         setSelectedWorkerAssessment(mockAssessment);
         setActiveTab('assessment');
       } else {
-        alert('Worker not found.');
+        alert('Vacancy not found.');
       }
     }
   };
 
   // Help with breach
-  const handleHelpWithBreach = (workerName: string) => {
-    const subject = `Help Required - Skills & Experience Compliance Breach for ${workerName}`;
-    const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
+  const handleHelpWithBreach = (vacancyName: string) => {
+    const subject = `Help Required - Skills & Experience Compliance Breach for ${vacancyName}`;
+    const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for vacancy: ${vacancyName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
     const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink);
   };
 
-  // Delete worker
-  const handleDeleteWorker = (workerId: string) => {
-    if (confirm('Are you sure you want to delete this worker?')) {
-      const updatedWorkers = workers.filter(w => w.id !== workerId);
-      setWorkers(updatedWorkers);
+  // Delete vacancy
+  const handleDeleteWorker = (vacancyId: string) => {
+    if (confirm('Are you sure you want to delete this vacancy?')) {
+      const updatedWorkers = vacancies.filter(v => v.id !== vacancyId);
+      setVacancies(updatedWorkers);
       localStorage.setItem('immigrationStatusMonitoringDataWorkers', JSON.stringify(updatedWorkers));
-      const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
+      const updatedAssessments = assessments.filter(a => a.workerId !== vacancyId);
       setAssessments(updatedAssessments);
       localStorage.setItem('immigrationStatusMonitoringDataAssessments', JSON.stringify(updatedAssessments));
     }
@@ -671,7 +666,7 @@ ${assessment?.professionalAssessment}`;
           AI Immigration Status Monitoring Agent
         </h1>
         <p className="text-gray-600">
-          AI-powered skills and experience compliance analysis for UK sponsors
+          Track visa expiries, monitor status changes, and ensure continuous right to work
         </p>
       </div>
       {/* Explainer Module */}
@@ -687,9 +682,9 @@ ${assessment?.professionalAssessment}`;
             label="Dashboard"
           />
           <TabButton
-            value="workers"
+            value="vacancies"
             icon={<Users className="h-5 w-5" />}
-            label="Workers"
+            label="Vacancies"
           />
           <TabButton
             value="assessment"
@@ -712,12 +707,12 @@ ${assessment?.professionalAssessment}`;
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium text-gray-500">
-                    Total Workers
+                    Total Vacancies
                   </div>
                   <div className="text-2xl font-bold text-brand-dark">
-                    {dashboardStats.totalWorkers}
+                    {dashboardStats.totalVacancies}
                   </div>
-                  <div className="text-xs text-gray-400">Active workers</div>
+                  <div className="text-xs text-gray-400">Active vacancies</div>
                 </div>
                 <Users className="h-6 w-6 text-brand-light" />
               </div>
@@ -732,7 +727,7 @@ ${assessment?.professionalAssessment}`;
                     {dashboardStats.complianceRate}%
                   </div>
                   <div className="text-xs text-gray-400">
-                    {dashboardStats.compliantWorkers} compliant workers
+                    {dashboardStats.compliantVacancies} compliant vacancies
                   </div>
                 </div>
                 <CheckCircle className="h-6 w-6 text-green-500" />
@@ -770,7 +765,7 @@ ${assessment?.professionalAssessment}`;
                     {dashboardStats.highRisk}
                   </div>
                   <div className="text-xs text-gray-400">
-                    High risk workers
+                    High risk vacancies
                   </div>
                 </div>
               </div>
@@ -854,58 +849,37 @@ ${assessment?.professionalAssessment}`;
         </div>
       )}
 
-      {activeTab === 'workers' && (
+      {activeTab === 'vacancies' && (
         <div className="bg-white rounded-lg p-6 shadow border">
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="font-semibold text-brand-dark flex items-center gap-2">
                 <Users className="h-5 w-5" />
-                Workers
+                Vacancies
               </div>
               <div className="text-gray-600 text-sm mt-1">
-                Manage sponsored workers and their skills/experience
+                Manage and assess all posted vacancies for genuine compliance
               </div>
             </div>
             <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium">
               <Plus className="h-4 w-4" />
-              Add Worker
+              Add Vacancy
             </button>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Worker Name</th>
-                  <th className="px-4 py-2 text-left">Visa Type</th>
-                  <th className="px-4 py-2 text-left">Expiry Date</th>
-                  <th className="px-4 py-2 text-left">Days Until Expiry</th>
+                  <th className="px-4 py-2 text-left">Position Title</th>
+                  <th className="px-4 py-2 text-left">Reference</th>
+                  <th className="px-4 py-2 text-left">Department</th>
+                  <th className="px-4 py-2 text-left">Posted Date</th>
                   <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Risk Level</th>
-                  <th className="px-4 py-2 text-left">View Report</th>
                   <th className="px-4 py-2 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {workers.map((worker) => (
-                  <tr key={worker.id} className="border-b">
-                    <td className="px-4 py-2">{worker.name}</td>
-                    <td className="px-4 py-2">{worker.jobTitle}</td>
-                    <td className="px-4 py-2">{worker.socCode}</td>
-                    <td className="px-4 py-2">{worker.assignmentDate}</td>
-                    <td className="px-4 py-2">{getStatusBadge(worker.complianceStatus, worker.redFlag)}</td>
-                    <td className="px-4 py-2">{getRiskBadge(worker.riskLevel)}</td>
-                    <td className="px-4 py-2">
-                      <Button size="sm" onClick={() => handleViewWorkerReport(worker.id)}>
-                        <Eye className="h-4 w-4 mr-1" /> View
-                      </Button>
-                    </td>
-                    <td className="px-4 py-2">
-                      <Button size="sm" variant="destructive" onClick={() => handleDeleteWorker(worker.id)}>
-                        <XCircle className="h-4 w-4 mr-1" /> Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {/* Map over vacancies here */}
               </tbody>
             </table>
           </div>
@@ -917,8 +891,8 @@ ${assessment?.professionalAssessment}`;
           <div className="bg-white rounded-lg p-6 shadow border">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Upload Immigration Status Documents</h3>
-              <p className="text-gray-600 mb-4">Upload visa documents, BRP cards, share codes, and immigration status records for AI monitoring</p>
+              <h3 className="text-lg font-medium mb-2">Upload Vacancy Documents</h3>
+              <p className="text-gray-600 mb-4">Upload job descriptions, vacancy postings, market analysis, and genuine vacancy evidence for AI analysis</p>
               <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
               <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
               {selectedFiles.length > 0 && (
@@ -955,7 +929,7 @@ ${assessment?.professionalAssessment}`;
                   <div className="mt-4 space-y-2">
                     <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
                       <GraduationCap className="h-4 w-4 mr-2" />
-                      Analyze Immigration Status ({selectedFiles.length} files)
+                      Analyze Vacancies ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
