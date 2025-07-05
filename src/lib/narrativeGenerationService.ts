@@ -1,29 +1,5 @@
-import { NarrativeInput, NarrativeAudit, ModelConfig, LegalReference } from '../types/narrative.types';
-
-// Legal references for compliance assessments
-const LEGAL_REFERENCES: LegalReference[] = [
-  {
-    code: 'C1.38',
-    description: 'Sponsors must not employ a worker where they do not believe the worker will comply with the conditions of their permission to stay, or where they have reasonable grounds to believe the worker does not have the necessary skills, qualifications, or professional accreditations to do the job in question.',
-    version: '12/24',
-    effectiveDate: '2024-12-01',
-    category: 'primary'
-  },
-  {
-    code: 'Annex C2(g)',
-    description: 'You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020.',
-    version: '12/24',
-    effectiveDate: '2024-12-01',
-    category: 'primary'
-  },
-  {
-    code: 'Appendix D',
-    description: 'Documents you must keep for each worker',
-    version: '12/24',
-    effectiveDate: '2024-12-01',
-    category: 'guidance'
-  }
-];
+import { NarrativeInput, NarrativeAudit, ModelConfig } from '../types/narrative.types';
+import { CURRENT_LEGAL_REFERENCES, getFormattedLegalReference, getLegalReferencesForComplianceArea } from './legalReferences';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -114,8 +90,12 @@ export class NarrativeGenerationService {
     const { step1Pass, step2Pass, step3Pass, step4Pass, step5Pass } = input;
     const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
     
+    // Get relevant legal references for skills & experience compliance
+    const skillsExperienceRefs = getLegalReferencesForComplianceArea('skills-experience');
+    const documentationRefs = getLegalReferencesForComplianceArea('documentation');
+    
     const missingDocsText = input.missingDocs.length > 0
-      ? `We further note that certain required documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${this.getLegalReference('Annex C2(g)')} of the sponsor guidance: "You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020." This further compounds the compliance breach.\n\n`
+      ? `We further note that certain required documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${getFormattedLegalReference('Annex C2(g)')} of the sponsor guidance: "You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020." This further compounds the compliance breach.\n\n`
       : "";
 
     return `
@@ -125,7 +105,7 @@ A Certificate of Sponsorship (CoS) was assigned to ${input.workerName} (${input.
 
 Upon examining the submitted documentation, we note that ${input.missingDocs.length === 0
   ? "all required supporting documents have been provided, including the CoS, job description, CV, references, employment contracts, payslips, and training certificates, demonstrating a comprehensive record of assessment"
-  : `certain required documents have not been provided, including ${input.missingDocs.join(", ")}, thereby undermining the evidence of a thorough compliance check as required under Appendix D.`}
+  : `certain required documents have not been provided, including ${input.missingDocs.join(", ")}, thereby undermining the evidence of a thorough compliance check as required under ${getFormattedLegalReference('Appendix D')}.`}
 
 Our analysis of the worker's employment history revealed ${input.employmentHistoryConsistent
   ? "a consistent and logical progression toward the current role, with no unexplained gaps or inconsistencies"
@@ -143,13 +123,13 @@ Regarding the recency and continuity of experience, the evidence indicates that 
   ? "the worker has been continuously active in the relevant sector up to the CoS assignment date, reinforcing confidence in their current skills"
   : "the worker's experience is not recent or continuous, with long breaks or sector switches undermining confidence in their suitability for the role"}.
 
-${input.missingDocs.length > 0 ? `In addition to the above concerns, we note that certain key documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${this.getLegalReference('Annex C2(g)')} of the sponsor guidance:\n\n"You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020."\n` : ""}
+${input.missingDocs.length > 0 ? `In addition to the above concerns, we note that certain key documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${getFormattedLegalReference('Annex C2(g)')} of the sponsor guidance:\n\n"You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020."\n` : ""}
 
-Based on these findings, the Home Office would conclude that you have breached ${this.getLegalReference('C1.38')} of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
+Based on these findings, the Home Office would conclude that you have breached ${getFormattedLegalReference('C1.38')} of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
 
 "Sponsors must not employ a worker where they do not believe the worker will comply with the conditions of their permission to stay, or where they have reasonable grounds to believe the worker does not have the necessary skills, qualifications, or professional accreditations to do the job in question."
 
-This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
+This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under ${getFormattedLegalReference('Annex C1(w)')} and ${getFormattedLegalReference('Annex C2(a)')} of the sponsor guidance.
 
 Compliance Verdict: ${input.isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${input.isCompliant ? 'assessment indicates compliance with sponsor duties' : 'immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks'}.
 
@@ -165,6 +145,8 @@ Compliance Verdict: ${input.isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${
 
 **Overall Risk Level:** ${input.riskLevel}
 **Final Compliance Status:** ${input.isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
+
+**Legal Framework Version:** ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
 `.trim();
   }
 
@@ -191,6 +173,8 @@ Decision Tree Results:
 
 Missing Documents: ${input.missingDocs.length > 0 ? input.missingDocs.join(', ') : 'None'}
 
+Legal Framework: ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
+
 This assessment was generated using fallback template due to system constraints.`;
   }
 
@@ -206,14 +190,6 @@ This assessment was generated using fallback template due to system constraints.
     const hasRiskLevel = narrative.includes(input.riskLevel);
     
     return hasWorkerName && hasJobTitle && hasSocCode && hasComplianceStatus && hasRiskLevel;
-  }
-
-  /**
-   * Get formatted legal reference
-   */
-  private static getLegalReference(code: string): string {
-    const reference = LEGAL_REFERENCES.find(ref => ref.code === code);
-    return reference ? `${reference.code} (${reference.version})` : code;
   }
 
   /**
