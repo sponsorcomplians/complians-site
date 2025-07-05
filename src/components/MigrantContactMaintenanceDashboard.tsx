@@ -27,7 +27,7 @@ import {
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 
 // Types for our data structures
-interface MigrantContactWorker {
+interface QualificationWorker {
   id: string;
   name: string;
   jobTitle: string;
@@ -38,17 +38,17 @@ interface MigrantContactWorker {
   lastAssessment: string;
   redFlag: boolean;
   assignmentDate: string;
-  migrantContact: string;
+  qualification: string;
 }
 
-interface MigrantContactAssessment {
+interface QualificationAssessment {
   id: string;
   workerId: string;
   workerName: string;
   cosReference: string;
   jobTitle: string;
   socCode: string;
-  migrantContact: string;
+  qualification: string;
   complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   redFlag: boolean;
@@ -190,9 +190,9 @@ export default function MigrantContactMaintenanceDashboard() {
   const [activeTab, setActiveTab] = useState('assessment');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [currentAssessment, setCurrentAssessment] = useState<MigrantContactAssessment | null>(null);
-  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<MigrantContactAssessment | null>(null);
-  const [workers, setWorkers] = useState<MigrantContactWorker[]>([
+  const [currentAssessment, setCurrentAssessment] = useState<QualificationAssessment | null>(null);
+  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<QualificationAssessment | null>(null);
+  const [workers, setWorkers] = useState<QualificationWorker[]>([
     {
       id: '1',
       name: 'John Smith',
@@ -204,7 +204,7 @@ export default function MigrantContactMaintenanceDashboard() {
       lastAssessment: '2024-06-10',
       redFlag: false,
       assignmentDate: '2024-01-15',
-      migrantContact: 'BSc Computer Science'
+      qualification: 'BSc Computer Science'
     },
     {
       id: '2',
@@ -217,7 +217,7 @@ export default function MigrantContactMaintenanceDashboard() {
       lastAssessment: '2024-06-09',
       redFlag: true,
       assignmentDate: '2024-11-05',
-      migrantContact: 'No formal migrantContact'
+      qualification: 'No formal qualification'
     },
     {
       id: '3',
@@ -230,14 +230,14 @@ export default function MigrantContactMaintenanceDashboard() {
       lastAssessment: '2024-06-08',
       redFlag: false,
       assignmentDate: '2024-03-10',
-      migrantContact: 'NVQ Level 2'
+      qualification: 'NVQ Level 2'
     }
   ]);
-  const [assessments, setAssessments] = useState<MigrantContactAssessment[]>([]);
+  const [assessments, setAssessments] = useState<QualificationAssessment[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your AI migrantContact compliance assistant. I can help you with SOC code verification, migrantContact analysis, and compliance questions. How can I assist you today?',
+      content: 'Hello! I\'m your AI qualification compliance assistant. I can help you with SOC code verification, qualification analysis, and compliance questions. How can I assist you today?',
       timestamp: new Date().toISOString()
     }
   ]);
@@ -265,11 +265,11 @@ export default function MigrantContactMaintenanceDashboard() {
     { name: 'Serious Breach', value: workers.filter(w => w.complianceStatus === 'SERIOUS_BREACH').length, color: '#EF4444' }
   ]
 
-  const migrantContactTypeData = [
-    { name: 'Degree Level', value: workers.filter(w => w.migrantContact.toLowerCase().includes('degree') || w.migrantContact.toLowerCase().includes('bsc') || w.migrantContact.toLowerCase().includes('ba')).length },
-    { name: 'NVQ Level 3+', value: workers.filter(w => w.migrantContact.toLowerCase().includes('nvq') && (w.migrantContact.toLowerCase().includes('3') || w.migrantContact.toLowerCase().includes('4') || w.migrantContact.toLowerCase().includes('5'))).length },
-    { name: 'NVQ Level 2', value: workers.filter(w => w.migrantContact.toLowerCase().includes('nvq') && w.migrantContact.toLowerCase().includes('2')).length },
-    { name: 'No Migrant Contact', value: workers.filter(w => w.migrantContact.toLowerCase().includes('no') || w.migrantContact.toLowerCase().includes('none')).length }
+  const qualificationTypeData = [
+    { name: 'Degree Level', value: workers.filter(w => w.qualification.toLowerCase().includes('degree') || w.qualification.toLowerCase().includes('bsc') || w.qualification.toLowerCase().includes('ba')).length },
+    { name: 'NVQ Level 3+', value: workers.filter(w => w.qualification.toLowerCase().includes('nvq') && (w.qualification.toLowerCase().includes('3') || w.qualification.toLowerCase().includes('4') || w.qualification.toLowerCase().includes('5'))).length },
+    { name: 'NVQ Level 2', value: workers.filter(w => w.qualification.toLowerCase().includes('nvq') && w.qualification.toLowerCase().includes('2')).length },
+    { name: 'No Qualification', value: workers.filter(w => w.qualification.toLowerCase().includes('no') || w.qualification.toLowerCase().includes('none')).length }
   ]
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -288,14 +288,14 @@ export default function MigrantContactMaintenanceDashboard() {
     }
   };
 
-  // Enhanced extractMigrantContactInfo with deeper logic
-  const extractMigrantContactInfo = (files: File[]) => {
-    console.log('📁 Processing migrantContact files:', files.map(f => f.name));
+  // Enhanced extractQualificationInfo with deeper logic
+  const extractQualificationInfo = (files: File[]) => {
+    console.log('📁 Processing qualification files:', files.map(f => f.name));
     
     let workerName = "Unknown Worker";
     let cosReference = "UNKNOWN";
-    let migrantContact = "No formal migrantContact";
-    let migrantContactDate = "2023-01-01"; // default example
+    let qualification = "No formal qualification";
+    let qualificationDate = "2023-01-01"; // default example
     let assignmentDate = "2023-02-01"; // default example
 
     const cosFile = files.find(f => f.name.toLowerCase().includes("cos"));
@@ -351,11 +351,11 @@ export default function MigrantContactMaintenanceDashboard() {
       // Generate CoS reference based on name
       if (workerName.toLowerCase().includes('rotimi') || workerName.toLowerCase().includes('owolabi')) {
         cosReference = 'C2G7K98710Q';
-        migrantContact = 'No formal migrantContact';
+        qualification = 'No formal qualification';
         assignmentDate = '2024-11-05';
       } else if (workerName.toLowerCase().includes('bomere') || workerName.includes('ogriki')) {
         cosReference = 'COS030393';
-        migrantContact = 'NVQ Level 2';
+        qualification = 'NVQ Level 2';
         assignmentDate = '2024-03-10';
       } else {
         // Generate random but realistic reference
@@ -364,17 +364,17 @@ export default function MigrantContactMaintenanceDashboard() {
       }
     }
 
-    const migrantContactFile = files.find(f => f.name.toLowerCase().includes("migrantContact") || f.name.toLowerCase().includes("nvq") || f.name.toLowerCase().includes("degree"));
-    if (migrantContactFile) {
-      if (migrantContactFile.name.toLowerCase().includes("degree")) {
-        migrantContact = "BSc Health and Social Care";
-        migrantContactDate = "2022-05-15";
-      } else if (migrantContactFile.name.toLowerCase().includes("nvq3")) {
-        migrantContact = "NVQ Level 3 Health and Social Care";
-        migrantContactDate = "2022-06-10";
-      } else if (migrantContactFile.name.toLowerCase().includes("nvq2")) {
-        migrantContact = "NVQ Level 2 Health and Social Care";
-        migrantContactDate = "2023-03-20"; // simulate a post-CoS example
+    const qualificationFile = files.find(f => f.name.toLowerCase().includes("qualification") || f.name.toLowerCase().includes("nvq") || f.name.toLowerCase().includes("degree"));
+    if (qualificationFile) {
+      if (qualificationFile.name.toLowerCase().includes("degree")) {
+        qualification = "BSc Health and Social Care";
+        qualificationDate = "2022-05-15";
+      } else if (qualificationFile.name.toLowerCase().includes("nvq3")) {
+        qualification = "NVQ Level 3 Health and Social Care";
+        qualificationDate = "2022-06-10";
+      } else if (qualificationFile.name.toLowerCase().includes("nvq2")) {
+        qualification = "NVQ Level 2 Health and Social Care";
+        qualificationDate = "2023-03-20"; // simulate a post-CoS example
       }
     }
 
@@ -396,13 +396,13 @@ export default function MigrantContactMaintenanceDashboard() {
       f.name.toLowerCase().includes("supervision")
     );
 
-    const relevance = migrantContact.toLowerCase().includes("health") || migrantContact.toLowerCase().includes("care");
+    const relevance = qualification.toLowerCase().includes("health") || qualification.toLowerCase().includes("care");
 
-    console.log('📊 Extracted enhanced migrantContact data:', { 
+    console.log('📊 Extracted enhanced qualification data:', { 
       workerName, 
       cosReference, 
-      migrantContact, 
-      migrantContactDate, 
+      qualification, 
+      qualificationDate, 
       assignmentDate, 
       relevance, 
       englishEvidence, 
@@ -412,8 +412,8 @@ export default function MigrantContactMaintenanceDashboard() {
     return {
       workerName,
       cosReference,
-      migrantContact,
-      migrantContactDate,
+      qualification,
+      qualificationDate,
       assignmentDate,
       relevance,
       englishEvidence,
@@ -422,21 +422,21 @@ export default function MigrantContactMaintenanceDashboard() {
   };
 
   // Enhanced professional assessment generator using deeper checks
-  const generateProfessionalMigrantContactAssessment = (
+  const generateProfessionalQualificationAssessment = (
     workerName: string, 
     cosRef: string, 
     jobTitle: string, 
     socCode: string, 
     assignmentDate: string,
-    migrantContact: string,
-    migrantContactDate?: string,
+    qualification: string,
+    qualificationDate?: string,
     relevance?: boolean,
     englishEvidence?: boolean,
     experienceEvidence?: boolean
   ) => {
     // Use enhanced logic if additional parameters are provided
-    if (migrantContactDate && relevance !== undefined && englishEvidence !== undefined && experienceEvidence !== undefined) {
-      const qualDate = new Date(migrantContactDate);
+    if (qualificationDate && relevance !== undefined && englishEvidence !== undefined && experienceEvidence !== undefined) {
+      const qualDate = new Date(qualificationDate);
       const cosDate = new Date(assignmentDate);
       const isTimingValid = qualDate <= cosDate;
 
@@ -453,10 +453,10 @@ export default function MigrantContactMaintenanceDashboard() {
       const missingDocs: string[] = [];
       if (!englishEvidence) missingDocs.push("English language evidence");
       if (!experienceEvidence) missingDocs.push("experience references");
-      if (migrantContact === "No formal migrantContact") missingDocs.push("migrantContact certificate");
+      if (qualification === "No formal qualification") missingDocs.push("qualification certificate");
 
       const missingDocsText = missingDocs.length > 0
-        ? `You have not provided the following documents: ${missingDocs.join(", ")}, and therefore, the absence of these documents demonstrates that there is no evidence in place to support that the worker possesses the migrantContacts required for this role.`
+        ? `You have not provided the following documents: ${missingDocs.join(", ")}, and therefore, the absence of these documents demonstrates that there is no evidence in place to support that the worker possesses the qualifications required for this role.`
         : "";
 
       return `You assigned Certificate of Sponsorship (CoS) for ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
@@ -465,44 +465,44 @@ The summary of job description in the CoS states:
 
 The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
 
-The usual requirement for performing such a role is the possession of a relevant migrantContact in health and social care (e.g., NVQ Level 3 or above), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
+The usual requirement for performing such a role is the possession of a relevant qualification in health and social care (e.g., NVQ Level 3 or above), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
 
-Upon review of the documentation provided, we acknowledge that ${workerName} obtained their migrantContact ${isTimingValid ? "before" : "after"} the CoS assignment date, ${isTimingValid ? "which satisfies the timing requirement." : "which is a serious breach of sponsor compliance obligations."} However, ${relevance ? "the migrantContact is relevant to health and social care." : "the migrantContact is not relevant to health and social care and therefore undermines the claim that the worker is suitably qualified to perform the duties described in the CoS."} As such, there is insufficient evidence that ${workerName} holds a migrantContact required for this role.
+Upon review of the documentation provided, we acknowledge that ${workerName} obtained their qualification ${isTimingValid ? "before" : "after"} the CoS assignment date, ${isTimingValid ? "which satisfies the timing requirement." : "which is a serious breach of sponsor compliance obligations."} However, ${relevance ? "the qualification is relevant to health and social care." : "the qualification is not relevant to health and social care and therefore undermines the claim that the worker is suitably qualified to perform the duties described in the CoS."} As such, there is insufficient evidence that ${workerName} holds a qualification required for this role.
 
 ${missingDocsText}
 
-As such, the Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary migrantContacts and experience for the role in question.
+As such, the Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary qualifications and experience for the role in question.
 
 This breach is further supported by your failure to provide mandatory documentation, and may result in licence suspension or revocation in line with Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
 
-Compliance Verdict: SERIOUS BREACH — immediate remedial action required. A full internal audit of all assigned Certificates of Sponsorship, migrantContacts, and compliance records is strongly recommended.`;
+Compliance Verdict: SERIOUS BREACH — immediate remedial action required. A full internal audit of all assigned Certificates of Sponsorship, qualifications, and compliance records is strongly recommended.`;
     }
 
     // Fallback to original logic for backward compatibility
-    const isQualified = migrantContact.toLowerCase().includes('degree') || 
-                       migrantContact.toLowerCase().includes('nvq') && migrantContact.toLowerCase().includes('3') ||
-                       migrantContact.toLowerCase().includes('professional');
+    const isQualified = qualification.toLowerCase().includes('degree') || 
+                       qualification.toLowerCase().includes('nvq') && qualification.toLowerCase().includes('3') ||
+                       qualification.toLowerCase().includes('professional');
     
     return `You also assigned a COS to ${workerName} (${cosRef}) on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
 
-Migrant Contact Analysis:
-• Worker's migrantContact: ${migrantContact}
-• Required migrantContact level: ${socCode === '6145' ? 'NVQ Level 2 or equivalent' : 'Degree level or equivalent'}
-• Migrant Contact status: ${isQualified ? 'MEETS REQUIREMENTS' : 'BELOW REQUIREMENTS'}
+Qualification Analysis:
+• Worker's qualification: ${qualification}
+• Required qualification level: ${socCode === '6145' ? 'NVQ Level 2 or equivalent' : 'Degree level or equivalent'}
+• Qualification status: ${isQualified ? 'MEETS REQUIREMENTS' : 'BELOW REQUIREMENTS'}
 
 Compliance Assessment:
 ${isQualified ? 
-  `${workerName} holds ${migrantContact} which meets the migrantContact requirements for SOC code ${socCode}. The worker is compliant with Home Office migrantContact standards for this role.` :
-  `${workerName} holds ${migrantContact} which does not meet the minimum migrantContact requirements for SOC code ${socCode}. This represents a compliance breach that requires immediate attention. The worker may need additional training or migrantContact verification.`
+  `${workerName} holds ${qualification} which meets the qualification requirements for SOC code ${socCode}. The worker is compliant with Home Office qualification standards for this role.` :
+  `${workerName} holds ${qualification} which does not meet the minimum qualification requirements for SOC code ${socCode}. This represents a compliance breach that requires immediate attention. The worker may need additional training or qualification verification.`
 }
 
 Sponsor Duties:
-- Maintain records of worker migrantContacts
-- Ensure migrantContacts are verified and authentic
-- Report any migrantContact discrepancies to Home Office
-- Provide evidence of migrantContact compliance if requested
+- Maintain records of worker qualifications
+- Ensure qualifications are verified and authentic
+- Report any qualification discrepancies to Home Office
+- Provide evidence of qualification compliance if requested
 
-${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Please review worker migrantContacts and take remedial action.' : 'Compliance maintained. Continue monitoring migrantContact requirements.'}`;
+${!isQualified ? 'URGENT ACTION REQUIRED: Qualification breach detected. Please review worker qualifications and take remedial action.' : 'Compliance maintained. Continue monitoring qualification requirements.'}`;
   };
 
   const handleUpload = async () => {
@@ -513,13 +513,13 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
 
     setUploading(true);
     
-    // Extract worker and migrantContact information from documents using enhanced logic
-    const extractedInfo = extractMigrantContactInfo(selectedFiles);
+    // Extract worker and qualification information from documents using enhanced logic
+    const extractedInfo = extractQualificationInfo(selectedFiles);
     const { 
       workerName, 
       cosReference, 
-      migrantContact, 
-      migrantContactDate, 
+      qualification, 
+      qualificationDate, 
       assignmentDate, 
       relevance, 
       englishEvidence, 
@@ -532,7 +532,7 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
       const socCode = '6145';
       
       // Use enhanced assessment logic
-      const qualDate = new Date(migrantContactDate);
+      const qualDate = new Date(qualificationDate);
       const cosDate = new Date(assignmentDate);
       const isTimingValid = qualDate <= cosDate;
       
@@ -548,28 +548,28 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
       }
       
       // Generate professional assessment using enhanced logic
-      const professionalAssessment = generateProfessionalMigrantContactAssessment(
+      const professionalAssessment = generateProfessionalQualificationAssessment(
         workerName, 
         cosReference, 
         jobTitle, 
         socCode, 
         assignmentDate, 
-        migrantContact,
-        migrantContactDate,
+        qualification,
+        qualificationDate,
         relevance,
         englishEvidence,
         experienceEvidence
       );
       
       // Mock assessment result
-      const mockAssessment: MigrantContactAssessment = {
+      const mockAssessment: QualificationAssessment = {
         id: 'ASSESS_' + Date.now(),
         workerId: 'WORKER_' + Date.now(),
         workerName,
         cosReference,
         jobTitle,
         socCode,
-        migrantContact,
+        qualification,
         complianceStatus,
         riskLevel,
         redFlag,
@@ -579,7 +579,7 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
       };
 
       // Add worker to the workers list
-      const newWorker: MigrantContactWorker = {
+      const newWorker: QualificationWorker = {
         id: mockAssessment.workerId,
         name: workerName,
         jobTitle,
@@ -590,7 +590,7 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
         lastAssessment: new Date().toISOString().split('T')[0],
         redFlag,
         assignmentDate,
-        migrantContact
+        qualification
       };
 
       // Update state
@@ -626,85 +626,85 @@ ${!isQualified ? 'URGENT ACTION REQUIRED: Migrant Contact breach detected. Pleas
       if (query.includes('soc code') || query.includes('occupation')) {
         response = `SOC Code requirements for Care Workers (6145):
 
-• Minimum migrantContact: NVQ Level 2 or equivalent
+• Minimum qualification: NVQ Level 2 or equivalent
 • Alternative: Relevant experience in care sector
 • English language requirement: B1 level
 • Salary threshold: £26,200 per year
 
 Key Requirements:
-- Migrant Contacts must be verified and authentic
-- Experience can substitute for formal migrantContacts
+- Qualifications must be verified and authentic
+- Experience can substitute for formal qualifications
 - English language proficiency required
-- Regular migrantContact monitoring needed
+- Regular qualification monitoring needed
 
 Common Issues:
-• Unverified migrantContacts
+• Unverified qualifications
 • Insufficient experience documentation
 • Language proficiency gaps
-• Outdated migrantContact standards`;
-      } else if (query.includes('migrantContact') || query.includes('certificate')) {
-        response = `Migrant Contact verification requirements:
+• Outdated qualification standards`;
+      } else if (query.includes('qualification') || query.includes('certificate')) {
+        response = `Qualification verification requirements:
 
 Essential Checks:
 • Certificate authenticity verification
-• Migrant Contact level assessment
+• Qualification level assessment
 • English language proficiency
 • Experience documentation review
 
-Accepted Migrant Contacts:
+Accepted Qualifications:
 • NVQ Level 2 or higher in Health and Social Care
-• Relevant degree migrantContacts
+• Relevant degree qualifications
 • Professional care certificates
-• Equivalent international migrantContacts
+• Equivalent international qualifications
 
 Red Flags:
 • Unverified certificates
-• Migrant Contacts below required level
+• Qualifications below required level
 • Expired or outdated certificates
 • Non-recognized institutions
 
 Documentation:
-- Keep original migrantContact certificates
+- Keep original qualification certificates
 • Maintain verification records
-• Update migrantContact status regularly
-• Document any migrantContact changes`;
+• Update qualification status regularly
+• Document any qualification changes`;
       } else if (query.includes('compliance') || query.includes('breach')) {
-        response = `Migrant Contact compliance requirements:
+        response = `Qualification compliance requirements:
 
 Compliance Standards:
-• Workers must meet minimum migrantContact requirements
-• Migrant Contacts must be verified and current
-• Regular migrantContact monitoring required
-• Immediate reporting of migrantContact issues
+• Workers must meet minimum qualification requirements
+• Qualifications must be verified and current
+• Regular qualification monitoring required
+• Immediate reporting of qualification issues
 
 Breach Types:
 • Unqualified workers in skilled roles
-• Unverified migrantContact certificates
-• Expired or invalid migrantContacts
+• Unverified qualification certificates
+• Expired or invalid qualifications
 • Insufficient experience documentation
 
 Remedial Actions:
-- Immediate migrantContact verification
+- Immediate qualification verification
 - Additional training if required
 - Documentation of remedial steps
 - Home Office notification if necessary
 
 Prevention:
-• Regular migrantContact audits
+• Regular qualification audits
 • Staff training on requirements
 • Proper documentation systems
 • Proactive compliance monitoring`;
       } else {
-        response = `I can help with migrantContact compliance questions about:
+        response = `I can help with qualification compliance questions about:
 
-• SOC code migrantContact requirements
+• SOC code qualification requirements
 • Certificate verification and authenticity
-• Migrant Contact compliance standards
-• Home Office migrantContact duties
-• Migrant Contact breach remediation
+• Qualification compliance standards
+• Home Office qualification duties
+• Qualification breach remediation
 • Documentation requirements
 
-Please ask a specific question about migrantContact compliance.`;
+Please ask a specific question about qualification compliance.`;
       }
 
       const assistantMessage: ChatMessage = {
@@ -768,7 +768,7 @@ Please ask a specific question about migrantContact compliance.`;
       
       // Set font size and add title
       doc.setFontSize(20);
-      doc.text('Migrant Contact Compliance Analysis Report', 105, 20, { align: 'center' });
+      doc.text('Contact Record Analysis Report', 105, 20, { align: 'center' });
       
       // Add generation date
       doc.setFontSize(10);
@@ -799,7 +799,7 @@ Please ask a specific question about migrantContact compliance.`;
       yPos += 7;
       doc.text(`SOC Code: ${assessment?.socCode}`, 10, yPos);
       yPos += 7;
-      doc.text(`Migrant Contact: ${assessment?.migrantContact}`, 10, yPos);
+      doc.text(`Qualification: ${assessment?.qualification}`, 10, yPos);
       yPos += 7;
       doc.text(`Status: ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}`, 10, yPos);
       yPos += 15;
@@ -821,7 +821,7 @@ Please ask a specific question about migrantContact compliance.`;
       });
       
       // Save PDF
-      doc.save(`Migrant Contact_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+      doc.save(`Qualification_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
       
       console.log('✅ PDF generated and downloaded');
     } catch (error) {
@@ -842,7 +842,7 @@ Please ask a specific question about migrantContact compliance.`;
     
     // Create HTML email content
     const emailHTML = `
-      <h2>Migrant Contact Compliance Assessment Report</h2>
+      <h2>Contact Record Assessment Report</h2>
       <p><strong>Worker:</strong> ${assessment?.workerName}</p>
       <p><strong>CoS Reference:</strong> ${assessment?.cosReference}</p>
       <p><strong>Status:</strong> ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}</p>
@@ -860,7 +860,7 @@ Please ask a specific question about migrantContact compliance.`;
         },
         body: JSON.stringify({
           to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
-          subject: `Migrant Contact Compliance Assessment Report - ${assessment?.workerName}`,
+          subject: `Contact Record Assessment Report - ${assessment?.workerName}`,
           html: emailHTML,
           workerName: assessment?.workerName,
         }),
@@ -877,12 +877,12 @@ Please ask a specific question about migrantContact compliance.`;
       console.error('❌ Email error:', error);
       
       // Fallback to mailto
-      const subject = `Migrant Contact Compliance Assessment Report - ${assessment?.workerName}`;
-      const body = `Please find the migrantContact compliance assessment report for ${assessment?.workerName} (${assessment?.cosReference}).
+      const subject = `Contact Record Assessment Report - ${assessment?.workerName}`;
+      const body = `Please find the qualification compliance assessment report for ${assessment?.workerName} (${assessment?.cosReference}).
 
 Job Title: ${assessment?.jobTitle}
 SOC Code: ${assessment?.socCode}
-Migrant Contact: ${assessment?.migrantContact}
+Qualification: ${assessment?.qualification}
 Status: ${((assessment?.complianceStatus || 'N/A').replace(/_/g, ' ')) === 'SERIOUS BREACH' ? 'SERIOUS BREACH' : (assessment?.complianceStatus || 'N/A')}
 Risk Level: ${assessment?.riskLevel}
 Generated: ${new Date().toLocaleDateString('en-GB')}
@@ -890,7 +890,7 @@ Generated: ${new Date().toLocaleDateString('en-GB')}
 ${assessment?.professionalAssessment}
 
 ---
-This report was generated by the AI Migrant Contact Compliance System.`;
+This report was generated by the AI Migrant Contact Maintenance Agent.`;
       
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(mailtoLink);
@@ -925,18 +925,18 @@ This report was generated by the AI Migrant Contact Compliance System.`;
           cosReference: worker.cosReference,
           jobTitle: worker.jobTitle,
           socCode: worker.socCode,
-          migrantContact: worker.migrantContact,
+          qualification: worker.qualification,
           complianceStatus: worker.complianceStatus,
           riskLevel: worker.riskLevel,
           redFlag: worker.redFlag,
           assignmentDate: worker.assignmentDate,
-          professionalAssessment: generateProfessionalMigrantContactAssessment(
+          professionalAssessment: generateProfessionalQualificationAssessment(
             worker.name, 
             worker.cosReference, 
             worker.jobTitle, 
             worker.socCode, 
             worker.assignmentDate,
-            worker.migrantContact
+            worker.qualification
           ),
           generatedAt: new Date().toISOString()
         };
@@ -951,13 +951,13 @@ This report was generated by the AI Migrant Contact Compliance System.`;
 
   // Help with breach - contact support
   const handleHelpWithBreach = (workerName: string) => {
-    const subject = `Help Required - Migrant Contact Compliance Breach for ${workerName}`;
+    const subject = `Help Required - Qualification Compliance Breach for ${workerName}`;
     const body = `Dear Complians Support Team,
 
-I need assistance with a migrantContact compliance breach for worker: ${workerName}
+I need assistance with a qualification compliance breach for worker: ${workerName}
 
 Please provide guidance on:
-- Immediate actions required for migrantContact issues
+- Immediate actions required for qualification issues
 - Remedial steps to ensure compliance
 - Documentation needed for Home Office
 - Sponsor licence protection measures
@@ -972,7 +972,7 @@ Best regards`;
 
   // Load workers from localStorage on mount
   useEffect(() => {
-    const savedWorkers = localStorage.getItem('migrantContactComplianceWorkers');
+    const savedWorkers = localStorage.getItem('qualificationComplianceWorkers');
     if (savedWorkers) {
       try {
         const parsedWorkers = JSON.parse(savedWorkers);
@@ -986,13 +986,13 @@ Best regards`;
   // Save workers to localStorage whenever they change
   useEffect(() => {
     if (workers.length > 0) {
-      localStorage.setItem('migrantContactComplianceWorkers', JSON.stringify(workers));
+      localStorage.setItem('qualificationComplianceWorkers', JSON.stringify(workers));
     }
   }, [workers]);
 
   // Load assessments from localStorage on mount
   useEffect(() => {
-    const savedAssessments = localStorage.getItem('migrantContactComplianceAssessments');
+    const savedAssessments = localStorage.getItem('qualificationComplianceAssessments');
     if (savedAssessments) {
       try {
         const parsedAssessments = JSON.parse(savedAssessments);
@@ -1006,7 +1006,7 @@ Best regards`;
   // Save assessments to localStorage whenever they change
   useEffect(() => {
     if (assessments.length > 0) {
-      localStorage.setItem('migrantContactComplianceAssessments', JSON.stringify(assessments));
+      localStorage.setItem('qualificationComplianceAssessments', JSON.stringify(assessments));
     }
   }, [assessments]);
 
@@ -1016,12 +1016,12 @@ Best regards`;
       // Remove worker
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('migrantContactComplianceWorkers', JSON.stringify(updatedWorkers));
+      localStorage.setItem('qualificationComplianceWorkers', JSON.stringify(updatedWorkers));
       
       // Remove associated assessments
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('migrantContactComplianceAssessments', JSON.stringify(updatedAssessments));
+      localStorage.setItem('qualificationComplianceAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -1032,10 +1032,10 @@ Best regards`;
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#263976] mb-2 flex items-center gap-3">
           <GraduationCap className="h-8 w-8 text-[#00c3ff]" />
-          AI Migrant Contact Compliance System
+          AI Migrant Contact Maintenance Agent
         </h1>
         <p className="text-gray-600">
-          AI-powered SOC code verification and migrantContact analysis for UK sponsors
+          AI-powered SOC code verification and qualification analysis for UK sponsors
         </p>
       </div>
       {/* Explainer Module */}
@@ -1085,7 +1085,7 @@ Best regards`;
             
             <Card className={dashboardStats.redFlags > 0 ? 'border-red-500 border-2 animate-pulse' : ''}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">🚨 Migrant Contact Breaches</CardTitle>
+                <CardTitle className="text-sm font-medium">🚨 Qualification Breaches</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
@@ -1101,7 +1101,7 @@ Best regards`;
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#263976]">{dashboardStats.notQualifiedWorkers}</div>
-                <p className="text-xs text-gray-600">Require migrantContact review</p>
+                <p className="text-xs text-gray-600">Require qualification review</p>
               </CardContent>
             </Card>
           </div>
@@ -1112,7 +1112,7 @@ Best regards`;
               <CardHeader>
                 <CardTitle className="text-[#263976] flex items-center gap-2">
                   <PieChart className="h-5 w-5" />
-                  Migrant Contact Compliance Status
+                  Qualification Compliance Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1132,11 +1132,11 @@ Best regards`;
               <CardHeader>
                 <CardTitle className="text-[#263976] flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  Migrant Contact Type Distribution
+                  Qualification Type Distribution
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <BarChartComponent data={migrantContactTypeData} />
+                <BarChartComponent data={qualificationTypeData} />
               </CardContent>
             </Card>
           </div>
@@ -1144,7 +1144,7 @@ Best regards`;
           {/* Recent Activity */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#263976]">Recent Migrant Contact Activity</CardTitle>
+              <CardTitle className="text-[#263976]">Recent Qualification Activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {workers.slice(-3).reverse().map((worker, index) => (
@@ -1152,14 +1152,14 @@ Best regards`;
                   <div className={`w-2 h-2 rounded-full ${worker.redFlag ? 'bg-red-500 animate-pulse' : worker.complianceStatus === 'COMPLIANT' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      {worker.redFlag ? `Migrant Contact breach detected for ${worker.name}` : 
-                       worker.complianceStatus === 'COMPLIANT' ? `${worker.name} migrantContact assessment completed` :
-                       `${worker.name} migrantContact issue detected`}
+                      {worker.redFlag ? `Qualification breach detected for ${worker.name}` : 
+                       worker.complianceStatus === 'COMPLIANT' ? `${worker.name} qualification assessment completed` :
+                       `${worker.name} qualification issue detected`}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {worker.redFlag ? `Migrant Contact: ${worker.migrantContact}` : 
-                       worker.complianceStatus === 'COMPLIANT' ? 'All migrantContacts compliant' :
-                       'Migrant Contact verification required'} - {worker.lastAssessment}
+                      {worker.redFlag ? `Qualification: ${worker.qualification}` : 
+                       worker.complianceStatus === 'COMPLIANT' ? 'All qualifications compliant' :
+                       'Qualification verification required'} - {worker.lastAssessment}
                     </p>
                   </div>
                 </div>
@@ -1175,7 +1175,7 @@ Best regards`;
                 <CardTitle className="text-[#263976] flex items-center gap-2">
                   <Users className="h-5 w-5" /> Workers
                 </CardTitle>
-                <p className="text-gray-600 text-sm mt-1">Manage sponsored workers and their migrantContact compliance</p>
+                <p className="text-gray-600 text-sm mt-1">Manage sponsored workers and their qualification compliance</p>
               </div>
               <Button className="bg-gray-900 hover:bg-gray-800 text-white">
                 <Plus className="h-4 w-4 mr-2" /> Add Worker
@@ -1189,7 +1189,7 @@ Best regards`;
                       <th className="text-left p-4 font-medium">Name</th>
                       <th className="text-left p-4 font-medium">CoS Reference</th>
                       <th className="text-left p-4 font-medium">Job Title</th>
-                      <th className="text-left p-4 font-medium">Migrant Contact</th>
+                      <th className="text-left p-4 font-medium">Qualification</th>
                       <th className="text-left p-4 font-medium">SOC Code</th>
                       <th className="text-left p-4 font-medium">Status</th>
                       <th className="text-left p-4 font-medium">Risk Level</th>
@@ -1203,7 +1203,7 @@ Best regards`;
                         <td className="p-4">{worker.name}</td>
                         <td className="p-4">{worker.cosReference}</td>
                         <td className="p-4">{worker.jobTitle}</td>
-                        <td className="p-4">{worker.migrantContact}</td>
+                        <td className="p-4">{worker.qualification}</td>
                         <td className="p-4">{worker.socCode}</td>
                         <td className="p-4">{getStatusBadge(worker.complianceStatus, worker.redFlag)}</td>
                         <td className="p-4">{getRiskBadge(worker.riskLevel)}</td>
@@ -1231,14 +1231,14 @@ Best regards`;
             <Card>
               <CardHeader>
                 <CardTitle className="text-[#263976] flex items-center gap-2">
-                  <FileCheck className="h-5 w-5" /> Migrant Contact Assessment
+                  <FileCheck className="h-5 w-5" /> Contact Record Assessment
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Upload Migrant Contact Documents</h3>
-                  <p className="text-gray-600 mb-4">Upload migrantContact certificates, SOC code documents, and application forms for AI analysis</p>
+                  <h3 className="text-lg font-medium mb-2">Upload Contact Records</h3>
+                  <p className="text-gray-600 mb-4">Upload contact forms, address updates, communication logs, and application forms for AI analysis</p>
                   <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
                   <Button className="bg-[#00c3ff] hover:bg-[#0099cc] text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
                   {selectedFiles.length > 0 && (
@@ -1282,7 +1282,7 @@ Best regards`;
                           ) : (
                             <>
                               <GraduationCap className="h-4 w-4 mr-2" /> 
-                              Analyze Migrant Contacts ({selectedFiles.length} files)
+                              Analyze Qualifications ({selectedFiles.length} files)
                             </>
                           )}
                         </Button>
@@ -1305,7 +1305,7 @@ Best regards`;
                 <CardHeader className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <GraduationCap className="h-6 w-6 text-gray-600 mr-2" />
-                    <CardTitle className="text-[#263976]">Migrant Contact Compliance Analysis Report</CardTitle>
+                    <CardTitle className="text-[#263976]">Contact Record Analysis Report</CardTitle>
                   </div>
                   <p className="text-sm text-gray-600">Generated on {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleDateString('en-GB')} {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleTimeString('en-GB', { hour12: false })}</p>
                 </CardHeader>
@@ -1318,7 +1318,7 @@ Best regards`;
                         <span className="font-bold">SERIOUS QUALIFICATION BREACH DETECTED</span>
                         <AlertTriangle className="h-5 w-5" />
                       </div>
-                      <p>Migrant Contact requirements not met - Immediate review required</p>
+                      <p>Qualification requirements not met - Immediate review required</p>
                     </div>
                   )}
                   {/* Professional Assessment */}
@@ -1332,7 +1332,7 @@ Best regards`;
                       <div><label className="text-gray-600 font-medium">Worker:</label><p>{(currentAssessment || selectedWorkerAssessment)?.workerName || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">CoS Reference:</label><p>{(currentAssessment || selectedWorkerAssessment)?.cosReference || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">Job Title:</label><p>{(currentAssessment || selectedWorkerAssessment)?.jobTitle || 'N/A'}</p></div>
-                      <div><label className="text-gray-600 font-medium">Migrant Contact:</label><p>{(currentAssessment || selectedWorkerAssessment)?.migrantContact || 'N/A'}</p></div>
+                      <div><label className="text-gray-600 font-medium">Qualification:</label><p>{(currentAssessment || selectedWorkerAssessment)?.qualification || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">SOC Code:</label><p>{(currentAssessment || selectedWorkerAssessment)?.socCode || 'N/A'}</p></div>
                       <div><label className="text-gray-600 font-medium">Status:</label><p>{((currentAssessment || selectedWorkerAssessment)?.complianceStatus || 'N/A').replace(/_/g, ' ')}</p></div>
                     </div>
@@ -1356,7 +1356,7 @@ Best regards`;
         <TabsContent value="ai-assistant" activeTab={activeTab}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#263976] flex items-center gap-2"><Bot className="h-5 w-5" /> AI Migrant Contact Compliance Assistant</CardTitle>
+              <CardTitle className="text-[#263976] flex items-center gap-2"><Bot className="h-5 w-5" /> AI Migrant Contact Maintenance Assistant</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -1383,7 +1383,7 @@ Best regards`;
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Ask about migrantContact requirements, SOC codes, compliance..." className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c3ff]" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleChatSend()} disabled={chatLoading} />
+                  <input type="text" placeholder="Ask about qualification requirements, SOC codes, compliance..." className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00c3ff]" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleChatSend()} disabled={chatLoading} />
                   <Button className="bg-[#263976] hover:bg-[#1e2a5a] text-white" onClick={handleChatSend} disabled={chatLoading || !chatInput.trim()}><Send className="h-4 w-4" /></Button>
                 </div>
               </div>
