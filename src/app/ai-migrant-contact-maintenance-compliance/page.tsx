@@ -1,18 +1,12 @@
 "use client";
 
-export const dynamic = 'force-dynamic'
+import { Suspense } from 'react';
+import MigrantContactMaintenanceDashboard from '@/components/MigrantContactMaintenanceDashboard';
 
-import { Suspense } from "react";
-import AIComplianceDashboard from "@/components/AIComplianceDashboard";
-
-function MigrantContactMaintenanceContent() {
-  return <AIComplianceDashboard />;
-}
-
-export default function AIMigrantContactMaintenancePage() {
+export default function AIMigrantContactMaintenanceCompliancePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <MigrantContactMaintenanceContent />
+      <MigrantContactMaintenanceDashboard />
     </Suspense>
   );
 }
