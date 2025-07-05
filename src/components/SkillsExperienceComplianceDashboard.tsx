@@ -449,7 +449,7 @@ export default function SkillsExperienceComplianceDashboard() {
   };
 
   // Enhanced assessment logic for skills & experience with comprehensive decision tree
-  const generateSkillsExperienceAssessment = (
+  const generateSkillsExperienceAssessment = async (
     info: {
       workerName: string;
       cosReference: string;
@@ -471,12 +471,13 @@ export default function SkillsExperienceComplianceDashboard() {
       inconsistenciesDescription?: string;
       missingDocs: string[];
     }
-  ): {
+  ): Promise<{
     complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
     riskLevel: "LOW" | "MEDIUM" | "HIGH";
     redFlag: boolean;
     professionalAssessment: string;
-  } => {
+    auditId?: string;
+  }> => {
     // Step 1: Check if all required documents are provided
     const step1Pass = info.hasJobDescription && info.hasCV && info.hasReferences && 
                      info.hasContracts && info.hasPayslips && info.hasTraining;
@@ -496,11 +497,6 @@ export default function SkillsExperienceComplianceDashboard() {
     // Overall compliance decision
     const isCompliant = step1Pass && step2Pass && step3Pass && step4Pass && step5Pass;
 
-    // Generate missing documents text for Annex C2(g) reference
-    const missingDocsText = info.missingDocs.length > 0
-      ? `We further note that certain required documents, including ${info.missingDocs.join(", ")}, have not been provided. Under Annex C2(g) of the sponsor guidance: "You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020." This further compounds the compliance breach.\n\n`
-      : "";
-
     // Determine risk level based on number of failures
     const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
     let riskLevel: "LOW" | "MEDIUM" | "HIGH";
@@ -512,7 +508,53 @@ export default function SkillsExperienceComplianceDashboard() {
       riskLevel = "HIGH";
     }
 
-    const narrative = `
+    // Use the new narrative generation service
+    try {
+      const { NarrativeGenerationService } = await import('../lib/narrativeGenerationService');
+      
+      const narrativeInput = {
+        workerName: info.workerName,
+        cosReference: info.cosReference,
+        assignmentDate: info.assignmentDate,
+        jobTitle: info.jobTitle,
+        socCode: info.socCode,
+        cosDuties: info.cosDuties,
+        jobDescriptionDuties: info.jobDescriptionDuties,
+        step1Pass,
+        step2Pass,
+        step3Pass,
+        step4Pass,
+        step5Pass,
+        hasJobDescription: info.hasJobDescription,
+        hasCV: info.hasCV,
+        hasReferences: info.hasReferences,
+        hasContracts: info.hasContracts,
+        hasPayslips: info.hasPayslips,
+        hasTraining: info.hasTraining,
+        employmentHistoryConsistent: info.employmentHistoryConsistent,
+        experienceMatchesDuties: info.experienceMatchesDuties,
+        referencesCredible: info.referencesCredible,
+        experienceRecentAndContinuous: info.experienceRecentAndContinuous,
+        inconsistenciesDescription: info.inconsistenciesDescription,
+        missingDocs: info.missingDocs,
+        isCompliant,
+        riskLevel
+      };
+
+      const { narrative, audit } = await NarrativeGenerationService.generateNarrative(narrativeInput);
+
+      return {
+        complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
+        riskLevel: riskLevel,
+        redFlag: !isCompliant,
+        professionalAssessment: narrative,
+        auditId: audit.id
+      };
+    } catch (error) {
+      console.error('Error generating narrative:', error);
+      
+      // Fallback to original logic if service fails
+      const narrative = `
 Following a detailed review of the documents you have provided, serious concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
 
 A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}. The summary of job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
@@ -545,7 +587,7 @@ Based on these findings, the Home Office would conclude that you have breached p
 
 This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
 
-Compliance Verdict: SERIOUS BREACH — immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks.
+Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isCompliant ? 'assessment indicates compliance with sponsor duties' : 'immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks'}.
 
 ---
 
@@ -561,12 +603,13 @@ Compliance Verdict: SERIOUS BREACH — immediate remedial action is required, in
 **Final Compliance Status:** ${isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
 `;
 
-    return {
-      complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
-      riskLevel: riskLevel,
-      redFlag: !isCompliant,
-      professionalAssessment: narrative.trim(),
-    };
+      return {
+        complianceStatus: isCompliant ? "COMPLIANT" : "SERIOUS_BREACH",
+        riskLevel: riskLevel,
+        redFlag: !isCompliant,
+        professionalAssessment: narrative.trim(),
+      };
+    }
   };
 
   // Analyze button handler
@@ -582,7 +625,7 @@ Compliance Verdict: SERIOUS BREACH — immediate remedial action is required, in
       const extracted = await extractSkillsExperienceInfo(selectedFiles);
       
       // Generate assessment using extracted data with enhanced logic
-      const assessmentResult = generateSkillsExperienceAssessment({
+      const assessmentResult = await generateSkillsExperienceAssessment({
         workerName: extracted.workerName,
         cosReference: 'COS_' + Date.now(),
         assignmentDate: extracted.assignmentDate,
@@ -641,6 +684,11 @@ Compliance Verdict: SERIOUS BREACH — immediate remedial action is required, in
       setSelectedFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
       setActiveTab('assessment');
+      
+      // Log audit information if available
+      if (assessmentResult.auditId) {
+        console.log(`Assessment generated with audit ID: ${assessmentResult.auditId}`);
+      }
     } catch (error) {
       console.error('Error during analysis:', error);
       alert('Error analyzing documents. Please try again.');
