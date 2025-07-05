@@ -1,21 +1,18 @@
-'use client'
+"use client"
 
 export const dynamic = 'force-dynamic'
 
-import AIComplianceDashboard from '@/components/AIComplianceDashboard';
+import { Suspense } from 'react'
+import ReportingDutiesComplianceDashboard from '@/components/ReportingDutiesComplianceDashboard'
 
 function ReportingDutiesComplianceContent() {
-  return <AIComplianceDashboard />;
+  return <ReportingDutiesComplianceDashboard />
 }
 
 export default function AIReportingDutiesCompliancePage() {
   return (
-    <AIComplianceDashboard 
-      title="AI Reporting Duties System"
-      description="AI-powered sponsor reporting and compliance monitoring"
-      storagePrefix="reporting"
-      documentType="Report Document"
-      complianceType="Reporting Compliance"
-    />
-  );
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReportingDutiesComplianceContent />
+    </Suspense>
+  )
 }
