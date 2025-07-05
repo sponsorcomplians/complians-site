@@ -3,16 +3,12 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
-import AIComplianceDashboard from '@/components/AIComplianceDashboard'
-
-function RecruitmentPracticesComplianceContent() {
-  return <AIComplianceDashboard />
-}
+import RecruitmentPracticesComplianceDashboard from '@/components/RecruitmentPracticesComplianceDashboard'
 
 export default function AIRecruitmentPracticesCompliancePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RecruitmentPracticesComplianceContent />
+      <RecruitmentPracticesComplianceDashboard />
     </Suspense>
   )
 }
