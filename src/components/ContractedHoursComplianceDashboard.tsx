@@ -660,13 +660,11 @@ ${assessment?.professionalAssessment}`;
     <div className="container mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
-          <Bot className="h-8 w-8 text-brand-light" />
-          AI Immigration Status Monitoring Agent
-        </h1>
-        <p className="text-gray-600">
-          Track visa expiries, monitor status changes, and ensure continuous right to work
-        </p>
+        <div className="flex items-center gap-3 mb-2">
+          <Bot className="h-7 w-7 text-blue-600" />
+          <h1 className="text-3xl font-bold text-brand-dark">AI Contracted Hours Compliance Agent</h1>
+        </div>
+        <p className="text-gray-600 text-lg ml-10">Check working hours against contract and legal limits, flag breaches, and guide on hours compliance.</p>
       </div>
       {/* Explainer Module */}
       <div className="mb-8">
