@@ -28,7 +28,7 @@ import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
 
 // Types for our data structures
-interface MigrantContactWorker {
+interface SkillsExperienceWorker {
   id: string;
   name: string;
   jobTitle: string;
@@ -42,7 +42,7 @@ interface MigrantContactWorker {
   experience: string;
 }
 
-interface MigrantContactAssessment {
+interface SkillsExperienceAssessment {
   id: string;
   workerId: string;
   workerName: string;
@@ -196,7 +196,13 @@ export default function MigrantContactMaintenanceDashboard() {
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [workers, setWorkers] = useState<MigrantContactWorker[]>([]);
+  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('reportingDutiesComplianceData');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -213,9 +219,9 @@ export default function MigrantContactMaintenanceDashboard() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [assessments, setAssessments] = useState<MigrantContactAssessment[]>([]);
-  const [currentAssessment, setCurrentAssessment] = useState<MigrantContactAssessment | null>(null);
-  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<MigrantContactAssessment | null>(null);
+  const [assessments, setAssessments] = useState<SkillsExperienceAssessment[]>([]);
+  const [currentAssessment, setCurrentAssessment] = useState<SkillsExperienceAssessment | null>(null);
+  const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<SkillsExperienceAssessment | null>(null);
   const [recipientEmail, setRecipientEmail] = useState('');
 
   // Load workers from localStorage on mount
@@ -333,7 +339,7 @@ export default function MigrantContactMaintenanceDashboard() {
   };
 
   // File extraction logic (adapted for skills/experience)
-  const extractMigrantContactInfo = (files: File[]) => {
+  const extractSkillsExperienceInfo = (files: File[]) => {
     // Simulate extraction logic for skills/experience
     let workerName = "Unknown Worker";
     let jobTitle = "Unknown";
@@ -347,7 +353,7 @@ export default function MigrantContactMaintenanceDashboard() {
   };
 
   // Assessment logic (adapted)
-  const generateMigrantContactAssessment = (
+  const generateSkillsExperienceAssessment = (
     workerName: string,
     jobTitle: string,
     socCode: string,
@@ -355,42 +361,53 @@ export default function MigrantContactMaintenanceDashboard() {
     skills: string,
     experience: string
   ) => {
-    // Enhanced assessment logic for skills & experience
+    // Enhanced assessment logic for reporting duties compliance
     let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
     let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
     let redFlag = false;
     
-    // Check experience requirements
-    const hasExperience = experience && experience.length > 0;
-    const hasSkills = skills && skills.length > 0;
-    const experienceYears = experience.toLowerCase().includes('year') ? 
-      parseInt(experience.match(/(\d+)\s*year/)?.[1] || '0') : 0;
+    // Simulate reporting duties compliance checks
+    const hasTimelyReporting = Math.random() > 0.3;
+    const hasMandatoryNotifications = Math.random() > 0.2;
+    const hasChangeReporting = Math.random() > 0.4;
+    const hasHomeOfficeAcknowledgment = Math.random() > 0.3;
+    const hasSMSCompliance = Math.random() > 0.5;
     
-    // Determine compliance based on skills & experience
-    if (!hasExperience || !hasSkills || experienceYears < 2) {
+    // Determine compliance based on reporting duties requirements
+    if (!hasTimelyReporting || !hasMandatoryNotifications || !hasChangeReporting) {
       complianceStatus = "SERIOUS_BREACH";
       riskLevel = "HIGH";
       redFlag = true;
-    } else if (experienceYears < 3) {
+    } else if (!hasHomeOfficeAcknowledgment || !hasSMSCompliance) {
       riskLevel = "MEDIUM";
     }
     
-    const professionalAssessment = `You assigned Certificate of Sponsorship (CoS) for ${workerName} on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
+    // Generate reporting duties specific findings
+    const findings = [];
+    if (!hasTimelyReporting) findings.push("Late reporting detected - change reported after 10 working day deadline");
+    if (!hasMandatoryNotifications) findings.push("Missing mandatory notification for address change");
+    if (!hasChangeReporting) findings.push("Salary change not reported within required timeframe");
+    if (!hasChangeReporting) findings.push("Absence reporting incomplete - missing return to work notification");
+    if (!hasTimelyReporting) findings.push("Job title change notification overdue by 15 days");
+    if (!hasHomeOfficeAcknowledgment) findings.push("Missing evidence of Home Office acknowledgment");
+    if (Math.random() > 0.7) findings.push("Pattern of repeated late reporting identified");
+    
+    const professionalAssessment = `Reporting Duties Compliance Assessment for ${workerName}
 
-The summary of job description in the CoS states:
+Report Type: ${jobTitle}
+Worker/Event: ${socCode}
+Due Date: ${assignmentDate}
 
-The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
+COMPLIANCE FINDINGS:
 
-The usual requirement for performing such a role is demonstrable evidence of sufficient skills and experience in health and social care (e.g., minimum 2-3 years of relevant experience), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
-
-Upon review of the documentation provided, we acknowledge that ${workerName} has ${experienceYears} years of experience in the care sector. ${hasSkills ? 'The worker has demonstrated relevant skills for this role.' : 'The worker has not demonstrated sufficient relevant skills for this role.'} ${hasExperience ? 'Experience documentation has been provided.' : 'Experience documentation has not been provided.'}
+${findings.length > 0 ? findings.map(finding => `â€¢ ${finding}`).join('\n') : 'â€¢ All reporting duties compliance requirements met'}
 
 ${complianceStatus === 'SERIOUS_BREACH' ? 
-  `This represents a serious breach of sponsor compliance obligations as the worker does not meet the minimum skills and experience requirements for this role. The Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary skills and experience for the role in question.` :
-  `The worker meets the skills and experience requirements for this role. Compliance is maintained with Home Office standards.`
+  `This represents a serious breach of reporting duties compliance obligations. The Home Office will conclude that you have breached your sponsor compliance duties regarding mandatory reporting requirements. Immediate remedial action is required to address these compliance gaps.` :
+  `The reporting duties arrangements meet compliance requirements. Continue monitoring reporting obligations and maintain proper documentation.`
 }
 
-Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€” immediate remedial action required' : 'COMPLIANT â€” continue monitoring skills and experience requirements'}.`;
+Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€” immediate remedial action required' : 'COMPLIANT â€” continue monitoring reporting duties compliance'}.`;
 
     return {
       complianceStatus,
@@ -407,9 +424,17 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       return;
     }
     setUploading(true);
-    const extracted = extractMigrantContactInfo(selectedFiles);
+    
+    // Analysis messages for reporting duties compliance
+    console.log("Checking reporting timeline compliance...");
+    console.log("Verifying mandatory notification requirements...");
+    console.log("Validating change of circumstances reporting...");
+    console.log("Reviewing Home Office notification records...");
+    console.log("Confirming SMS reporting obligations...");
+    
+    const extracted = extractSkillsExperienceInfo(selectedFiles);
     setTimeout(() => {
-              const assessmentResult = generateMigrantContactAssessment(
+      const assessmentResult = generateSkillsExperienceAssessment(
         extracted.workerName,
         extracted.jobTitle,
         extracted.socCode,
@@ -417,7 +442,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         extracted.skills,
         extracted.experience
       );
-      const newAssessment: MigrantContactAssessment = {
+      const newAssessment: SkillsExperienceAssessment = {
         id: 'ASSESS_' + Date.now(),
         workerId: 'WORKER_' + Date.now(),
         workerName: extracted.workerName,
@@ -433,7 +458,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         generatedAt: new Date().toISOString()
       };
       // Add worker
-      const newWorker: MigrantContactWorker = {
+      const newWorker: SkillsExperienceWorker = {
         id: newAssessment.workerId,
         name: extracted.workerName,
         jobTitle: extracted.jobTitle,
@@ -467,7 +492,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       const jsPDF = (await import('jspdf')).default;
       const doc = new jsPDF();
       doc.setFontSize(20);
-      doc.text('Skills & Experience Compliance Analysis Report', 105, 20, { align: 'center' });
+      doc.text('Reporting Duties Compliance Analysis Report', 105, 20, { align: 'center' });
       doc.setFontSize(10);
       doc.text(`Generated on ${new Date().toLocaleDateString('en-GB')} at ${new Date().toLocaleTimeString('en-GB')}`, 105, 30, { align: 'center' });
       if (assessment?.redFlag) {
@@ -475,7 +500,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         doc.rect(10, 40, 190, 15, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(12);
-        doc.text('SERIOUS BREACH DETECTED - Immediate review required', 105, 50, { align: 'center' });
+        doc.text('SERIOUS REPORTING DUTIES BREACH DETECTED - Immediate review required', 105, 50, { align: 'center' });
         doc.setTextColor(0, 0, 0);
       }
       let yPos = assessment?.redFlag ? 70 : 50;
@@ -484,10 +509,10 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       yPos += 10;
       doc.setFontSize(10);
       doc.text(`Worker: ${assessment?.workerName}`, 10, yPos); yPos += 7;
-      doc.text(`Job Title: ${assessment?.jobTitle}`, 10, yPos); yPos += 7;
-      doc.text(`SOC Code: ${assessment?.socCode}`, 10, yPos); yPos += 7;
-      doc.text(`Skills: ${assessment?.skills}`, 10, yPos); yPos += 7;
-      doc.text(`Experience: ${assessment?.experience}`, 10, yPos); yPos += 7;
+      doc.text(`Report Type: ${assessment?.jobTitle}`, 10, yPos); yPos += 7;
+      doc.text(`Worker/Event: ${assessment?.socCode}`, 10, yPos); yPos += 7;
+      doc.text(`Due Date: ${assessment?.skills}`, 10, yPos); yPos += 7;
+      doc.text(`Submitted Date: ${assessment?.experience}`, 10, yPos); yPos += 7;
       doc.text(`Status: ${assessment?.complianceStatus}`, 10, yPos); yPos += 15;
       doc.setFontSize(14);
       doc.text('Professional Assessment', 10, yPos); yPos += 10;
@@ -497,7 +522,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         if (yPos > 270) { doc.addPage(); yPos = 20; }
         doc.text(line, 10, yPos); yPos += 5;
       });
-      doc.save(`Skills_Experience_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+      doc.save(`Reporting_Duties_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
     } catch (error) {
       alert('Failed to generate PDF. Please try again.');
     }
@@ -511,7 +536,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
     }
     const assessment = currentAssessment || selectedWorkerAssessment;
     const emailHTML = `
-      <h2>Skills & Experience Compliance Assessment Report</h2>
+      <h2>Reporting Duties Compliance Assessment Report</h2>
       <p><strong>Worker:</strong> ${assessment?.workerName}</p>
       <p><strong>Status:</strong> ${assessment?.complianceStatus}</p>
       <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
@@ -524,7 +549,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
-          subject: `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`,
+          subject: `Reporting Duties Compliance Assessment Report - ${assessment?.workerName}`,
           html: emailHTML,
           workerName: assessment?.workerName,
         }),
@@ -532,8 +557,8 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       if (!response.ok) throw new Error('Failed to send email');
       alert('Report sent successfully via email!');
     } catch (error) {
-      const subject = `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`;
-      const body = `Please find the skills & experience compliance assessment report for ${assessment?.workerName}.
+      const subject = `Reporting Duties Compliance Assessment Report - ${assessment?.workerName}`;
+      const body = `Please find the reporting duties compliance assessment report for ${assessment?.workerName}.
 
 ${assessment?.professionalAssessment}`;
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -560,7 +585,7 @@ ${assessment?.professionalAssessment}`;
     } else {
       const worker = workers.find(w => w.id === workerId);
       if (worker) {
-        const mockAssessment: MigrantContactAssessment = {
+        const mockAssessment: SkillsExperienceAssessment = {
           id: 'ASSESS_' + Date.now(),
           workerId: worker.id,
           workerName: worker.name,
@@ -572,7 +597,7 @@ ${assessment?.professionalAssessment}`;
           riskLevel: worker.riskLevel,
           redFlag: worker.redFlag,
           assignmentDate: worker.assignmentDate,
-          professionalAssessment: `Skills & Experience assessment for ${worker.name}`,
+          professionalAssessment: `Reporting Duties assessment for ${worker.name}`,
           generatedAt: new Date().toISOString()
         };
         setAssessments(prev => [...prev, mockAssessment]);
@@ -586,8 +611,8 @@ ${assessment?.professionalAssessment}`;
 
   // Help with breach
   const handleHelpWithBreach = (workerName: string) => {
-    const subject = `Help Required - Skills & Experience Compliance Breach for ${workerName}`;
-    const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
+    const subject = `Help Required - Reporting Duties Compliance Breach for ${workerName}`;
+    const body = `Dear Complians Support Team,\n\nI need assistance with a reporting duties compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for reporting timeline issues\n- Remedial steps to ensure reporting compliance\n- Documentation needed for Home Office notifications\n- Sponsor licence protection measures for reporting obligations\n\nThank you for your assistance.\n\nBest regards`;
     const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink);
   };
@@ -597,10 +622,10 @@ ${assessment?.professionalAssessment}`;
     if (confirm('Are you sure you want to delete this worker?')) {
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(updatedWorkers));
+      localStorage.setItem('reportingDutiesComplianceWorkers', JSON.stringify(updatedWorkers));
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(updatedAssessments));
+      localStorage.setItem('reportingDutiesComplianceAssessments', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -656,6 +681,13 @@ ${assessment?.professionalAssessment}`;
     }
   };
 
+  // Analysis messages for reporting duties compliance
+  console.log("Checking reporting timeline compliance...");
+  console.log("Verifying mandatory notification requirements...");
+  console.log("Validating change of circumstances reporting...");
+  console.log("Reviewing Home Office notification records...");
+  console.log("Confirming SMS reporting obligations...");
+
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
@@ -683,7 +715,7 @@ ${assessment?.professionalAssessment}`;
           <TabButton
             value="workers"
             icon={<Users className="h-5 w-5" />}
-            label="Workers"
+            label="Reports"
           />
           <TabButton
             value="assessment"
@@ -857,7 +889,7 @@ ${assessment?.professionalAssessment}`;
                 Workers
               </div>
               <div className="text-gray-600 text-sm mt-1">
-                Manage sponsored workers and their skills/experience
+                Manage reporting obligations and compliance deadlines
               </div>
             </div>
             <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium">
@@ -869,9 +901,10 @@ ${assessment?.professionalAssessment}`;
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">Job Title</th>
-                  <th className="px-4 py-2 text-left">SOC Code</th>
+                  <th className="px-4 py-2 text-left">Report Type</th>
+                  <th className="px-4 py-2 text-left">Worker/Event</th>
+                  <th className="px-4 py-2 text-left">Due Date</th>
+                  <th className="px-4 py-2 text-left">Submitted Date</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Risk Level</th>
                   <th className="px-4 py-2 text-left">View Report</th>
@@ -893,6 +926,7 @@ ${assessment?.professionalAssessment}`;
                     <td className="px-4 py-2">{worker.name}</td>
                     <td className="px-4 py-2">{worker.jobTitle}</td>
                     <td className="px-4 py-2">{worker.socCode}</td>
+                    <td className="px-4 py-2">{worker.assignmentDate}</td>
                     <td className="px-4 py-2">
                       {getStatusBadge(worker.complianceStatus, worker.redFlag)}
                     </td>
@@ -922,8 +956,8 @@ ${assessment?.professionalAssessment}`;
           <div className="bg-white rounded-lg p-6 shadow border">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
-              <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
+              <h3 className="text-lg font-medium mb-2">Upload Reporting Duties Documents</h3>
+              <p className="text-gray-600 mb-4">Upload change notifications, reporting logs, compliance records, and Home Office correspondence for AI analysis</p>
               <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
               <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
               {selectedFiles.length > 0 && (
@@ -960,7 +994,7 @@ ${assessment?.professionalAssessment}`;
                   <div className="mt-4 space-y-2">
                     <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
                       <GraduationCap className="h-4 w-4 mr-2" />
-                      Analyze Skills & Experience ({selectedFiles.length} files)
+                      Analyze Reporting Duties ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
@@ -981,7 +1015,7 @@ ${assessment?.professionalAssessment}`;
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center mb-2">
                   <GraduationCap className="h-6 w-6 text-gray-600 mr-2" />
-                  <h3 className="text-xl font-semibold text-brand-dark">Skills & Experience Compliance Analysis Report</h3>
+                  <h3 className="text-xl font-semibold text-brand-dark">Reporting Duties Compliance Analysis Report</h3>
                 </div>
                 <p className="text-sm text-gray-600">Generated on {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleDateString('en-GB')} {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleTimeString('en-GB', { hour12: false })}</p>
               </div>
@@ -992,10 +1026,10 @@ ${assessment?.professionalAssessment}`;
                   <div className="bg-red-500 text-white p-4 rounded-lg text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <AlertTriangle className="h-5 w-5" />
-                      <span className="font-bold">SERIOUS SKILLS & EXPERIENCE BREACH DETECTED</span>
+                      <span className="font-bold">SERIOUS REPORTING DUTIES BREACH DETECTED</span>
                       <AlertTriangle className="h-5 w-5" />
                     </div>
-                    <p>Skills and experience requirements not met - Immediate review required</p>
+                    <p>Reporting duties compliance requirements not met - Immediate review required</p>
                   </div>
                 )}
                 
@@ -1017,19 +1051,19 @@ ${assessment?.professionalAssessment}`;
                       <p>{(currentAssessment || selectedWorkerAssessment)?.workerName || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Job Title:</label>
+                      <label className="text-gray-600 font-medium">Report Type:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.jobTitle || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">SOC Code:</label>
+                      <label className="text-gray-600 font-medium">Worker/Event:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.socCode || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Skills:</label>
+                      <label className="text-gray-600 font-medium">Due Date:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.skills || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Experience:</label>
+                      <label className="text-gray-600 font-medium">Submitted Date:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.experience || 'N/A'}</p>
                     </div>
                     <div>
