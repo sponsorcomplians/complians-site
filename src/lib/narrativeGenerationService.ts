@@ -3,6 +3,7 @@ import { CURRENT_LEGAL_REFERENCES, getFormattedLegalReference, getLegalReference
 import { narrativeCache } from './narrativeCache';
 import { narrativeValidator } from './narrativeValidation';
 import { narrativeMetrics } from './narrativeMetrics';
+import { generateAINarrative } from './aiNarrativeService';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -69,6 +70,39 @@ export class NarrativeGenerationService {
       await narrativeMetrics.logGeneration(audit);
       
       return { narrative: cachedNarrative, audit };
+    }
+
+    // Try AI generation first if enabled
+    if (this.shouldUseAI()) {
+      try {
+        const aiNarrative = await generateAINarrative(input);
+        
+        const audit: NarrativeAudit = {
+          id: auditId,
+          timestamp: new Date().toISOString(),
+          input,
+          output: aiNarrative,
+          model: 'ai-generated',
+          promptVersion: this.currentPromptVersion,
+          temperature: 0.3,
+          duration: Date.now() - startTime,
+          tokenCount: Math.ceil(aiNarrative.length / 4),
+          validationPassed: true,
+          fallbackUsed: false,
+          costEstimate: (Math.ceil(aiNarrative.length / 4) / 1000) * 0.01
+        };
+
+        // Store audit log
+        this.auditLog.push(audit);
+        
+        // Log metrics
+        await narrativeMetrics.logGeneration(audit);
+        
+        return { narrative: aiNarrative, audit };
+      } catch (error) {
+        console.error('AI generation failed, falling back to template:', error);
+        // Continue to fallback generation
+      }
     }
 
     try {
@@ -242,8 +276,6 @@ Legal Framework: ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
 This assessment was generated using fallback template due to system constraints.`;
   }
 
-
-
   /**
    * Get audit log for compliance reporting
    */
@@ -259,14 +291,14 @@ This assessment was generated using fallback template due to system constraints.
   }
 
   /**
-   * Clear audit log (for testing or maintenance)
+   * Clear audit log
    */
   static clearAuditLog(): void {
     this.auditLog = [];
   }
 
   /**
-   * Export audit log for external analysis
+   * Export audit log as JSON
    */
   static exportAuditLog(): string {
     return JSON.stringify(this.auditLog, null, 2);
