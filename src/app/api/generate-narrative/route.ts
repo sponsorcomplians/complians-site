@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    console.log('📥 [API] Received request body:', JSON.stringify(body, null, 2));
+    
+    // Ensure all fields have default values to prevent undefined errors
     const {
       workerName = 'Unknown Worker',
       jobTitle = 'Unknown Role',
@@ -26,9 +29,16 @@ export async function POST(request: NextRequest) {
       isCompliant = false,
     } = body;
 
-    // Validate required fields
-    if (!workerName || workerName.trim() === '') {
-      return NextResponse.json({ error: 'Worker name is required' }, { status: 400 });
+    console.log('🔍 [API] Extracted workerName:', workerName);
+    console.log('🔍 [API] Extracted jobTitle:', jobTitle);
+
+    // Validate required fields with better error messages
+    if (!workerName || workerName.trim() === '' || workerName === 'Unknown Worker') {
+      console.error('❌ [API] Worker name validation failed:', { workerName, body });
+      return NextResponse.json({ 
+        error: 'Worker name is required and cannot be empty',
+        receivedData: { workerName, bodyKeys: Object.keys(body) }
+      }, { status: 400 });
     }
 
     const systemPrompt = `
@@ -66,6 +76,8 @@ Instructions:
 Return only the final letter text in your response.
     `;
 
+    console.log('🤖 [API] Calling OpenAI with workerName:', workerName);
+    
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -83,11 +95,19 @@ Return only the final letter text in your response.
       throw new Error('AI returned placeholder or invalid narrative.');
     }
 
-    console.log('✅ [AI Raw Output]', output);
+    console.log('✅ [API] AI Raw Output generated successfully for worker:', workerName);
 
     return NextResponse.json({ narrative: output });
   } catch (error: any) {
-    console.error('❌ AI Narrative generation error:', error);
-    return NextResponse.json({ error: 'Narrative generation failed. Check logs for details.' }, { status: 500 });
+    console.error('❌ [API] AI Narrative generation error:', error);
+    console.error('❌ [API] Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    return NextResponse.json({ 
+      error: 'Narrative generation failed. Check logs for details.',
+      details: error.message 
+    }, { status: 500 });
   }
 } 

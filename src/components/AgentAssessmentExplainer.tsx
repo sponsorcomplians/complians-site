@@ -3,13 +3,13 @@ import { Bot, AlertTriangle } from "lucide-react";
 
 const agentExplainers: Record<
   string,
-  { agentName: string; summary: string; points: string[]; requiredDocuments?: string[]; warning?: string }
+  { agentName: string; summary: string; capabilities: string[]; requiredDocuments?: string[]; warning?: string }
 > = {
   "ai-qualification-compliance": {
     agentName: "AI Qualification Compliance System",
     summary:
       "The AI Qualification Compliance System is an advanced automated tool designed to evaluate and verify whether sponsored workers possess the necessary formal qualifications required for their roles. It ensures sponsors meet Home Office requirements for skill level and qualification evidence, reducing the risk of compliance breaches and protecting the sponsor licence.",
-    points: [
+    capabilities: [
       "Verifies that qualifications match the specific SOC code and job role",
       "Confirms qualifications were obtained before CoS assignment date",
       "Reviews degree certificates, diplomas, and transcripts",
@@ -31,7 +31,7 @@ const agentExplainers: Record<
     agentName: "AI Salary Compliance System",
     summary:
       "The AI Salary Compliance System is a specialist automated analysis tool designed to verify that migrant workers' salaries meet or exceed the Home Office minimum salary thresholds and conditions set out in sponsor guidance. This system protects sponsors from underpayment breaches and ensures ongoing compliance with immigration and employment laws.",
-    points: [
+    capabilities: [
       "Checks salaries against the relevant SOC code thresholds",
       "Verifies pay consistency with CoS and employment contract",
       "Analyses payslips, contracts, and financial records",
@@ -52,7 +52,7 @@ const agentExplainers: Record<
     agentName: "AI Skills & Experience Compliance System",
     summary:
       "The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements. This system ensures that all sponsored workers possess the necessary competencies and documented experience to fulfill their designated roles effectively and lawfully.",
-    points: [
+    capabilities: [
       "Verifies skills and experience match the specific job role requirements",
       "Analyses CVs, references, contracts, payslips, and training certificates",
       "Detects inconsistencies and gaps in employment history and qualifications",
@@ -75,7 +75,7 @@ const agentExplainers: Record<
     agentName: "AI Record Keeping Compliance Agent",
     summary:
       "Checks document management and record keeping for sponsor compliance.",
-    points: [
+    capabilities: [
       "Verifies required records are present",
       "Detects missing/expired documents",
       "Flags audit risks",
@@ -86,7 +86,7 @@ const agentExplainers: Record<
   "ai-reporting-duties-compliance": {
     agentName: "AI Reporting Duties Compliance Agent",
     summary: "Monitors sponsor reporting obligations and deadlines.",
-    points: [
+    capabilities: [
       "Tracks reporting deadlines",
       "Detects missed/late reports",
       "Flags compliance breaches",
@@ -97,7 +97,7 @@ const agentExplainers: Record<
   "ai-third-party-labour-compliance": {
     agentName: "AI Third Party Labour Compliance System",
     summary: "The AI Third Party Labour Compliance System is designed to help sponsors ensure that any workers supplied through third-party arrangements are engaged lawfully and in compliance with Home Office rules. This system helps sponsors avoid risks of unlawful sub-contracting, disguised employment relationships, and breaches of sponsor licence duties.",
-    points: [
+    capabilities: [
       "Analyses contracts and agreements with labour supply agencies",
       "Verifies that third-party workers are under genuine, direct control of the sponsor",
       "Checks for disguised sub-contracting or unauthorised outsourcing arrangements",
@@ -117,7 +117,7 @@ const agentExplainers: Record<
   "ai-monitoring-immigration-status-compliance": {
     agentName: "AI Immigration Status Monitoring Agent",
     summary: "Monitors migrant worker immigration status in real time.",
-    points: [
+    capabilities: [
       "Tracks visa/permit status",
       "Detects expired/expiring status",
       "Flags urgent compliance issues",
@@ -128,7 +128,7 @@ const agentExplainers: Record<
   "ai-contracted-hours-compliance": {
     agentName: "AI Contracted Hours Compliance System",
     summary: "The AI Contracted Hours Compliance System is an intelligent tool designed to verify that sponsored workers are consistently working the contracted weekly hours declared to the Home Office and stated on their Certificate of Sponsorship (CoS). It protects sponsors against non-compliance with working hour obligations and identifies risks of potential underemployment or false reporting.",
-    points: [
+    capabilities: [
       "Verifies actual hours worked against contracted hours in the CoS and employment contracts",
       "Cross-checks timesheets, rota schedules, and work logs",
       "Detects patterns of underemployment or inconsistencies in reported hours",
@@ -147,7 +147,7 @@ const agentExplainers: Record<
   "ai-paragraph-c7-26-compliance": {
     agentName: "AI Paragraph C7.26 Compliance System",
     summary: "The AI Paragraph C7.26 Compliance System is designed to evaluate whether sponsors maintain and provide appropriate records and evidence demonstrating that migrant workers continue to meet visa conditions and sponsorship requirements. This system ensures full compliance with paragraph C7.26 of the Immigration Rules, protecting sponsors from revocation risks.",
-    points: [
+    capabilities: [
       "Reviews ongoing compliance evidence for sponsored workers",
       "Checks for adherence to visa conditions and sponsor duties",
       "Detects missing or outdated records supporting lawful employment",
@@ -166,7 +166,7 @@ const agentExplainers: Record<
   "ai-document-compliance": {
     agentName: "AI Document Compliance System",
     summary: "The AI Document Compliance System is a dedicated automated solution that validates the completeness, authenticity, and correctness of required documentation for sponsored migrant workers. It ensures that all legal and regulatory documents are accurate and maintained in accordance with Home Office Appendix D requirements.",
-    points: [
+    capabilities: [
       "Checks completeness and authenticity of documents",
       "Analyses right to work checks, visas, and biometric permits",
       "Detects expired or forged documents",
@@ -187,7 +187,7 @@ const agentExplainers: Record<
   "ai-right-to-work-compliance": {
     agentName: "AI Right to Work Compliance System",
     summary: "The AI Right to Work Compliance System is a specialised tool designed to help sponsors verify and document their employees' right to work in the UK in line with Home Office regulations. This system ensures all necessary checks are performed, documented, and retained, protecting the sponsor against civil penalties and licence risks.",
-    points: [
+    capabilities: [
       "Verifies right to work checks have been conducted before employment start date",
       "Analyses documents such as share codes, visas, passports, and Biometric Residence Permits",
       "Checks for correct record-keeping and re-check scheduling where required",
@@ -207,7 +207,7 @@ const agentExplainers: Record<
   "ai-hr-compliance": {
     agentName: "AI HR Compliance Agent",
     summary: "Manages HR policy and employee compliance.",
-    points: [
+    capabilities: [
       "Checks HR policies",
       "Detects non-compliance",
       "Flags training gaps",
@@ -218,7 +218,7 @@ const agentExplainers: Record<
   "ai-genuine-vacancies-compliance": {
     agentName: "AI Genuine Vacancy Compliance System",
     summary: "The AI Genuine Vacancy Compliance System is an advanced analysis tool designed to verify that roles offered under Certificates of Sponsorship (CoS) are genuine, immediate, and supported by robust operational need and evidence. It ensures that sponsors do not create speculative or artificial vacancies, protecting their sponsor licence from enforcement action.",
-    points: [
+    capabilities: [
       "Verifies if job roles truly exist at the time of application",
       "Reviews service contracts, business agreements, and staffing plans",
       "Assesses financial viability to pay salaries",
@@ -239,7 +239,7 @@ const agentExplainers: Record<
   "ai-maintaining-migrant-contact-compliance": {
     agentName: "AI Migrant Contact Maintenance Agent",
     summary: "Monitors and tracks migrant worker contact.",
-    points: [
+    capabilities: [
       "Tracks contact records",
       "Detects missing/invalid contact",
       "Flags communication issues",
@@ -250,7 +250,7 @@ const agentExplainers: Record<
   "ai-recruitment-practices-compliance": {
     agentName: "AI Recruitment Practices Compliance Agent",
     summary: "Checks recruitment practices and policy compliance.",
-    points: [
+    capabilities: [
       "Verifies recruitment process",
       "Detects policy breaches",
       "Flags transparency issues",
@@ -261,7 +261,7 @@ const agentExplainers: Record<
   "ai-migrant-tracking-compliance": {
     agentName: "AI Migrant Tracking Compliance System",
     summary: "The AI Migrant Tracking Compliance System ensures sponsors maintain continuous awareness and control over the whereabouts and working status of all sponsored workers, as required by UK Home Office guidance. Proper tracking helps sponsors demonstrate ongoing monitoring and mitigate risks related to unauthorised absences or changes in circumstances.",
-    points: [
+    capabilities: [
       "Verifies records of worker locations, assignments, and absences",
       "Identifies missing or inconsistent tracking logs",
       "Checks whether reporting of changes in duties or work location is compliant",
@@ -280,7 +280,7 @@ const agentExplainers: Record<
   "ai-immigration-status-monitoring-compliance": {
     agentName: "AI Immigration Status Monitoring Agent",
     summary: "Monitors migrant worker immigration status in real time.",
-    points: [
+    capabilities: [
       "Tracks visa/permit status",
       "Detects expired/expiring status",
       "Flags urgent compliance issues",
@@ -291,7 +291,7 @@ const agentExplainers: Record<
   "ai-migrant-contact-maintenance-compliance": {
     agentName: "AI Migrant Contact Maintenance Compliance System",
     summary: "The AI Migrant Contact Maintenance Compliance System supports sponsors in meeting their duty to keep accurate and up-to-date contact details for all sponsored workers, as required by the Home Office. Maintaining valid contact information ensures that sponsors can meet record-keeping duties and demonstrate control over their sponsored workforce.",
-    points: [
+    capabilities: [
       "Reviews records to confirm current residential address, phone number, and email are up to date",
       "Identifies missing, outdated, or inconsistent contact details",
       "Cross-checks contact data against official records and HR databases",
@@ -322,40 +322,40 @@ export default function AgentAssessmentExplainer() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Bot className="h-6 w-6 text-[#263976]" />
-        <h2 className="text-xl font-bold text-[#263976]">
-          {explainer.agentName}
-        </h2>
-      </div>
-
-      <p className="text-gray-700 mb-4 leading-relaxed">
-        {explainer.summary}
-      </p>
-
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-[#263976] mb-2">
-          What this agent does:
-        </h3>
-        <ul className="list-disc pl-5 space-y-1 text-gray-700">
-          {explainer.points.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-      </div>
-
-      {explainer.requiredDocuments && (
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-[#263976] mb-2">
-            Documents required for a full compliance assessment:
-          </h3>
-          <ul className="list-disc pl-5 space-y-1 text-gray-700">
-            {explainer.requiredDocuments.map((doc, index) => (
-              <li key={index}>{doc}</li>
-            ))}
-          </ul>
+      {/* Two-column layout below heading */}
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Left: What this agent does */}
+        <div className="md:w-2/3 w-full mb-4 md:mb-0">
+          <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#263976] mb-2">
+              What this agent does:
+            </h3>
+            <p className="text-gray-700 mb-4 leading-relaxed">
+              {explainer.summary}
+            </p>
+            {explainer.capabilities && (
+              <ul className="list-disc list-inside mb-4 text-gray-700">
+                {explainer.capabilities.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-      )}
+        {/* Right: Documents required */}
+        <div className="md:w-1/3 w-full">
+          {explainer.requiredDocuments && (
+            <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
+              <h4 className="text-md font-semibold text-[#263976] mb-2">Documents required for a full compliance assessment:</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {explainer.requiredDocuments.map((doc, idx) => (
+                  <li key={idx}>{doc}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
 
       {explainer.warning && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
