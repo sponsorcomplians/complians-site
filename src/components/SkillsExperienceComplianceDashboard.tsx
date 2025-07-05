@@ -512,8 +512,8 @@ export default function SkillsExperienceComplianceDashboard() {
     const aiStartTime = Date.now();
     
     try {
-      // Try AI narrative generation
-      console.log('Attempting AI narrative generation...');
+      // When generating the narrative (look for the function that calls generateAINarrative)
+      console.log('[SkillsExperienceComp] Calling generateAINarrative with:', info);
       const { generateAINarrative } = await import('@/lib/aiNarrativeService');
       const { narrativeMetrics } = await import('@/lib/narrativeMetrics');
       
@@ -527,9 +527,9 @@ export default function SkillsExperienceComplianceDashboard() {
         isCompliant,
         riskLevel
       });
-      console.log('AI narrative generated successfully');
+      console.log('[SkillsExperienceComp] Narrative returned:', narrative);
     } catch (error) {
-      console.error('AI generation failed, using fallback:', error);
+      console.error('[SkillsExperienceComp] Error or fallback in narrative generation:', error);
       
       // Log fallback usage
       try {

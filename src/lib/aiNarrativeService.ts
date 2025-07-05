@@ -38,33 +38,34 @@ export async function generateAINarrative(input: NarrativeInput): Promise<string
   // Check cache first
   const cached = narrativeCache.get(input);
   if (cached) {
-    console.log('Returning cached narrative');
+    console.log('[AI Narrative] Returning cached narrative:', cached);
     return cached;
   }
   
   // Check if we should use AI
   if (!narrativeMetrics.shouldUseAI()) {
-    console.log('AI generation disabled by experiment, but forcing AI generation for testing');
+    console.log('[AI Narrative] AI generation disabled by experiment, but forcing AI generation for testing');
     // For testing purposes, we'll continue with AI generation
   }
   
   // Try each model in order
   for (const model of MODELS) {
     try {
-      const narrative = await generateWithModel(input, model);
+      console.log('[AI Narrative] Sending request to AI model:', model.name);
+      const narrative = await generateWithModel(input);
       const duration = Date.now() - startTime;
       
       // Log the generated narrative and validation result
-      console.log('Generated narrative:', narrative);
+      console.log('[AI Narrative] Generated narrative:', narrative);
       
       // Validate the output
       const validation = input.riskLevel === 'HIGH' 
         ? narrativeValidator.validateHighRisk(narrative, input)
         : narrativeValidator.validate(narrative, input);
-      console.log('Validation result:', validation);
+      console.log('[AI Narrative] Validation result:', validation);
       
       if (!validation.isValid) {
-        console.error('Validation failed:', validation);
+        console.error('[AI Narrative] Validation failed:', validation);
         continue; // Try next model
       }
       
@@ -90,38 +91,48 @@ export async function generateAINarrative(input: NarrativeInput): Promise<string
       
       return narrative;
     } catch (error) {
-      console.error(`Model ${model.name} failed:`, error);
+      console.error(`[AI Narrative] Model ${model.name} failed:`, error);
       continue;
     }
   }
   
+  console.log('[AI Narrative] All AI models failed, using fallback/template narrative');
   throw new Error('All AI models failed');
 }
 
-async function generateWithModel(input: NarrativeInput, model: ModelConfig): Promise<string> {
-  const prompt = buildEnhancedPrompt(input);
-  
+async function generateWithModel(input: NarrativeInput): Promise<string> {
+  // Map NarrativeInput to the required API fields
+  const requestPayload = {
+    workerName: input.workerName,
+    jobTitle: input.jobTitle,
+    socCode: input.socCode,
+    assignmentDate: input.assignmentDate,
+    cosDuties: input.cosDuties,
+    jobDescriptionDuties: input.jobDescriptionDuties,
+    missingDocs: input.missingDocs,
+    inconsistencies: input.inconsistenciesDescription,
+    isCompliant: input.isCompliant,
+  };
+  console.log('[AI Narrative] API request payload:', requestPayload);
+
   const response = await fetch('/api/generate-narrative', {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json' // Request JSON, not streaming
+      'Accept': 'application/json'
     },
-    body: JSON.stringify({ 
-      input,
-      prompt,
-      model: model.name,
-      temperature: model.temperature,
-      maxTokens: model.maxTokens
-    })
+    body: JSON.stringify(requestPayload)
   });
-  
+  console.log('[AI Narrative] API raw response:', response);
+
   if (!response.ok) {
     const error = await response.text();
+    console.error('[AI Narrative] API failed:', error);
     throw new Error(`API failed: ${error}`);
   }
-  
+
   const data = await response.json();
+  console.log('[AI Narrative] API response data:', data);
   return data.narrative;
 }
 
