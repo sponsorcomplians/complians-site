@@ -11,20 +11,25 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      workerName,
-      jobTitle,
-      socCode,
-      assignmentDate,
-      cosDuties,
-      jobDescriptionDuties,
-      cvSummary,
-      referenceSummary,
-      employmentEvidenceSummary,
-      missingDocs,
-      inconsistencies,
-      experienceConcerns,
-      isCompliant,
+      workerName = 'Unknown Worker',
+      jobTitle = 'Unknown Role',
+      socCode = 'Unknown SOC',
+      assignmentDate = 'Unknown Date',
+      cosDuties = 'No CoS duties provided',
+      jobDescriptionDuties = 'No job description duties provided',
+      cvSummary = 'No CV summary provided',
+      referenceSummary = 'No reference summary provided',
+      employmentEvidenceSummary = 'No employment evidence provided',
+      missingDocs = 'No missing documents specified',
+      inconsistencies = 'No inconsistencies identified',
+      experienceConcerns = 'No experience concerns identified',
+      isCompliant = false,
     } = body;
+
+    // Validate required fields
+    if (!workerName || workerName.trim() === '') {
+      return NextResponse.json({ error: 'Worker name is required' }, { status: 400 });
+    }
 
     const systemPrompt = `
 You are a Senior Immigration Solicitor and UK sponsor compliance expert. 

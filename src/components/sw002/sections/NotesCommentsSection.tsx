@@ -177,6 +177,8 @@ export default function NotesCommentsSection({ workerId, notes, onUpdate }: Note
           
           <div className="flex gap-2">
             <Input
+              id="payslip_month"
+              name="payslip_month"
               type="month"
               value={selectedPayslipMonths}
               onChange={(e) => setSelectedPayslipMonths(e.target.value)}
@@ -234,6 +236,7 @@ export default function NotesCommentsSection({ workerId, notes, onUpdate }: Note
               <Label htmlFor="reviewer_name">Full Name</Label>
               <Input
                 id="reviewer_name"
+                name="reviewer_name"
                 value={formData.reviewed_by_name || ''}
                 onChange={(e) => setFormData({ ...formData, reviewed_by_name: e.target.value })}
                 placeholder="Name of reviewer"
@@ -243,6 +246,7 @@ export default function NotesCommentsSection({ workerId, notes, onUpdate }: Note
               <Label htmlFor="reviewer_title">Job Title</Label>
               <Input
                 id="reviewer_title"
+                name="reviewer_title"
                 value={formData.reviewed_by_title || ''}
                 onChange={(e) => setFormData({ ...formData, reviewed_by_title: e.target.value })}
                 placeholder="e.g., HR Manager"

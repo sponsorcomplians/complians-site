@@ -71,6 +71,7 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="tier_category">Tier & Category *</Label>
               <Input
                 id="tier_category"
+                name="tier_category"
                 value={data.tier_category || ''}
                 onChange={(e) => handleFieldChange('tier_category', e.target.value)}
                 placeholder="e.g., Skilled Worker (New hires - defined)"
@@ -112,6 +113,7 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="sponsor_licence_number">Sponsor Licence Number *</Label>
               <Input
                 id="sponsor_licence_number"
+                name="sponsor_licence_number"
                 value={data.sponsor_licence_number || ''}
                 onChange={(e) => handleFieldChange('sponsor_licence_number', e.target.value)}
                 placeholder="e.g., 7GPDNRHJ1"
@@ -122,6 +124,7 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="sponsor_name">Sponsor Name *</Label>
               <Input
                 id="sponsor_name"
+                name="sponsor_name"
                 value={data.sponsor_name || ''}
                 onChange={(e) => handleFieldChange('sponsor_name', e.target.value)}
                 placeholder="e.g., ESTEEMED LIFE LTD"
@@ -135,6 +138,7 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="certificate_number">Certificate Number *</Label>
               <Input
                 id="certificate_number"
+                name="certificate_number"
                 value={data.certificate_number || ''}
                 onChange={(e) => handleFieldChange('certificate_number', e.target.value)}
                 placeholder="e.g., C2G8L98342Q"
@@ -180,6 +184,7 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="brp_reference">BRP Reference</Label>
               <Input
                 id="brp_reference"
+                name="brp_reference"
                 value={data.brp_reference || ''}
                 onChange={(e) => handleFieldChange('brp_reference', e.target.value)}
                 placeholder="e.g., RT7111600"
@@ -283,9 +288,10 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="current_home_address">Home Address</Label>
               <Input
                 id="current_home_address"
+                name="current_home_address"
                 value={data.current_home_address || ''}
                 onChange={(e) => handleFieldChange('current_home_address', e.target.value)}
-                placeholder="e.g., 417 Foleshill Road"
+                placeholder="e.g., 123 Main St"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -293,24 +299,27 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
                 <Label htmlFor="city_or_town">City/Town</Label>
                 <Input
                   id="city_or_town"
+                  name="city_or_town"
                   value={data.city_or_town || ''}
                   onChange={(e) => handleFieldChange('city_or_town', e.target.value)}
-                  placeholder="e.g., Coventry"
+                  placeholder="e.g., London"
                 />
               </div>
               <div>
                 <Label htmlFor="postcode">Postcode</Label>
                 <Input
                   id="postcode"
+                  name="postcode"
                   value={data.postcode || ''}
                   onChange={(e) => handleFieldChange('postcode', e.target.value)}
-                  placeholder="e.g., CV6 5AQ"
+                  placeholder="e.g., SW1A 1AA"
                 />
               </div>
               <div>
                 <Label htmlFor="country">Country</Label>
                 <Input
                   id="country"
+                  name="country"
                   value={data.country || ''}
                   onChange={(e) => handleFieldChange('country', e.target.value)}
                   placeholder="e.g., United Kingdom"
@@ -328,18 +337,21 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="job_type">Job Type</Label>
               <Input
                 id="job_type"
+                name="job_type"
                 value={data.job_type || ''}
                 onChange={(e) => handleFieldChange('job_type', e.target.value)}
-                placeholder="e.g., 6146 Senior Care Workers"
+                placeholder="e.g., Healthcare Assistant"
+                required
               />
             </div>
             <div>
               <Label htmlFor="job_title">Job Title *</Label>
               <Input
                 id="job_title"
+                name="job_title"
                 value={data.job_title || ''}
                 onChange={(e) => handleFieldChange('job_title', e.target.value)}
-                placeholder="e.g., Senior Care Worker"
+                placeholder="e.g., Senior Carer"
                 required
               />
             </div>
@@ -350,11 +362,12 @@ export default function COSSummarySection({ data, onChange, onSave }: COSSummary
               <Label htmlFor="gross_salary">Gross Salary (£) *</Label>
               <Input
                 id="gross_salary"
+                name="gross_salary"
                 type="number"
                 step="0.01"
                 value={data.gross_salary || ''}
                 onChange={(e) => handleFieldChange('gross_salary', parseFloat(e.target.value))}
-                placeholder="e.g., 22400.00"
+                placeholder="e.g., 25000.00"
                 required
               />
             </div>

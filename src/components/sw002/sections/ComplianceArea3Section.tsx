@@ -281,6 +281,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                       <Label htmlFor="advert_location">Where Advertised</Label>
                       <Input
                         id="advert_location"
+                        name="advert_location"
                         value={data.recruitment.advert_location || ''}
                         onChange={(e) => handleFieldChange('recruitment', 'advert_location', e.target.value)}
                         placeholder="e.g., Indeed, Company Website"
@@ -290,6 +291,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                       <Label htmlFor="advert_duration">Duration</Label>
                       <Input
                         id="advert_duration"
+                        name="advert_duration"
                         value={data.recruitment.advert_duration || ''}
                         onChange={(e) => handleFieldChange('recruitment', 'advert_duration', e.target.value)}
                         placeholder="e.g., 28 days"
@@ -302,6 +304,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                       <Label htmlFor="num_applicants">Number of Applicants</Label>
                       <Input
                         id="num_applicants"
+                        name="num_applicants"
                         type="number"
                         value={data.recruitment.number_of_applicants || ''}
                         onChange={(e) => handleFieldChange('recruitment', 'number_of_applicants', parseInt(e.target.value))}
@@ -311,6 +314,7 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                       <Label htmlFor="num_shortlisted">Number Shortlisted</Label>
                       <Input
                         id="num_shortlisted"
+                        name="num_shortlisted"
                         type="number"
                         value={data.recruitment.number_shortlisted || ''}
                         onChange={(e) => handleFieldChange('recruitment', 'number_shortlisted', parseInt(e.target.value))}
@@ -322,494 +326,490 @@ export default function ComplianceArea3Section({ data, onChange, onSave }: Compl
                     <h4 className="font-medium">Additional Evidence</h4>
                     <div className="flex items-center gap-2">
                       <Checkbox
-  id="sw021"
-  checked={data.recruitment.sw021_interview_questions_kept ?? false}
-  onCheckedChange={(checked) => 
-    handleFieldChange('recruitment', 'sw021_interview_questions_kept', checked)
-  }
-/>
-<Label htmlFor="sw021">SW021 - Interview Questions kept</Label>
-</div>
-<div className="flex items-center gap-2">
-<Checkbox
-  id="sw022"
-  checked={data.recruitment.sw022_payslips_copies_kept ?? false}
-  onCheckedChange={(checked) => 
-    handleFieldChange('recruitment', 'sw022_payslips_copies_kept', checked)
-  }
-/>
+                        id="sw021"
+                        checked={data.recruitment.sw021_interview_questions_kept ?? false}
+                        onCheckedChange={(checked) => handleFieldChange('recruitment', 'sw021_interview_questions_kept', checked)}
+                      />
+                      <Label htmlFor="sw021">SW021 - Interview Questions kept</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="sw022"
+                        checked={data.recruitment.sw022_payslips_copies_kept ?? false}
+                        onCheckedChange={(checked) => handleFieldChange('recruitment', 'sw022_payslips_copies_kept', checked)}
+                      />
                       <Label htmlFor="sw022">SW022 - Copies of payslips kept</Label>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Checkbox
-  id="sw023"
-  checked={data.recruitment.sw023_offer_letter_copy ?? false}
-  onCheckedChange={(checked) =>
-    handleFieldChange('recruitment', 'sw023_offer_letter_copy', checked)
-  }
-/>
-                      <Label htmlFor="sw023">SW023 - Copy of Offer Letter</Label>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className={cn(
-                            "justify-start text-left font-normal",
-                            !data.recruitment.sw023_date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {data.recruitment.sw023_date
-                            ? format(new Date(data.recruitment.sw023_date), "dd/MM/yyyy")
-                            : "Date"
-                          }
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={data.recruitment.sw023_date ? new Date(data.recruitment.sw023_date) : undefined}
-                          onSelect={(date) => handleFieldChange('recruitment', 'sw023_date', date?.toISOString())}
-                          initialFocus
+                          id="sw023"
+                          checked={data.recruitment.sw023_offer_letter_copy ?? false}
+                          onCheckedChange={(checked) => handleFieldChange('recruitment', 'sw023_offer_letter_copy', checked)}
                         />
-                      </PopoverContent>
-                    </Popover>
+                        <Label htmlFor="sw023">SW023 - Copy of Offer Letter</Label>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "justify-start text-left font-normal",
+                              !data.recruitment.sw023_date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {data.recruitment.sw023_date
+                              ? format(new Date(data.recruitment.sw023_date), "dd/MM/yyyy")
+                              : "Date"
+                            }
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={data.recruitment.sw023_date ? new Date(data.recruitment.sw023_date) : undefined}
+                            onSelect={(date) => handleFieldChange('recruitment', 'sw023_date', date?.toISOString())}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {!data.recruitment.applied_to_advertisement && (
-              <div className="space-y-4 pl-4 border-l-2">
-                <Label htmlFor="recruitment_method">
-                  How did you identify the worker was suitable?
-                </Label>
-                <Textarea
-                  id="recruitment_method"
-                  value={data.recruitment.recruitment_method_explanation || ''}
-                  onChange={(e) => handleFieldChange('recruitment', 'recruitment_method_explanation', e.target.value)}
-                  placeholder="Explain the recruitment method and provide evidence where practicable"
-                  rows={4}
-                />
-              </div>
-            )}
-          </div>
-          
-          <div className="flex justify-end">
-            <Button onClick={() => onSave('recruitment')}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Part 2
-            </Button>
-          </div>
-        </TabsContent>
-
-        {/* Part 3: Salary of sponsored workers */}
-        <TabsContent value="part3" className="space-y-4">
-          <h3 className="text-lg font-semibold">Part 3: Salary of sponsored workers</h3>
-          
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW024 - Copy of any contract of employment</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Must show names, signatures, dates, job details, hours, and pay
-                  </p>
+              {!data.recruitment.applied_to_advertisement && (
+                <div className="space-y-4 pl-4 border-l-2">
+                  <Label htmlFor="recruitment_method">
+                    How did you identify the worker was suitable?
+                  </Label>
+                  <Textarea
+                    id="recruitment_method"
+                    value={data.recruitment.recruitment_method_explanation || ''}
+                    onChange={(e) => handleFieldChange('recruitment', 'recruitment_method_explanation', e.target.value)}
+                    placeholder="Explain the recruitment method and provide evidence where practicable"
+                    rows={4}
+                  />
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
+              )}
+            </div>
+            
+            <div className="flex justify-end">
+              <Button onClick={() => onSave('recruitment')}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Part 2
+              </Button>
+            </div>
+          </TabsContent>
+
+          {/* Part 3: Salary of sponsored workers */}
+          <TabsContent value="part3" className="space-y-4">
+            <h3 className="text-lg font-semibold">Part 3: Salary of sponsored workers</h3>
+            
+            <div className="space-y-4">
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW024 - Copy of any contract of employment</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Must show names, signatures, dates, job details, hours, and pay
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
   id="sw024_copy"
   checked={data.salary.sw024_contract_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('salary', 'sw024_contract_copy', checked)
   }
 />
-                    <Label htmlFor="sw024_copy" className="text-sm">Copy kept</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
+                      <Label htmlFor="sw024_copy" className="text-sm">Copy kept</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
   id="sw024_signed"
   checked={data.salary.sw024_contract_signed ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('salary', 'sw024_contract_signed', checked)
   }
 />
-                    <Label htmlFor="sw024_signed" className="text-sm">Signed by all parties</Label>
+                      <Label htmlFor="sw024_signed" className="text-sm">Signed by all parties</Label>
+                    </div>
                   </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.salary.sw024_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.salary.sw024_date
+                          ? format(new Date(data.salary.sw024_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.salary.sw024_date ? new Date(data.salary.sw024_date) : undefined}
+                        onSelect={(date) => handleFieldChange('salary', 'sw024_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.salary.sw024_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.salary.sw024_date
-                        ? format(new Date(data.salary.sw024_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.salary.sw024_date ? new Date(data.salary.sw024_date) : undefined}
-                      onSelect={(date) => handleFieldChange('salary', 'sw024_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW025 - A detailed and specific job description</h4>
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW025 - A detailed and specific job description</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw025_copy"
   checked={data.salary.sw025_job_description_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('salary', 'sw025_job_description_copy', checked)
   }
 />
-                  <Label htmlFor="sw025_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw025_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.salary.sw025_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.salary.sw025_date
+                          ? format(new Date(data.salary.sw025_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.salary.sw025_date ? new Date(data.salary.sw025_date) : undefined}
+                        onSelect={(date) => handleFieldChange('salary', 'sw025_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.salary.sw025_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.salary.sw025_date
-                        ? format(new Date(data.salary.sw025_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.salary.sw025_date ? new Date(data.salary.sw025_date) : undefined}
-                      onSelect={(date) => handleFieldChange('salary', 'sw025_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW026 - A degree or care qualification/training certificate/s</h4>
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW026 - A degree or care qualification/training certificate/s</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw026_copy"
   checked={data.salary.sw026_qualifications_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('salary', 'sw026_qualifications_copy', checked)
   }
 />
-                  <Label htmlFor="sw026_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw026_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.salary.sw026_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.salary.sw026_date
+                          ? format(new Date(data.salary.sw026_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.salary.sw026_date ? new Date(data.salary.sw026_date) : undefined}
+                        onSelect={(date) => handleFieldChange('salary', 'sw026_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.salary.sw026_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.salary.sw026_date
-                        ? format(new Date(data.salary.sw026_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.salary.sw026_date ? new Date(data.salary.sw026_date) : undefined}
-                      onSelect={(date) => handleFieldChange('salary', 'sw026_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
-          </div>
-          
-          <div className="flex justify-end">
-            <Button onClick={() => onSave('salary')}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Part 3
-            </Button>
-          </div>
-        </TabsContent>
+            
+            <div className="flex justify-end">
+              <Button onClick={() => onSave('salary')}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Part 3
+              </Button>
+            </div>
+          </TabsContent>
 
-        {/* Part 4: Skill level for sponsored workers */}
-        <TabsContent value="part4" className="space-y-4">
-          <h3 className="text-lg font-semibold">Part 4: Skill level for sponsored workers</h3>
-          
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW027 - References from a previous employer or other evidence of experience</h4>
+          {/* Part 4: Skill level for sponsored workers */}
+          <TabsContent value="part4" className="space-y-4">
+            <h3 className="text-lg font-semibold">Part 4: Skill level for sponsored workers</h3>
+            
+            <div className="space-y-4">
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW027 - References from a previous employer or other evidence of experience</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw027_copy"
   checked={data.skills.sw027_references_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('skills', 'sw027_references_copy', checked)
   }
 />
-                  <Label htmlFor="sw027_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw027_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.skills.sw027_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.skills.sw027_date
+                          ? format(new Date(data.skills.sw027_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.skills.sw027_date ? new Date(data.skills.sw027_date) : undefined}
+                        onSelect={(date) => handleFieldChange('skills', 'sw027_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.skills.sw027_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.skills.sw027_date
-                        ? format(new Date(data.skills.sw027_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.skills.sw027_date ? new Date(data.skills.sw027_date) : undefined}
-                      onSelect={(date) => handleFieldChange('skills', 'sw027_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW028 - IELTS UKVI or any evidence of passing the English Language requirement</h4>
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW028 - IELTS UKVI or any evidence of passing the English Language requirement</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="sw028_test_type">Test Type</Label>
-                  <Input
-                    id="sw028_test_type"
-                    value={data.skills.sw028_test_type || ''}
-                    onChange={(e) => handleFieldChange('skills', 'sw028_test_type', e.target.value)}
-                    placeholder="e.g., IELTS UKVI"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="sw028_test_type">Test Type</Label>
+                    <Input
+                      id="sw028_test_type"
+                      name="sw028_test_type"
+                      value={data.skills.sw028_test_type || ''}
+                      onChange={(e) => handleFieldChange('skills', 'sw028_test_type', e.target.value)}
+                      placeholder="e.g., IELTS UKVI"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw028_copy"
   checked={data.skills.sw028_english_language_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('skills', 'sw028_english_language_copy', checked)
   }
 />
-                  <Label htmlFor="sw028_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw028_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.skills.sw028_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.skills.sw028_date
+                          ? format(new Date(data.skills.sw028_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.skills.sw028_date ? new Date(data.skills.sw028_date) : undefined}
+                        onSelect={(date) => handleFieldChange('skills', 'sw028_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.skills.sw028_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.skills.sw028_date
-                        ? format(new Date(data.skills.sw028_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.skills.sw028_date ? new Date(data.skills.sw028_date) : undefined}
-                      onSelect={(date) => handleFieldChange('skills', 'sw028_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW029 - Police Clearance from Home Country</h4>
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW029 - Police Clearance from Home Country</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="sw029_country">Country</Label>
-                  <Input id="sw029_country"
-                    value={data.skills.sw029_country || ''}
-                    onChange={(e) => handleFieldChange('skills', 'sw029_country', e.target.value)}
-                    placeholder="e.g., India"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="sw029_country">Country</Label>
+                    <Input id="sw029_country"
+                      name="sw029_country"
+                      value={data.skills.sw029_country || ''}
+                      onChange={(e) => handleFieldChange('skills', 'sw029_country', e.target.value)}
+                      placeholder="e.g., India"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw029_copy"
   checked={data.skills.sw029_police_clearance_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('skills', 'sw029_police_clearance_copy', checked)
   }
 />
-                  <Label htmlFor="sw029_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw029_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.skills.sw029_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.skills.sw029_date
+                          ? format(new Date(data.skills.sw029_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.skills.sw029_date ? new Date(data.skills.sw029_date) : undefined}
+                        onSelect={(date) => handleFieldChange('skills', 'sw029_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.skills.sw029_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.skills.sw029_date
-                        ? format(new Date(data.skills.sw029_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.skills.sw029_date ? new Date(data.skills.sw029_date) : undefined}
-                      onSelect={(date) => handleFieldChange('skills', 'sw029_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
-            </div>
 
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">SW030 - Medical Test Certificates</h4>
+              <div className="border rounded-lg p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-medium">SW030 - Medical Test Certificates</h4>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
   id="sw030_copy"
   checked={data.skills.sw030_medical_certificates_copy ?? false}
   onCheckedChange={(checked) => 
     handleFieldChange('skills', 'sw030_medical_certificates_copy', checked)
   }
 />
-                  <Label htmlFor="sw030_copy" className="text-sm">Copy kept</Label>
+                    <Label htmlFor="sw030_copy" className="text-sm">Copy kept</Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "justify-start text-left font-normal",
+                          !data.skills.sw030_date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {data.skills.sw030_date
+                          ? format(new Date(data.skills.sw030_date), "dd/MM/yyyy")
+                          : "Date"
+                        }
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={data.skills.sw030_date ? new Date(data.skills.sw030_date) : undefined}
+                        onSelect={(date) => handleFieldChange('skills', 'sw030_date', date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "justify-start text-left font-normal",
-                        !data.skills.sw030_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {data.skills.sw030_date
-                        ? format(new Date(data.skills.sw030_date), "dd/MM/yyyy")
-                        : "Date"
-                      }
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.skills.sw030_date ? new Date(data.skills.sw030_date) : undefined}
-                      onSelect={(date) => handleFieldChange('skills', 'sw030_date', date?.toISOString())}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
               </div>
             </div>
-          </div>
-          
-          <div className="flex justify-end">
-            <Button onClick={() => onSave('skills')}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Part 4
-            </Button>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </CardContent>
-  </Card>
-);
+            
+            <div className="flex justify-end">
+              <Button onClick={() => onSave('skills')}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Part 4
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
 }

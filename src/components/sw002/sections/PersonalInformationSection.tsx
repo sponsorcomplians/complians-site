@@ -68,6 +68,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="family_name">Family Name *</Label>
             <Input
               id="family_name"
+              name="family_name"
               value={data.family_name || ''}
               onChange={(e) => handleFieldChange('family_name', e.target.value)}
               placeholder="As shown on passport"
@@ -78,6 +79,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="first_name">First Name *</Label>
             <Input
               id="first_name"
+              name="first_name"
               value={data.first_name || ''}
               onChange={(e) => handleFieldChange('first_name', e.target.value)}
               placeholder="As shown on passport"
@@ -92,6 +94,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="nationality">Nationality *</Label>
             <Input
               id="nationality"
+              name="nationality"
               value={data.nationality || ''}
               onChange={(e) => handleFieldChange('nationality', e.target.value)}
               placeholder="e.g., Indian"
@@ -102,6 +105,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="passport_number">Passport Number *</Label>
             <Input
               id="passport_number"
+              name="passport_number"
               value={data.passport_number || ''}
               onChange={(e) => handleFieldChange('passport_number', e.target.value)}
               placeholder="e.g., P7179397"
@@ -116,6 +120,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="place_of_birth">Place of Birth</Label>
             <Input
               id="place_of_birth"
+              name="place_of_birth"
               value={data.place_of_birth || ''}
               onChange={(e) => handleFieldChange('place_of_birth', e.target.value)}
               placeholder="City/Town"
@@ -125,6 +130,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="country_of_birth">Country of Birth</Label>
             <Input
               id="country_of_birth"
+              name="country_of_birth"
               value={data.country_of_birth || ''}
               onChange={(e) => handleFieldChange('country_of_birth', e.target.value)}
               placeholder="e.g., India"
@@ -227,6 +233,7 @@ export default function PersonalInformationSection({
               <Label htmlFor="passport_issue_place">Place of Issue</Label>
               <Input
                 id="passport_issue_place"
+                name="passport_issue_place"
                 value={data.passport_issue_place || ''}
                 onChange={(e) => handleFieldChange('passport_issue_place', e.target.value)}
                 placeholder="e.g., Johannesburg"
@@ -241,6 +248,7 @@ export default function PersonalInformationSection({
             <Label htmlFor="country_of_residence">Country of Residence</Label>
             <Input
               id="country_of_residence"
+              name="country_of_residence"
               value={data.country_of_residence || ''}
               onChange={(e) => handleFieldChange('country_of_residence', e.target.value)}
               placeholder="e.g., United Kingdom"

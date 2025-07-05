@@ -199,6 +199,7 @@ export default function ReportingDutiesSection({ workerId, duties, onUpdate }: R
                     <Label htmlFor="reported_by">Reported By</Label>
                     <Input
                       id="reported_by"
+                      name="reported_by"
                       value={newDuty.reported_by}
                       onChange={(e) => setNewDuty({ ...newDuty, reported_by: e.target.value })}
                       placeholder="Name of person reporting"
@@ -238,6 +239,7 @@ export default function ReportingDutiesSection({ workerId, duties, onUpdate }: R
                   <Label htmlFor="home_office_reference">Home Office Reference</Label>
                   <Input
                     id="home_office_reference"
+                    name="home_office_reference"
                     value={newDuty.home_office_reference}
                     onChange={(e) => setNewDuty({ ...newDuty, home_office_reference: e.target.value })}
                     placeholder="Reference number if provided"
