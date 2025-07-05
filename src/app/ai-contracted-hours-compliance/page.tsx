@@ -2,17 +2,15 @@
 
 export const dynamic = 'force-dynamic'
 
-import { Suspense } from "react";
-import AIComplianceDashboard from "@/components/AIComplianceDashboard";
+import { Suspense } from 'react';
+import ContractedHoursComplianceDashboard from '@/components/ContractedHoursComplianceDashboard';
 
-function ContractedHoursComplianceContent() {
-  return <AIComplianceDashboard />;
-}
-
-export default function AIContractedHoursCompliancePage() {
+export default function ContractedHoursCompliancePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ContractedHoursComplianceContent />
-    </Suspense>
+    <div className="min-h-screen bg-gray-50">
+      <Suspense fallback={<div>Loading...</div>}>
+        <ContractedHoursComplianceDashboard />
+      </Suspense>
+    </div>
   );
 }
