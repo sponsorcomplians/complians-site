@@ -1,15 +1,20 @@
-'use client';
+"use client";
 
 export const dynamic = 'force-dynamic'
 
-import RightToWorkComplianceDashboard from '@/components/RightToWorkComplianceDashboard';
+import { Suspense } from 'react'
+import RightToWorkComplianceDashboard from '@/components/RightToWorkComplianceDashboard'
 
 // Content component that uses useSearchParams
 function RightToWorkComplianceContent() {
-  return <RightToWorkComplianceDashboard />;
+  return <RightToWorkComplianceDashboard />
 }
 
 // Default export with Suspense wrapper
 export default function AIRightToWorkCompliancePage() {
-  return <RightToWorkComplianceDashboard />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RightToWorkComplianceContent />
+    </Suspense>
+  )
 } 
