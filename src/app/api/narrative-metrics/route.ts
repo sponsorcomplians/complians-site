@@ -1,24 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { NarrativeAudit } from '@/types/narrative.types';
 
+// In production, this would save to a database
+const metricsStore: NarrativeAudit[] = [];
+
 export async function POST(request: NextRequest) {
   try {
     const audit: NarrativeAudit = await request.json();
     
-    // Here you would typically store the metrics in a database
-    // For now, we'll just log them and return success
-    console.log('Narrative metrics logged:', {
-      id: audit.id,
-      timestamp: audit.timestamp,
-      model: audit.model,
-      duration: audit.duration,
-      validationPassed: audit.validationPassed,
-      costEstimate: audit.costEstimate
-    });
+    // Basic validation
+    if (!audit.id || !audit.timestamp) {
+      return NextResponse.json(
+        { error: 'Invalid audit data' },
+        { status: 400 }
+      );
+    }
     
-    return NextResponse.json({ success: true, message: 'Metrics logged successfully' });
+    // Store metrics (in production, save to database)
+    metricsStore.push(audit);
+    
+    // Alert on issues (in production, send to monitoring service)
+    if (!audit.validationPassed) {
+      console.error('Validation failed for narrative:', audit.id);
+    }
+    
+    if (audit.duration > 10000) {
+      console.warn('Slow narrative generation:', audit.id, audit.duration);
+    }
+    
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error logging narrative metrics:', error);
+    console.error('Metrics logging error:', error);
     return NextResponse.json(
       { error: 'Failed to log metrics' },
       { status: 500 }
@@ -27,36 +39,18 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const timeframe = searchParams.get('timeframe') as 'hour' | 'day' | 'week' || 'day';
-    
-    // Here you would typically fetch metrics from a database
-    // For now, we'll return mock data
-    const mockStats = {
-      totalGenerations: 150,
-      aiGenerations: 120,
-      fallbackGenerations: 30,
-      averageDuration: 2500,
-      validationPassRate: 0.95,
-      totalCost: 12.50,
-      modelUsage: {
-        'gpt-4': 80,
-        'gpt-3.5-turbo': 30,
-        'cache-hit': 40
-      }
-    };
-    
-    return NextResponse.json({ 
-      success: true, 
-      timeframe,
-      stats: mockStats 
-    });
-  } catch (error) {
-    console.error('Error fetching narrative metrics:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch metrics' },
-      { status: 500 }
-    );
-  }
+  const timeframe = request.nextUrl.searchParams.get('timeframe') || 'day';
+  
+  // Calculate stats (simplified for demo)
+  const stats = {
+    total: metricsStore.length,
+    averageDuration: metricsStore.reduce((sum, m) => sum + m.duration, 0) / metricsStore.length || 0,
+    validationPassRate: metricsStore.filter(m => m.validationPassed).length / metricsStore.length || 0,
+    modelBreakdown: metricsStore.reduce((acc, m) => {
+      acc[m.model] = (acc[m.model] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  };
+  
+  return NextResponse.json(stats);
 } 
