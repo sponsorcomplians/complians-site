@@ -3,10 +3,10 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
-import AIComplianceDashboard from '@/components/AIComplianceDashboard'
+import GenuineVacanciesComplianceDashboard from '@/components/GenuineVacanciesComplianceDashboard'
 
 function GenuineVacanciesComplianceContent() {
-  return <AIComplianceDashboard />
+  return <GenuineVacanciesComplianceDashboard />
 }
 
 export default function AIGenuineVacanciesCompliancePage() {
