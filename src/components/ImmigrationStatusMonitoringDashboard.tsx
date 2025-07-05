@@ -33,15 +33,13 @@ interface SkillsExperienceWorker {
   name: string;
   jobTitle: string;
   socCode: string;
-  assignmentDate: string;
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
   lastAssessment: string;
+  redFlag: boolean;
+  assignmentDate: string;
   skills: string;
   experience: string;
-  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" | "VALID" | "EXPIRING_SOON" | "EXPIRED" | "ACTION_REQUIRED";
-  redFlag: boolean;
-  riskLevel: "LOW" | "MEDIUM" | "HIGH";
-  professionalAssessment: string;
-  generatedAt: string;
 }
 
 interface SkillsExperienceAssessment {
@@ -52,7 +50,7 @@ interface SkillsExperienceAssessment {
   socCode: string;
   skills: string;
   experience: string;
-  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" | "VALID" | "EXPIRING_SOON" | "EXPIRED" | "ACTION_REQUIRED";
+  complianceStatus: "COMPLIANT" | "SERIOUS_BREACH";
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   redFlag: boolean;
   assignmentDate: string;
@@ -198,26 +196,17 @@ export default function ImmigrationStatusMonitoringDashboard() {
   const searchParams = useSearchParams();
   const initialTab = searchParams?.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('immigrationStatusMonitoringWorkers');
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
+  const [workers, setWorkers] = useState<SkillsExperienceWorker[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       content:
-        "Hello! I'm your AI compliance assistant. I can help you with questions about immigration status, visa expiries, right to work verification, and immigration compliance monitoring. How can I assist you today?",
+        "Hello! I'm your AI compliance assistant. I can help you with questions about skills, experience, CVs, and compliance obligations. How can I assist you today?",
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
   const [chatInput, setChatInput] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [supabaseError, setSupabaseError] = useState<string | null>(null);
-  const [supabaseClient, setSupabaseClient] = useState<any>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -228,7 +217,7 @@ export default function ImmigrationStatusMonitoringDashboard() {
 
   // Load workers from localStorage on mount
   useEffect(() => {
-    const savedWorkers = localStorage.getItem('immigrationStatusMonitoringWorkers');
+    const savedWorkers = localStorage.getItem('immigrationStatusMonitoringData');
     if (savedWorkers) {
       try {
         const parsedWorkers = JSON.parse(savedWorkers);
@@ -242,13 +231,13 @@ export default function ImmigrationStatusMonitoringDashboard() {
   // Save workers to localStorage whenever they change
   useEffect(() => {
     if (workers.length > 0) {
-      localStorage.setItem('immigrationStatusMonitoringWorkers', JSON.stringify(workers));
+      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(workers));
     }
   }, [workers]);
 
   // Load assessments from localStorage on mount
   useEffect(() => {
-    const savedAssessments = localStorage.getItem('immigrationStatusMonitoringAssessments');
+    const savedAssessments = localStorage.getItem('immigrationStatusMonitoringData');
     if (savedAssessments) {
       try {
         const parsedAssessments = JSON.parse(savedAssessments);
@@ -262,7 +251,7 @@ export default function ImmigrationStatusMonitoringDashboard() {
   // Save assessments to localStorage whenever they change
   useEffect(() => {
     if (assessments.length > 0) {
-      localStorage.setItem('immigrationStatusMonitoringAssessments', JSON.stringify(assessments));
+      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(assessments));
     }
   }, [assessments]);
 
@@ -317,7 +306,7 @@ export default function ImmigrationStatusMonitoringDashboard() {
       {
         role: 'assistant',
         content:
-          "Thank you for your question. Our AI will review your query and provide guidance on immigration status monitoring and compliance requirements.",
+          "Thank you for your question. Our AI will review your query and provide guidance on skills and experience compliance.",
         timestamp: new Date().toLocaleTimeString(),
       },
     ]);
@@ -363,59 +352,42 @@ export default function ImmigrationStatusMonitoringDashboard() {
     skills: string,
     experience: string
   ) => {
-    // Enhanced assessment logic for immigration status monitoring
+    // Enhanced assessment logic for skills & experience
     let complianceStatus: "COMPLIANT" | "SERIOUS_BREACH" = "COMPLIANT";
     let riskLevel: "LOW" | "MEDIUM" | "HIGH" = "LOW";
     let redFlag = false;
     
-    // Simulate immigration status monitoring checks
-    const daysUntilExpiry = Math.floor(Math.random() * 365) - 30; // Random days, some negative (expired)
-    const hasValidStatus = daysUntilExpiry > 0;
-    const isExpiringSoon = daysUntilExpiry <= 60 && daysUntilExpiry > 0;
-    const hasRestrictions = Math.random() > 0.7;
-    const hasShareCodeIssues = Math.random() > 0.6;
-    const hasPassportIssues = Math.random() > 0.8;
+    // Check experience requirements
+    const hasExperience = experience && experience.length > 0;
+    const hasSkills = skills && skills.length > 0;
+    const experienceYears = experience.toLowerCase().includes('year') ? 
+      parseInt(experience.match(/(\d+)\s*year/)?.[1] || '0') : 0;
     
-    // Determine compliance based on immigration status
-    if (daysUntilExpiry <= 0) {
+    // Determine compliance based on skills & experience
+    if (!hasExperience || !hasSkills || experienceYears < 2) {
       complianceStatus = "SERIOUS_BREACH";
       riskLevel = "HIGH";
       redFlag = true;
-    } else if (daysUntilExpiry <= 30) {
-      complianceStatus = "SERIOUS_BREACH";
-      riskLevel = "HIGH";
-      redFlag = true;
-    } else if (daysUntilExpiry <= 60) {
+    } else if (experienceYears < 3) {
       riskLevel = "MEDIUM";
     }
     
-    // Generate immigration status specific findings
-    const findings = [];
-    if (daysUntilExpiry <= 0) findings.push("Status expired - worker must cease employment until resolved");
-    if (daysUntilExpiry <= 30 && daysUntilExpiry > 0) findings.push("URGENT: Visa expires in 30 days - initiate renewal immediately");
-    if (daysUntilExpiry <= 60 && daysUntilExpiry > 30) findings.push("60-day expiry warning - begin renewal process");
-    if (hasRestrictions) findings.push("Restriction change detected - review work authorization");
-    if (hasShareCodeIssues) findings.push("Share code verification failed - request updated code");
-    if (hasPassportIssues) findings.push("Passport expiry approaching - may affect visa renewal");
-    if (Math.random() > 0.8) findings.push("Gap in continuous residence detected - review settlement eligibility");
-    if (Math.random() > 0.9) findings.push("Time limit on stay approaching maximum duration");
-    
-    const professionalAssessment = `Immigration Status Monitoring Assessment for ${workerName}
+    const professionalAssessment = `You assigned Certificate of Sponsorship (CoS) for ${workerName} on ${assignmentDate} to work as a ${jobTitle} under Standard Occupational Classification (SOC) code ${socCode}.
 
-Visa Type: ${jobTitle}
-Expiry Date: ${socCode}
-Days Until Expiry: ${daysUntilExpiry > 0 ? daysUntilExpiry : 'EXPIRED'}
+The summary of job description in the CoS states:
 
-COMPLIANCE FINDINGS:
+The worker is expected to deliver high-quality care services, provide leadership to junior care staff, participate in care planning and risk assessments, ensure compliance with health and safety standards, and support the operational objectives of the organisation.
 
-${findings.length > 0 ? findings.map(finding => `â€¢ ${finding}`).join('\n') : 'â€¢ Immigration status valid and compliant'}
+The usual requirement for performing such a role is demonstrable evidence of sufficient skills and experience in health and social care (e.g., minimum 2-3 years of relevant experience), and demonstrable evidence of sufficient English language proficiency and previous experience in supervisory or senior care responsibilities.
+
+Upon review of the documentation provided, we acknowledge that ${workerName} has ${experienceYears} years of experience in the care sector. ${hasSkills ? 'The worker has demonstrated relevant skills for this role.' : 'The worker has not demonstrated sufficient relevant skills for this role.'} ${hasExperience ? 'Experience documentation has been provided.' : 'Experience documentation has not been provided.'}
 
 ${complianceStatus === 'SERIOUS_BREACH' ? 
-  `This represents a serious breach of immigration status compliance. The worker's right to work has expired or is expiring imminently. Immediate action is required to resolve the immigration status or cease employment.` :
-  `The immigration status is currently valid. Continue monitoring expiry dates and maintain regular status checks.`
+  `This represents a serious breach of sponsor compliance obligations as the worker does not meet the minimum skills and experience requirements for this role. The Home Office will conclude that you have breached paragraph C1.38 of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states that sponsors must not employ workers who do not possess the necessary skills and experience for the role in question.` :
+  `The worker meets the skills and experience requirements for this role. Compliance is maintained with Home Office standards.`
 }
 
-Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€” immediate remedial action required' : 'COMPLIANT â€” continue monitoring immigration status'}.`;
+Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€” immediate remedial action required' : 'COMPLIANT â€” continue monitoring skills and experience requirements'}.`;
 
     return {
       complianceStatus,
@@ -432,14 +404,6 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       return;
     }
     setUploading(true);
-    
-    // Analysis messages for immigration status monitoring
-    console.log("Monitoring visa expiry dates...");
-    console.log("Checking immigration status validity...");
-    console.log("Verifying continuous right to work...");
-    console.log("Tracking status change conditions...");
-    console.log("Analyzing time limits and restrictions...");
-    
     const extracted = extractSkillsExperienceInfo(selectedFiles);
     setTimeout(() => {
       const assessmentResult = generateSkillsExperienceAssessment(
@@ -477,9 +441,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         redFlag: assessmentResult.redFlag,
         assignmentDate: extracted.assignmentDate,
         skills: extracted.skills,
-        experience: extracted.experience,
-        professionalAssessment: assessmentResult.professionalAssessment,
-        generatedAt: new Date().toISOString(),
+        experience: extracted.experience
       };
       setWorkers(prev => [...prev, newWorker]);
       setAssessments(prev => [...prev, newAssessment]);
@@ -502,7 +464,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       const jsPDF = (await import('jspdf')).default;
       const doc = new jsPDF();
       doc.setFontSize(20);
-      doc.text('Immigration Status Monitoring Analysis Report', 105, 20, { align: 'center' });
+      doc.text('Skills & Experience Compliance Analysis Report', 105, 20, { align: 'center' });
       doc.setFontSize(10);
       doc.text(`Generated on ${new Date().toLocaleDateString('en-GB')} at ${new Date().toLocaleTimeString('en-GB')}`, 105, 30, { align: 'center' });
       if (assessment?.redFlag) {
@@ -519,10 +481,10 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       yPos += 10;
       doc.setFontSize(10);
       doc.text(`Worker: ${assessment?.workerName}`, 10, yPos); yPos += 7;
-      doc.text(`Visa Type: ${assessment?.jobTitle}`, 10, yPos); yPos += 7;
-      doc.text(`Expiry Date: ${assessment?.socCode}`, 10, yPos); yPos += 7;
-      doc.text(`Days Until Expiry: ${assessment?.skills}`, 10, yPos); yPos += 7;
-      doc.text(`Last Check Date: ${assessment?.experience}`, 10, yPos); yPos += 7;
+      doc.text(`Job Title: ${assessment?.jobTitle}`, 10, yPos); yPos += 7;
+      doc.text(`SOC Code: ${assessment?.socCode}`, 10, yPos); yPos += 7;
+      doc.text(`Skills: ${assessment?.skills}`, 10, yPos); yPos += 7;
+      doc.text(`Experience: ${assessment?.experience}`, 10, yPos); yPos += 7;
       doc.text(`Status: ${assessment?.complianceStatus}`, 10, yPos); yPos += 15;
       doc.setFontSize(14);
       doc.text('Professional Assessment', 10, yPos); yPos += 10;
@@ -532,7 +494,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         if (yPos > 270) { doc.addPage(); yPos = 20; }
         doc.text(line, 10, yPos); yPos += 5;
       });
-      doc.save(`Immigration_Status_Monitoring_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+      doc.save(`Skills_Experience_Compliance_Report_${assessment?.workerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
     } catch (error) {
       alert('Failed to generate PDF. Please try again.');
     }
@@ -546,7 +508,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
     }
     const assessment = currentAssessment || selectedWorkerAssessment;
     const emailHTML = `
-      <h2>Immigration Status Monitoring Assessment Report</h2>
+      <h2>Skills & Experience Compliance Assessment Report</h2>
       <p><strong>Worker:</strong> ${assessment?.workerName}</p>
       <p><strong>Status:</strong> ${assessment?.complianceStatus}</p>
       <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
@@ -559,7 +521,7 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: recipientEmail || prompt('Enter email address:') || 'compliance@company.com',
-          subject: `Immigration Status Monitoring Assessment Report - ${assessment?.workerName}`,
+          subject: `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`,
           html: emailHTML,
           workerName: assessment?.workerName,
         }),
@@ -567,8 +529,8 @@ Compliance Verdict: ${complianceStatus === 'SERIOUS_BREACH' ? 'SERIOUS BREACH â€
       if (!response.ok) throw new Error('Failed to send email');
       alert('Report sent successfully via email!');
     } catch (error) {
-      const subject = `Immigration Status Monitoring Assessment Report - ${assessment?.workerName}`;
-      const body = `Please find the immigration status monitoring assessment report for ${assessment?.workerName}.
+      const subject = `Skills & Experience Compliance Assessment Report - ${assessment?.workerName}`;
+      const body = `Please find the skills & experience compliance assessment report for ${assessment?.workerName}.
 
 ${assessment?.professionalAssessment}`;
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -621,8 +583,8 @@ ${assessment?.professionalAssessment}`;
 
   // Help with breach
   const handleHelpWithBreach = (workerName: string) => {
-    const subject = `Help Required - Immigration Status Monitoring Breach for ${workerName}`;
-    const body = `Dear Complians Support Team,\n\nI need assistance with an immigration status monitoring breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for visa expiry issues\n- Remedial steps to ensure immigration compliance\n- Documentation needed for Home Office status checks\n- Sponsor licence protection measures for immigration status\n\nThank you for your assistance.\n\nBest regards`;
+    const subject = `Help Required - Skills & Experience Compliance Breach for ${workerName}`;
+    const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
     const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink);
   };
@@ -632,10 +594,10 @@ ${assessment?.professionalAssessment}`;
     if (confirm('Are you sure you want to delete this worker?')) {
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('immigrationStatusMonitoringWorkers', JSON.stringify(updatedWorkers));
+      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(updatedWorkers));
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('immigrationStatusMonitoringAssessments', JSON.stringify(updatedAssessments));
+      localStorage.setItem('immigrationStatusMonitoringData', JSON.stringify(updatedAssessments));
     }
   };
 
@@ -663,21 +625,18 @@ ${assessment?.professionalAssessment}`;
   );
 
   // Get status badge function
-  const getStatusBadge = (status: string, redFlag: boolean) => {
+  const getStatusBadge = (status: string, redFlag: boolean = false) => {
     if (redFlag) {
-      return <Badge className="bg-red-500 text-white">URGENT</Badge>;
+      return <Badge className="bg-red-500 text-white animate-pulse">SERIOUS BREACH</Badge>;
     }
-    
-    // Immigration status specific color coding
-    if (status === 'EXPIRED' || status === 'ACTION_REQUIRED') {
-      return <Badge className="bg-red-500 text-white">EXPIRED</Badge>;
-    } else if (status === 'EXPIRING_SOON') {
-      return <Badge className="bg-amber-500 text-white">EXPIRING SOON</Badge>;
-    } else if (status === 'VALID') {
-      return <Badge className="bg-green-500 text-white">VALID</Badge>;
+    switch (status) {
+      case 'COMPLIANT':
+        return <Badge className="bg-green-500 text-white">COMPLIANT</Badge>;
+      case 'SERIOUS_BREACH':
+        return <Badge className="bg-red-500 text-white">SERIOUS BREACH</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
     }
-    
-    return <Badge className="bg-gray-500 text-white">{status}</Badge>;
   };
 
   // Get risk badge function
@@ -694,51 +653,16 @@ ${assessment?.professionalAssessment}`;
     }
   };
 
-  const generateMockData = () => {
-    const visaTypes = ['Skilled Worker Visa', 'Tier 2 General', 'Tier 5 Temporary Worker', 'Global Talent Visa', 'Innovator Visa'];
-    const mockWorkers: SkillsExperienceWorker[] = [];
-    
-    for (let i = 1; i <= 5; i++) {
-      const daysUntilExpiry = Math.floor(Math.random() * 365) - 30; // Some negative (expired)
-      let status: "VALID" | "EXPIRING_SOON" | "EXPIRED" | "ACTION_REQUIRED" = 'VALID';
-      if (daysUntilExpiry <= 0) status = 'EXPIRED';
-      else if (daysUntilExpiry <= 60) status = 'EXPIRING_SOON';
-      else if (Math.random() > 0.8) status = 'ACTION_REQUIRED';
-      
-      const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + daysUntilExpiry);
-      
-      mockWorkers.push({
-        id: `worker-${i}`,
-        name: `Worker ${i}`,
-        jobTitle: visaTypes[Math.floor(Math.random() * visaTypes.length)],
-        socCode: expiryDate.toLocaleDateString('en-GB'),
-        assignmentDate: daysUntilExpiry > 0 ? daysUntilExpiry.toString() : 'EXPIRED',
-        lastAssessment: new Date().toLocaleDateString('en-GB'),
-        skills: 'Immigration Status Monitoring',
-        experience: 'Visa Compliance',
-        complianceStatus: status,
-        redFlag: daysUntilExpiry <= 30,
-        riskLevel: daysUntilExpiry <= 30 ? 'HIGH' : daysUntilExpiry <= 60 ? 'MEDIUM' : 'LOW',
-        professionalAssessment: `Immigration status monitoring assessment for Worker ${i}. Visa type: ${visaTypes[Math.floor(Math.random() * visaTypes.length)]}. Days until expiry: ${daysUntilExpiry > 0 ? daysUntilExpiry : 'EXPIRED'}.`,
-        generatedAt: new Date().toISOString(),
-      });
-    }
-    
-    setWorkers(mockWorkers);
-    localStorage.setItem('immigrationStatusMonitoringWorkers', JSON.stringify(mockWorkers));
-  };
-
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
           <Bot className="h-8 w-8 text-brand-light" />
-          AI Immigration Status Monitoring Agent
+          AI Skills & Experience Compliance System
         </h1>
         <p className="text-gray-600">
-          Track visa expiries, monitor status changes, and ensure continuous right to work
+          AI-powered skills and experience compliance analysis for UK sponsors
         </p>
       </div>
       {/* Explainer Module */}
@@ -930,7 +854,7 @@ ${assessment?.professionalAssessment}`;
                 Workers
               </div>
               <div className="text-gray-600 text-sm mt-1">
-                Monitor immigration status and visa expiry dates
+                Manage sponsored workers and their skills/experience
               </div>
             </div>
             <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium">
@@ -942,11 +866,9 @@ ${assessment?.professionalAssessment}`;
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Worker Name</th>
-                  <th className="px-4 py-2 text-left">Visa Type</th>
-                  <th className="px-4 py-2 text-left">Expiry Date</th>
-                  <th className="px-4 py-2 text-left">Days Until Expiry</th>
-                  <th className="px-4 py-2 text-left">Last Check Date</th>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Job Title</th>
+                  <th className="px-4 py-2 text-left">SOC Code</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Risk Level</th>
                   <th className="px-4 py-2 text-left">View Report</th>
@@ -968,8 +890,6 @@ ${assessment?.professionalAssessment}`;
                     <td className="px-4 py-2">{worker.name}</td>
                     <td className="px-4 py-2">{worker.jobTitle}</td>
                     <td className="px-4 py-2">{worker.socCode}</td>
-                    <td className="px-4 py-2">{worker.assignmentDate}</td>
-                    <td className="px-4 py-2">{worker.lastAssessment}</td>
                     <td className="px-4 py-2">
                       {getStatusBadge(worker.complianceStatus, worker.redFlag)}
                     </td>
@@ -999,8 +919,8 @@ ${assessment?.professionalAssessment}`;
           <div className="bg-white rounded-lg p-6 shadow border">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Upload Immigration Status Documents</h3>
-              <p className="text-gray-600 mb-4">Upload visa documents, BRP cards, share codes, and immigration status records for AI monitoring</p>
+              <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
+              <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
               <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" />
               <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()}>Choose Files</Button>
               {selectedFiles.length > 0 && (
@@ -1037,7 +957,7 @@ ${assessment?.professionalAssessment}`;
                   <div className="mt-4 space-y-2">
                     <Button className="bg-green-500 hover:bg-green-600 text-white w-full" onClick={handleAnalyze} disabled={uploading || selectedFiles.length === 0}>
                       <GraduationCap className="h-4 w-4 mr-2" />
-                      Analyze Immigration Status ({selectedFiles.length} files)
+                      Analyze Skills & Experience ({selectedFiles.length} files)
                     </Button>
                     <Button 
                       className="bg-black hover:bg-gray-800 text-white w-full" 
@@ -1058,7 +978,7 @@ ${assessment?.professionalAssessment}`;
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center mb-2">
                   <GraduationCap className="h-6 w-6 text-gray-600 mr-2" />
-                  <h3 className="text-xl font-semibold text-brand-dark">Immigration Status Monitoring Analysis Report</h3>
+                  <h3 className="text-xl font-semibold text-brand-dark">Skills & Experience Compliance Analysis Report</h3>
                 </div>
                 <p className="text-sm text-gray-600">Generated on {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleDateString('en-GB')} {new Date((currentAssessment || selectedWorkerAssessment)?.generatedAt || '').toLocaleTimeString('en-GB', { hour12: false })}</p>
               </div>
@@ -1069,10 +989,10 @@ ${assessment?.professionalAssessment}`;
                   <div className="bg-red-500 text-white p-4 rounded-lg text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <AlertTriangle className="h-5 w-5" />
-                      <span className="font-bold">SERIOUS IMMIGRATION STATUS BREACH DETECTED</span>
+                      <span className="font-bold">SERIOUS SKILLS & EXPERIENCE BREACH DETECTED</span>
                       <AlertTriangle className="h-5 w-5" />
                     </div>
-                    <p>Immigration status compliance requirements not met - Immediate review required</p>
+                    <p>Skills and experience requirements not met - Immediate review required</p>
                   </div>
                 )}
                 
@@ -1094,19 +1014,19 @@ ${assessment?.professionalAssessment}`;
                       <p>{(currentAssessment || selectedWorkerAssessment)?.workerName || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Visa Type:</label>
+                      <label className="text-gray-600 font-medium">Job Title:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.jobTitle || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Expiry Date:</label>
+                      <label className="text-gray-600 font-medium">SOC Code:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.socCode || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Days Until Expiry:</label>
+                      <label className="text-gray-600 font-medium">Skills:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.skills || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="text-gray-600 font-medium">Last Check Date:</label>
+                      <label className="text-gray-600 font-medium">Experience:</label>
                       <p>{(currentAssessment || selectedWorkerAssessment)?.experience || 'N/A'}</p>
                     </div>
                     <div>
