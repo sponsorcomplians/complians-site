@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Brain, Zap, FileText, Clock, Play, CheckCircle, Shield, TrendingUp, Mail, Phone, MapPin } from "lucide-react";
+import { Brain, Zap, FileText, Clock, CheckCircle, Shield, TrendingUp, Mail, Phone, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -451,14 +451,7 @@ export default function HomePage() {
                       className="w-full h-full object-cover"
                     />
                   )}
-                  {/* Video Play Button Overlay for Available Agents */}
-                  {agent.available && (
-                    <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-white bg-opacity-90 rounded-full p-4 cursor-pointer">
-                        <Play className="w-8 h-8 text-blue-600" />
-                      </div>
-                    </div>
-                  )}
+                  {/* Image placeholder - no video overlay */}
       </div>
 
                 <CardHeader className="pb-4">
@@ -620,15 +613,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   )}
-                  {/* Video Play Button Overlay for Available Agents */}
-                  {agent.available &&
-                    ["qualification", "salary"].includes(agent.id) && (
-                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                        <div className="bg-white bg-opacity-90 rounded-full p-3 cursor-pointer">
-                          <Play className="w-6 h-6 text-blue-600" />
-                        </div>
-                      </div>
-                    )}
+                  {/* Image placeholder - no video overlay */}
                 </div>
 
                 <CardHeader className="pb-4">
