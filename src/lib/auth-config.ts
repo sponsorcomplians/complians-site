@@ -5,7 +5,6 @@ import GoogleProvider from "next-auth/providers/google";
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
 import { logLoginSuccess, logLoginFailure } from "./audit-service";
-import { headers } from "next/headers";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,8 +35,7 @@ export const authOptions: NextAuthOptions = {
           if (error || !user) {
             // Log failed login attempt
             try {
-              const headersList = await headers();
-              await logLoginFailure(credentials.email, 'User not found', headersList);
+              await logLoginFailure(credentials.email, 'User not found');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -50,8 +48,7 @@ export const authOptions: NextAuthOptions = {
           if (!isPasswordValid) {
             // Log failed login attempt
             try {
-              const headersList = await headers();
-              await logLoginFailure(credentials.email, 'Invalid password', headersList);
+              await logLoginFailure(credentials.email, 'Invalid password');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -62,8 +59,7 @@ export const authOptions: NextAuthOptions = {
           if (!user.is_email_verified) {
             // Log failed login attempt
             try {
-              const headersList = await headers();
-              await logLoginFailure(credentials.email, 'Email not verified', headersList);
+              await logLoginFailure(credentials.email, 'Email not verified');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -72,8 +68,7 @@ export const authOptions: NextAuthOptions = {
 
           // Log successful login
           try {
-            const headersList = await headers();
-            await logLoginSuccess(credentials.email, headersList);
+            await logLoginSuccess(credentials.email);
           } catch (auditError) {
             console.warn('Failed to log login success:', auditError);
           }
