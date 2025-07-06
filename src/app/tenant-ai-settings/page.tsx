@@ -304,7 +304,7 @@ export default function TenantAISettingsPage() {
                 <Label htmlFor="email_alerts">Email Alerts</Label>
                 <Switch
                   checked={formData.notification_preferences?.email_alerts ?? true}
-                  onCheckedChange={(checked) => updateNotificationPreference('email_alerts', checked)}
+                  onChange={(e) => updateNotificationPreference('email_alerts', e.target.checked)}
                 />
               </div>
 
@@ -312,7 +312,7 @@ export default function TenantAISettingsPage() {
                 <Label htmlFor="dashboard_notifications">Dashboard Notifications</Label>
                 <Switch
                   checked={formData.notification_preferences?.dashboard_notifications ?? true}
-                  onCheckedChange={(checked) => updateNotificationPreference('dashboard_notifications', checked)}
+                  onChange={(e) => updateNotificationPreference('dashboard_notifications', e.target.checked)}
                 />
               </div>
 
@@ -320,7 +320,7 @@ export default function TenantAISettingsPage() {
                 <Label htmlFor="weekly_reports">Weekly Reports</Label>
                 <Switch
                   checked={formData.notification_preferences?.weekly_reports ?? false}
-                  onCheckedChange={(checked) => updateNotificationPreference('weekly_reports', checked)}
+                  onChange={(e) => updateNotificationPreference('weekly_reports', e.target.checked)}
                 />
               </div>
             </CardContent>
