@@ -1,13 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from './supabase';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './auth-config';
 import { Tenant, TenantSettings, User, ComplianceWorker, ComplianceAssessment, ComplianceReport, RemediationAction, Alert, Document, TrainingRecord, Note, AuditLog, Worker } from '@/types/database';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export interface TenantContext {
   tenant_id: string;
@@ -43,7 +37,7 @@ export async function getTenantContext(): Promise<TenantContext | null> {
  */
 export async function getCurrentTenant(): Promise<Tenant | null> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .rpc('get_current_user_tenant')
       .single();
 
@@ -63,9 +57,7 @@ export async function getCurrentTenant(): Promise<Tenant | null> {
  * Create a tenant-filtered Supabase query builder
  */
 export function createTenantQuery(table: string, tenantContext: TenantContext) {
-  return supabase
-    .from(table)
-    .eq('tenant_id', tenantContext.tenant_id);
+  return (supabaseAdmin.from(table) as any).eq('tenant_id', tenantContext.tenant_id);
 }
 
 /**
@@ -322,7 +314,7 @@ export async function createTenantComplianceWorker(workerData: Partial<Complianc
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('compliance_workers')
     .insert({
       ...workerData,
@@ -348,7 +340,7 @@ export async function createTenantComplianceAssessment(assessmentData: Partial<C
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('compliance_assessments')
     .insert({
       ...assessmentData,
@@ -374,7 +366,7 @@ export async function createTenantRemediationAction(actionData: Partial<Remediat
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('remediation_actions')
     .insert({
       ...actionData,
@@ -400,7 +392,7 @@ export async function createTenantAlert(alertData: Partial<Alert>): Promise<Aler
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('alerts')
     .insert({
       ...alertData,
@@ -426,7 +418,7 @@ export async function createTenantDocument(documentData: Partial<Document>): Pro
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('documents')
     .insert({
       ...documentData,
@@ -452,7 +444,7 @@ export async function createTenantTrainingRecord(trainingData: Partial<TrainingR
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('training_records')
     .insert({
       ...trainingData,
@@ -478,7 +470,7 @@ export async function createTenantNote(noteData: Partial<Note>): Promise<Note> {
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('notes')
     .insert({
       ...noteData,
@@ -504,7 +496,7 @@ export async function createTenantWorker(workerData: Partial<Worker>): Promise<W
     throw new Error('No tenant context available');
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('workers')
     .insert({
       ...workerData,
@@ -539,35 +531,35 @@ export async function getTenantStats() {
     trainingResult,
     notesResult
   ] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from('compliance_workers')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('compliance_assessments')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('compliance_reports')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('remediation_actions')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('alerts')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('documents')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('training_records')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id),
-    supabase
+    supabaseAdmin
       .from('notes')
       .select('*', { count: 'exact', head: true })
       .eq('tenant_id', tenantContext.tenant_id)

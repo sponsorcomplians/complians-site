@@ -13,9 +13,7 @@ import {
   StripeInvoice
 } from '@/types/database';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +47,7 @@ const OVERAGE_RATES = {
 /**
  * Create a Stripe customer for a tenant
  */
-export async function createStripeCustomer(tenantId: string, email: string, name?: string): Promise<StripeCustomer> {
+export async function createStripeCustomer(tenantId: string, email: string, name?: string): Promise<Stripe.Customer> {
   try {
     const customer = await stripe.customers.create({
       email,
@@ -82,7 +80,7 @@ export async function createSubscription(
   tenantId: string,
   planName: string,
   billingCycle: 'monthly' | 'yearly' = 'monthly'
-): Promise<StripeSubscription> {
+): Promise<Stripe.Subscription> {
   try {
     // Get tenant's Stripe customer ID
     const { data: tenant } = await supabase
@@ -130,7 +128,7 @@ export async function createSubscription(
         subscription_status: subscription.status,
         current_plan: planName,
         billing_cycle: billingCycle,
-        next_billing_date: new Date(subscription.current_period_end * 1000).toISOString().split('T')[0],
+        next_billing_date: new Date((subscription as any).current_period_end * 1000).toISOString().split('T')[0],
         stripe_subscription_id: subscription.id,
         stripe_price_id: priceId,
         plan_limits: plan.plan_limits
@@ -154,7 +152,7 @@ export async function updateSubscription(
   tenantId: string,
   planName: string,
   billingCycle: 'monthly' | 'yearly' = 'monthly'
-): Promise<StripeSubscription> {
+): Promise<Stripe.Subscription> {
   try {
     // Get tenant's current subscription
     const { data: tenant } = await supabase
@@ -199,7 +197,7 @@ export async function updateSubscription(
         subscription_status: subscription.status,
         current_plan: planName,
         billing_cycle: billingCycle,
-        next_billing_date: new Date(subscription.current_period_end * 1000).toISOString().split('T')[0],
+        next_billing_date: new Date((subscription as any).current_period_end * 1000).toISOString().split('T')[0],
         stripe_price_id: priceId,
         plan_limits: plan.plan_limits
       })
@@ -218,11 +216,11 @@ export async function updateSubscription(
 /**
  * Cancel a tenant's subscription
  */
-export async function cancelSubscription(tenantId: string, cancelAtPeriodEnd: boolean = true): Promise<StripeSubscription> {
+export async function cancelSubscription(tenantId: string, cancelAtPeriodEnd: boolean = true): Promise<Stripe.Subscription> {
   try {
     const { data: tenant } = await supabase
       .from('tenants')
-      .select('stripe_subscription_id')
+      .select('stripe_subscription_id, current_plan')
       .eq('id', tenantId)
       .single();
 
@@ -346,7 +344,7 @@ export async function recordUsageBilling(
 /**
  * Create invoice for overages
  */
-export async function createOverageInvoice(tenantId: string, billingPeriodStart: string): Promise<StripeInvoice | null> {
+export async function createOverageInvoice(tenantId: string, billingPeriodStart: string): Promise<Stripe.Invoice | null> {
   try {
     // Get tenant's Stripe customer ID
     const { data: tenant } = await supabase
@@ -389,7 +387,7 @@ export async function createOverageInvoice(tenantId: string, billingPeriodStart:
     for (const overage of overages) {
       await stripe.invoiceItems.create({
         customer: tenant.stripe_customer_id,
-        invoice: invoice.id,
+        invoice: invoice.id!,
         amount: Math.round(overage.overage_amount * 100), // Convert to cents
         currency: 'usd',
         description: `${overage.metric_type} overage (${overage.overage_count} units)`,
@@ -397,18 +395,18 @@ export async function createOverageInvoice(tenantId: string, billingPeriodStart:
     }
 
     // Finalize and send invoice
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-    await stripe.invoices.sendInvoice(finalizedInvoice.id);
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id!);
+    await stripe.invoices.sendInvoice(finalizedInvoice.id!);
 
     // Update usage billing records with invoice ID
     await supabase
       .from('usage_billing')
-      .update({ stripe_invoice_id: invoice.id })
+      .update({ stripe_invoice_id: invoice.id! })
       .eq('tenant_id', tenantId)
       .eq('billing_period_start', billingPeriodStart);
 
     // Record billing event
-    await recordBillingEvent(tenantId, 'overage_charged', invoice.id, { invoice, overages });
+    await recordBillingEvent(tenantId, 'overage_charged', invoice.id!, { invoice, overages });
 
     return finalizedInvoice;
   } catch (error) {
@@ -535,7 +533,7 @@ async function handleSubscriptionEvent(event: Stripe.Event): Promise<void> {
     .from('tenants')
     .update({
       subscription_status: subscription.status,
-      next_billing_date: new Date(subscription.current_period_end * 1000).toISOString().split('T')[0]
+      next_billing_date: new Date((subscription as any).current_period_end * 1000).toISOString().split('T')[0]
     })
     .eq('id', tenant.id);
 
