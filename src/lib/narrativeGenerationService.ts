@@ -4,6 +4,7 @@ import { narrativeCache } from './narrativeCache';
 import { narrativeValidator } from './narrativeValidation';
 import { narrativeMetrics } from './narrativeMetrics';
 import { generateAINarrative } from './aiNarrativeService';
+import { getTenantAIConfig, generateAIPrompt, applyTenantAISettings } from './multi-tenant-service';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -39,16 +40,22 @@ export class NarrativeGenerationService {
     const startTime = Date.now();
     const auditId = `AUDIT_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Check cache first
+    // Get tenant AI configuration
+    const tenantAIConfig = await getTenantAIConfig();
+    
+    // Apply tenant AI settings to input data
+    const adjustedInput = applyTenantAISettings(input, tenantAIConfig);
+
+    // Check cache first (using original input for cache key)
     const cachedNarrative = narrativeCache.get(input);
     if (cachedNarrative) {
       // Validate cached narrative
-      const validation = narrativeValidator.validate(cachedNarrative, input);
+      const validation = narrativeValidator.validate(cachedNarrative, adjustedInput);
       
       const audit: NarrativeAudit = {
         id: auditId,
         timestamp: new Date().toISOString(),
-        input,
+        input: adjustedInput,
         output: cachedNarrative,
         model: 'cache-hit',
         promptVersion: this.currentPromptVersion,
@@ -61,7 +68,8 @@ export class NarrativeGenerationService {
         cacheHit: true,
         validationScore: validation.score,
         validationErrors: validation.errors,
-        validationWarnings: validation.warnings
+        validationWarnings: validation.warnings,
+        tenantAIConfig: tenantAIConfig
       };
 
       this.auditLog.push(audit);
@@ -75,12 +83,16 @@ export class NarrativeGenerationService {
     // Try AI generation first if enabled
     if (this.shouldUseAI()) {
       try {
-        const aiNarrative = await generateAINarrative(input);
+        // Generate tenant-specific AI prompt
+        const basePrompt = this.generateBasePrompt(adjustedInput);
+        const tenantPrompt = generateAIPrompt(basePrompt, adjustedInput, tenantAIConfig);
+        
+        const aiNarrative = await generateAINarrative(adjustedInput, tenantPrompt);
         
         const audit: NarrativeAudit = {
           id: auditId,
           timestamp: new Date().toISOString(),
-          input,
+          input: adjustedInput,
           output: aiNarrative,
           model: 'ai-generated',
           promptVersion: this.currentPromptVersion,
@@ -89,7 +101,9 @@ export class NarrativeGenerationService {
           tokenCount: Math.ceil(aiNarrative.length / 4),
           validationPassed: true,
           fallbackUsed: false,
-          costEstimate: (Math.ceil(aiNarrative.length / 4) / 1000) * 0.01
+          costEstimate: (Math.ceil(aiNarrative.length / 4) / 1000) * 0.01,
+          tenantAIConfig: tenantAIConfig,
+          customPrompt: tenantPrompt
         };
 
         // Store audit log
@@ -106,14 +120,14 @@ export class NarrativeGenerationService {
     }
 
     try {
-      // Generate the narrative using the decision tree logic
-      const narrative = this.buildNarrativeFromDecisionTree(input);
+      // Generate the narrative using the decision tree logic with tenant settings
+      const narrative = this.buildNarrativeFromDecisionTree(adjustedInput, tenantAIConfig);
       
       // Cache the generated narrative
       narrativeCache.set(input, narrative);
       
       // Validate the generated narrative
-      const validation = narrativeValidator.validate(narrative, input);
+      const validation = narrativeValidator.validate(narrative, adjustedInput);
       
       // Estimate token count (rough approximation)
       const tokenCount = Math.ceil(narrative.length / 4);
@@ -125,7 +139,7 @@ export class NarrativeGenerationService {
       const audit: NarrativeAudit = {
         id: auditId,
         timestamp: new Date().toISOString(),
-        input,
+        input: adjustedInput,
         output: narrative,
         model: modelConfig.name,
         promptVersion: this.currentPromptVersion,
@@ -137,7 +151,8 @@ export class NarrativeGenerationService {
         costEstimate,
         validationScore: validation.score,
         validationErrors: validation.errors,
-        validationWarnings: validation.warnings
+        validationWarnings: validation.warnings,
+        tenantAIConfig: tenantAIConfig
       };
 
       // Store audit log
@@ -149,15 +164,15 @@ export class NarrativeGenerationService {
       return { narrative, audit };
     } catch (error) {
       // Fallback to template-based generation
-      const fallbackNarrative = this.generateFallbackNarrative(input);
+      const fallbackNarrative = this.generateFallbackNarrative(adjustedInput, tenantAIConfig);
       
       // Validate fallback narrative
-      const validation = narrativeValidator.validate(fallbackNarrative, input);
+      const validation = narrativeValidator.validate(fallbackNarrative, adjustedInput);
       
       const audit: NarrativeAudit = {
         id: auditId,
         timestamp: new Date().toISOString(),
-        input,
+        input: adjustedInput,
         output: fallbackNarrative,
         model: 'template-fallback',
         promptVersion: this.currentPromptVersion,
@@ -169,7 +184,8 @@ export class NarrativeGenerationService {
         costEstimate: 0,
         validationScore: validation.score,
         validationErrors: validation.errors,
-        validationWarnings: validation.warnings
+        validationWarnings: validation.warnings,
+        tenantAIConfig: tenantAIConfig
       };
 
       this.auditLog.push(audit);
@@ -182,9 +198,32 @@ export class NarrativeGenerationService {
   }
 
   /**
-   * Build narrative using the decision tree logic (current implementation)
+   * Generate base prompt for AI generation
    */
-  private static buildNarrativeFromDecisionTree(input: NarrativeInput): string {
+  private static generateBasePrompt(input: NarrativeInput): string {
+    const { step1Pass, step2Pass, step3Pass, step4Pass, step5Pass } = input;
+    const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
+    
+    return `
+Generate a comprehensive compliance assessment narrative for a sponsored worker under SOC code ${input.socCode} (${input.jobTitle}).
+
+Assessment Details:
+- Worker Name: ${input.workerName}
+- Job Title: ${input.jobTitle}
+- SOC Code: ${input.socCode}
+- Assessment Steps Passed: ${[step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => pass).length}/5
+- Missing Documents: ${input.missingDocs.join(', ') || 'None'}
+- Evidence Status: ${input.evidenceStatus}
+- Breach Type: ${input.breachType || 'N/A'}
+
+The narrative should be professional, detailed, and reference relevant UK immigration compliance requirements.
+    `.trim();
+  }
+
+  /**
+   * Build narrative using the decision tree logic with tenant settings
+   */
+  private static buildNarrativeFromDecisionTree(input: NarrativeInput, tenantAIConfig: any): string {
     const { step1Pass, step2Pass, step3Pass, step4Pass, step5Pass } = input;
     const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
     
@@ -192,88 +231,124 @@ export class NarrativeGenerationService {
     const skillsExperienceRefs = getLegalReferencesForComplianceArea('skills-experience');
     const documentationRefs = getLegalReferencesForComplianceArea('documentation');
     
+    // Apply tenant-specific tone and style
+    const tone = this.getToneBasedOnSettings(tenantAIConfig.ai_tone);
+    const style = this.getStyleBasedOnSettings(tenantAIConfig.narrative_style);
+    
     const missingDocsText = input.missingDocs.length > 0
       ? `We further note that certain required documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${getFormattedLegalReference('Annex C2(g)')} of the sponsor guidance: "You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020." This further compounds the compliance breach.\n\n`
       : "";
 
     return `
-Following a detailed review of the documents you have provided, serious concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${input.socCode} (${input.jobTitle}). The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
+Following a detailed review of the documents you have provided, ${tone.concernLevel} concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${input.socCode} (${input.jobTitle}). ${style.evidenceDescription} The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a ${tone.breachSeverity} breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
 
-A Certificate of Sponsorship (CoS) was assigned to ${input.workerName} (${input.cosReference}) on ${input.assignmentDate} to work as a ${input.jobTitle}. The summary of job description in your CoS states: ${input.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${input.jobDescriptionDuties}.
+${missingDocsText}
 
-Upon examining the submitted documentation, we note that ${input.missingDocs.length === 0
-  ? "all required supporting documents have been provided, including the CoS, job description, CV, references, employment contracts, payslips, and training certificates, demonstrating a comprehensive record of assessment"
-  : `certain required documents have not been provided, including ${input.missingDocs.join(", ")}, thereby undermining the evidence of a thorough compliance check as required under ${getFormattedLegalReference('Appendix D')}.`}
-
-Our analysis of the worker's employment history revealed ${input.employmentHistoryConsistent
-  ? "a consistent and logical progression toward the current role, with no unexplained gaps or inconsistencies"
-  : "significant inconsistencies and unexplained gaps, raising concerns about the authenticity of the claimed experience and whether the worker has maintained relevant skills"}.
-
-A review of the worker's prior roles and duties suggests that ${input.experienceMatchesDuties
-  ? "the experience aligns closely with the tasks described in the CoS and job description, indicating practical readiness for the role"
-  : "the experience does not match the specific duties required, with past roles appearing unrelated or insufficiently detailed to support the current appointment"}.
-
-We further note that the reference letters provided were ${input.referencesCredible
-  ? "credible and independently prepared, containing specific details of duties, dates, and performance, thus supporting the claimed experience"
-  : "lacking credibility, with concerns such as missing signatures, absence of official letterheads, or the appearance of being prepared by non-independent parties"}.
-
-Regarding the recency and continuity of experience, the evidence indicates that ${input.experienceRecentAndContinuous
-  ? "the worker has been continuously active in the relevant sector up to the CoS assignment date, reinforcing confidence in their current skills"
-  : "the worker's experience is not recent or continuous, with long breaks or sector switches undermining confidence in their suitability for the role"}.
-
-${input.missingDocs.length > 0 ? `In addition to the above concerns, we note that certain key documents, including ${input.missingDocs.join(", ")}, have not been provided. Under ${getFormattedLegalReference('Annex C2(g)')} of the sponsor guidance:\n\n"You fail to provide to us, when requested and within the time limit given, either: • a document specified in Appendix D to the sponsor guidance • specified evidence you were required to keep for workers sponsored under the shortage occupation provisions in Appendix K to the Immigration Rules in force before 1 December 2020."\n` : ""}
-
-Based on these findings, the Home Office would conclude that you have breached ${getFormattedLegalReference('C1.38')} of the Workers and Temporary Workers: Guidance for Sponsors (version 12/24), which clearly states:
-
-"Sponsors must not employ a worker where they do not believe the worker will comply with the conditions of their permission to stay, or where they have reasonable grounds to believe the worker does not have the necessary skills, qualifications, or professional accreditations to do the job in question."
-
-This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under ${getFormattedLegalReference('Annex C1(w)')} and ${getFormattedLegalReference('Annex C2(a)')} of the sponsor guidance.
-
-Compliance Verdict: ${input.isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${input.isCompliant ? 'assessment indicates compliance with sponsor duties' : 'immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks'}.
-
----
-
-**Decision Tree Compliance Summary:**
-
-- **Step 1: Required Documents Provided:** ${step1Pass ? "✅ Yes" : "❌ No"}
-- **Step 2: Employment History Consistent:** ${step2Pass ? "✅ Yes" : "❌ No"}
-- **Step 3: Experience Matches CoS Duties:** ${step3Pass ? "✅ Yes" : "❌ No"}
-- **Step 4: References Credible & Independent:** ${step4Pass ? "✅ Yes" : "❌ No"}
-- **Step 5: Experience Recent & Continuous:** ${step5Pass ? "✅ Yes" : "❌ No"}
-
-**Overall Risk Level:** ${input.riskLevel}
-**Final Compliance Status:** ${input.isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
-
-**Legal Framework Version:** ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
-`.trim();
+${this.generateDetailedAssessment(input, tenantAIConfig)}
+    `.trim();
   }
 
   /**
-   * Generate fallback narrative if primary generation fails
+   * Get tone-specific language based on tenant settings
    */
-  private static generateFallbackNarrative(input: NarrativeInput): string {
-    return `Compliance Assessment Report
+  private static getToneBasedOnSettings(aiTone: string = 'strict') {
+    switch (aiTone) {
+      case 'strict':
+        return {
+          concernLevel: 'serious',
+          breachSeverity: 'significant',
+          language: 'authoritative and firm'
+        };
+      case 'moderate':
+        return {
+          concernLevel: 'notable',
+          breachSeverity: 'moderate',
+          language: 'balanced and professional'
+        };
+      case 'lenient':
+        return {
+          concernLevel: 'some',
+          breachSeverity: 'potential',
+          language: 'supportive and educational'
+        };
+      default:
+        return {
+          concernLevel: 'serious',
+          breachSeverity: 'significant',
+          language: 'professional'
+        };
+    }
+  }
 
-Worker: ${input.workerName}
-Job Title: ${input.jobTitle}
-SOC Code: ${input.socCode}
-Assignment Date: ${input.assignmentDate}
+  /**
+   * Get style-specific language based on tenant settings
+   */
+  private static getStyleBasedOnSettings(narrativeStyle: string = 'formal') {
+    switch (narrativeStyle) {
+      case 'formal':
+        return {
+          evidenceDescription: 'The evidence presented demonstrates significant deficiencies in compliance verification processes.',
+          language: 'formal legal terminology'
+        };
+      case 'professional':
+        return {
+          evidenceDescription: 'The evidence indicates areas where compliance verification could be improved.',
+          language: 'professional business language'
+        };
+      case 'conversational':
+        return {
+          evidenceDescription: 'The evidence shows some gaps in the compliance verification process.',
+          language: 'clear and accessible language'
+        };
+      default:
+        return {
+          evidenceDescription: 'The evidence suggests compliance verification issues.',
+          language: 'professional language'
+        };
+    }
+  }
 
-Compliance Status: ${input.isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'}
-Risk Level: ${input.riskLevel}
+  /**
+   * Generate detailed assessment based on tenant settings
+   */
+  private static generateDetailedAssessment(input: NarrativeInput, tenantAIConfig: any): string {
+    const { step1Pass, step2Pass, step3Pass, step4Pass, step5Pass } = input;
+    const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
+    
+    const strictness = tenantAIConfig.compliance_strictness || 'high';
+    const riskTolerance = tenantAIConfig.risk_tolerance || 'low';
+    
+    let assessmentText = '';
+    
+    if (failures >= 3) {
+      assessmentText = `Given that ${failures} out of 5 critical assessment steps have failed, this represents a ${strictness === 'high' ? 'critical' : strictness === 'medium' ? 'significant' : 'notable'} compliance issue that requires immediate attention.`;
+    } else if (failures >= 2) {
+      assessmentText = `With ${failures} out of 5 assessment steps failing, there are ${strictness === 'high' ? 'serious' : strictness === 'medium' ? 'moderate' : 'some'} compliance concerns that should be addressed.`;
+    } else if (failures === 1) {
+      assessmentText = `While only 1 out of 5 assessment steps has failed, this ${strictness === 'high' ? 'still represents a compliance issue' : strictness === 'medium' ? 'indicates an area for improvement' : 'suggests a minor concern'} that should be reviewed.`;
+    } else {
+      assessmentText = `All assessment steps have passed, indicating ${strictness === 'high' ? 'adequate' : strictness === 'medium' ? 'good' : 'satisfactory'} compliance with the requirements.`;
+    }
+    
+    return assessmentText;
+  }
 
-Decision Tree Results:
-- Documents Provided: ${input.step1Pass ? 'PASS' : 'FAIL'}
-- Employment History: ${input.step2Pass ? 'PASS' : 'FAIL'}
-- Experience Match: ${input.step3Pass ? 'PASS' : 'FAIL'}
-- Reference Credibility: ${input.step4Pass ? 'PASS' : 'FAIL'}
-- Experience Recency: ${input.step5Pass ? 'PASS' : 'FAIL'}
+  /**
+   * Generate fallback narrative with tenant settings
+   */
+  private static generateFallbackNarrative(input: NarrativeInput, tenantAIConfig: any): string {
+    const tone = this.getToneBasedOnSettings(tenantAIConfig.ai_tone);
+    const style = this.getStyleBasedOnSettings(tenantAIConfig.narrative_style);
+    
+    return `
+Based on the assessment of ${input.workerName} for the position of ${input.jobTitle} (SOC Code: ${input.socCode}), ${tone.concernLevel} compliance issues have been identified. 
 
-Missing Documents: ${input.missingDocs.length > 0 ? input.missingDocs.join(', ') : 'None'}
+The evidence provided indicates ${style.evidenceDescription.toLowerCase()} This constitutes a ${tone.breachSeverity} breach of sponsor duties under UK immigration regulations.
 
-Legal Framework: ${CURRENT_LEGAL_REFERENCES[0]?.version || 'Unknown'}
+${input.missingDocs.length > 0 ? `Required documents including ${input.missingDocs.join(', ')} are missing from the assessment.` : ''}
 
-This assessment was generated using fallback template due to system constraints.`;
+Immediate remedial action is required to address these compliance concerns and ensure adherence to sponsor obligations.
+    `.trim();
   }
 
   /**

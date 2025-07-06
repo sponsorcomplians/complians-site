@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 function SignInForm() {
   const router = useRouter();
@@ -19,11 +21,13 @@ function SignInForm() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [signInError, setSignInError] = useState('');
+  const [signInSuccess, setSignInSuccess] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setSignInError('');
+    setSignInSuccess('');
 
     try {
       const result = await signIn('credentials', {
@@ -36,7 +40,10 @@ function SignInForm() {
       if (result?.error) {
         setSignInError('Invalid email or password');
       } else if (result?.ok) {
-        router.push(callbackUrl);
+        setSignInSuccess('Sign in successful! Redirecting...');
+        setTimeout(() => {
+          router.push(callbackUrl);
+        }, 1000);
       }
     } catch (error) {
       setSignInError('An error occurred. Please try again.');
@@ -47,6 +54,8 @@ function SignInForm() {
 
   const handleGoogleSignIn = () => {
     setIsLoading(true);
+    setSignInError('');
+    setSignInSuccess('');
     signIn('google', { callbackUrl });
   };
 
@@ -61,11 +70,21 @@ function SignInForm() {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {(error || signInError) && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
-              {error === 'OAuthAccountNotLinked'
-                ? 'This email is already associated with another sign-in method.'
-                : signInError || 'An error occurred during sign in.'}
-            </div>
+            <Alert className="border-red-200 bg-red-50 text-red-800">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error === 'OAuthAccountNotLinked'
+                  ? 'This email is already associated with another sign-in method.'
+                  : signInError || 'An error occurred during sign in.'}
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {signInSuccess && (
+            <Alert className="border-green-200 bg-green-50 text-green-800">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription>{signInSuccess}</AlertDescription>
+            </Alert>
           )}
           
           <div className="space-y-2">
@@ -104,7 +123,14 @@ function SignInForm() {
         
         <CardFooter className="flex flex-col space-y-3">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </Button>
           
           <div className="relative w-full">
@@ -123,7 +149,14 @@ function SignInForm() {
             onClick={handleGoogleSignIn}
             disabled={isLoading}
           >
-            Sign in with Google
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              'Sign in with Google'
+            )}
           </Button>
           
           <p className="text-sm text-center text-gray-600">

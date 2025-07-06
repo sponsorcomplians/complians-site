@@ -32,7 +32,7 @@ const DOCUMENT_CONTEXTS: Record<string, { present: string; missing: string }> = 
   }
 };
 
-export async function generateAINarrative(input: NarrativeInput): Promise<string> {
+export async function generateAINarrative(input: NarrativeInput, customPrompt?: string): Promise<string> {
   const startTime = Date.now();
   
   // Check cache first
@@ -52,7 +52,7 @@ export async function generateAINarrative(input: NarrativeInput): Promise<string
   for (const model of MODELS) {
     try {
       console.log('[AI Narrative] Sending request to AI model:', model.name);
-      const narrative = await generateWithModel(input);
+      const narrative = await generateWithModel(input, customPrompt);
       const duration = Date.now() - startTime;
       
       // Log the generated narrative and validation result
@@ -100,7 +100,7 @@ export async function generateAINarrative(input: NarrativeInput): Promise<string
   throw new Error('All AI models failed');
 }
 
-async function generateWithModel(input: NarrativeInput): Promise<string> {
+async function generateWithModel(input: NarrativeInput, customPrompt?: string): Promise<string> {
   // Map NarrativeInput to the required API fields
   const requestPayload = {
     workerName: input.workerName,
@@ -112,6 +112,7 @@ async function generateWithModel(input: NarrativeInput): Promise<string> {
     missingDocs: input.missingDocs,
     inconsistencies: input.inconsistenciesDescription,
     isCompliant: input.isCompliant,
+    customPrompt: customPrompt // Include custom prompt if provided
   };
   console.log('[AI Narrative] API request payload:', requestPayload);
 

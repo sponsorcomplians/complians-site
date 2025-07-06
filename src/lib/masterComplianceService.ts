@@ -466,7 +466,11 @@ export class MasterComplianceService {
         overallRiskLevel: overallRiskLevel,
         totalRedFlags,
         agentCompliance,
-        lastUpdated: firstWorker.updated_at || firstWorker.created_at
+        globalRiskScore: firstWorker.global_risk_score ?? 0,
+        remediationActions: [],
+        createdAt: firstWorker.created_at,
+        updatedAt: firstWorker.updated_at,
+        lastUpdated: firstWorker.updated_at || firstWorker.created_at,
       });
     }
 
@@ -682,6 +686,131 @@ export class MasterComplianceService {
     }
     
     return narrative;
+  }
+
+  // Calculate global risk score for a worker
+  async calculateGlobalRiskScore(workerId: string): Promise<number> {
+    try {
+      // Get all assessments for this worker
+      const { data: assessments, error } = await this.supabase
+        .from('compliance_assessments')
+        .select('*')
+        .eq('worker_id', workerId);
+
+      if (error) {
+        console.error('Error fetching assessments for risk score:', error);
+        return 0;
+      }
+
+      if (!assessments || assessments.length === 0) {
+        return 0;
+      }
+
+      let totalScore = 0;
+      let maxPossibleScore = 0;
+
+      // Risk level weights
+      const riskWeights = {
+        'LOW': 1,
+        'MEDIUM': 3,
+        'HIGH': 5
+      };
+
+      // Compliance status weights
+      const statusWeights = {
+        'COMPLIANT': 0,
+        'BREACH': 2,
+        'SERIOUS_BREACH': 4
+      };
+
+      // Red flag penalty
+      const redFlagPenalty = 3;
+
+      assessments.forEach((assessment: any) => {
+        // Base score from risk level
+        const riskScore = riskWeights[assessment.risk_level as keyof typeof riskWeights] || 0;
+        
+        // Additional score from compliance status
+        const statusScore = statusWeights[assessment.compliance_status as keyof typeof statusWeights] || 0;
+        
+        // Red flag penalty
+        const flagPenalty = assessment.red_flag ? redFlagPenalty : 0;
+        
+        totalScore += riskScore + statusScore + flagPenalty;
+        maxPossibleScore += 5 + 4 + redFlagPenalty; // Max risk + max status + red flag
+      });
+
+      // Calculate percentage and ensure it's between 0-100
+      const riskPercentage = Math.round((totalScore / maxPossibleScore) * 100);
+      return Math.min(Math.max(riskPercentage, 0), 100);
+    } catch (error) {
+      console.error('Error calculating global risk score:', error);
+      return 0;
+    }
+  }
+
+  // Update global risk score for a worker
+  async updateWorkerGlobalRiskScore(workerId: string): Promise<void> {
+    try {
+      const riskScore = await this.calculateGlobalRiskScore(workerId);
+      
+      const { error } = await this.supabase
+        .from('compliance_workers')
+        .update({ global_risk_score: riskScore })
+        .eq('id', workerId);
+
+      if (error) {
+        console.error('Error updating global risk score:', error);
+      }
+    } catch (error) {
+      console.error('Error updating global risk score:', error);
+    }
+  }
+
+  // Create alert for serious breaches or high-risk statuses
+  async createAlertForWorker(workerId: string, agentType: string, assessment: {
+    compliance_status: string;
+    risk_level: string;
+    red_flag: boolean;
+    worker_name: string;
+  }): Promise<void> {
+    try {
+      const shouldCreateAlert = 
+        assessment.compliance_status === 'SERIOUS_BREACH' ||
+        assessment.risk_level === 'HIGH' ||
+        assessment.red_flag === true;
+
+      if (!shouldCreateAlert) {
+        return;
+      }
+
+      const { data: { user } } = await this.supabase.auth.getUser();
+      if (!user) return;
+
+      let alertMessage = '';
+      
+      if (assessment.compliance_status === 'SERIOUS_BREACH') {
+        alertMessage = `SERIOUS BREACH detected in ${AI_AGENT_NAMES[agentType] || agentType} for worker ${assessment.worker_name}. Immediate action required.`;
+      } else if (assessment.risk_level === 'HIGH') {
+        alertMessage = `HIGH RISK status detected in ${AI_AGENT_NAMES[agentType] || agentType} for worker ${assessment.worker_name}. Enhanced monitoring recommended.`;
+      } else if (assessment.red_flag === true) {
+        alertMessage = `RED FLAG raised in ${AI_AGENT_NAMES[agentType] || agentType} for worker ${assessment.worker_name}. Review required.`;
+      }
+
+      if (alertMessage) {
+        await this.supabase
+          .from('alerts')
+          .insert({
+            user_id: user.id,
+            worker_id: workerId,
+            agent_type: agentType,
+            alert_message: alertMessage,
+            status: 'Unread'
+          });
+      }
+    } catch (error) {
+      console.error('Error creating alert:', error);
+    }
   }
 }
 

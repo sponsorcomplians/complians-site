@@ -2,7 +2,15 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { SupabaseAdapter } from "@auth/supabase-adapter";
+import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcryptjs";
+import { logLoginSuccess, logLoginFailure } from "./audit-service";
+import { headers } from "next/headers";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,19 +21,76 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // TODO: Implement real authentication logic here
-        // For now, using temporary hardcoded login for testing
-        const user = {
-          id: "1",
-          name: "Test User",
-          email: credentials?.email,
-        };
-
-        if (credentials?.email && credentials?.password) {
-          return user;
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
 
-        return null;
+        try {
+          // Find user by email
+          const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', credentials.email.toLowerCase())
+            .single();
+
+          if (error || !user) {
+            // Log failed login attempt
+            try {
+              const headersList = await headers();
+              await logLoginFailure(credentials.email, 'User not found', headersList);
+            } catch (auditError) {
+              console.warn('Failed to log login failure:', auditError);
+            }
+            return null;
+          }
+
+          // Verify password with bcrypt
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isPasswordValid) {
+            // Log failed login attempt
+            try {
+              const headersList = await headers();
+              await logLoginFailure(credentials.email, 'Invalid password', headersList);
+            } catch (auditError) {
+              console.warn('Failed to log login failure:', auditError);
+            }
+            return null;
+          }
+
+          // Check if email is verified
+          if (!user.is_email_verified) {
+            // Log failed login attempt
+            try {
+              const headersList = await headers();
+              await logLoginFailure(credentials.email, 'Email not verified', headersList);
+            } catch (auditError) {
+              console.warn('Failed to log login failure:', auditError);
+            }
+            return null;
+          }
+
+          // Log successful login
+          try {
+            const headersList = await headers();
+            await logLoginSuccess(credentials.email, headersList);
+          } catch (auditError) {
+            console.warn('Failed to log login success:', auditError);
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.full_name,
+            company: user.company,
+            tenant_id: user.tenant_id,
+            role: user.role,
+            is_email_verified: user.is_email_verified,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
+        }
       },
     }),
     GoogleProvider({
@@ -33,20 +98,24 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  adapter: SupabaseAdapter({
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  }),
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
+        token.tenant_id = user.tenant_id;
+        token.company = user.company;
+        token.role = user.role;
+        token.is_email_verified = user.is_email_verified;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session?.user && token?.id) {
+      if (session?.user && token) {
         session.user.id = token.id as string;
+        session.user.tenant_id = token.tenant_id as string;
+        session.user.company = token.company as string;
+        session.user.role = token.role as 'Admin' | 'Manager' | 'Auditor' | 'Viewer';
+        session.user.is_email_verified = token.is_email_verified as boolean;
       }
       return session;
     },

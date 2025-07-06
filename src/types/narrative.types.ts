@@ -1,4 +1,6 @@
 // src/types/narrative.types.ts
+import { TenantSettings } from './database';
+
 export interface NarrativeInput {
   // Worker information
   workerName: string;
@@ -33,6 +35,13 @@ export interface NarrativeInput {
   missingDocs: string[];
   isCompliant: boolean;
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  
+  // Assessment details
+  evidenceStatus?: string;
+  breachType?: string;
+  compliance_score?: number;
+  risk_score?: number;
+  compliance_status?: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
 }
 
 export interface NarrativeAudit {
@@ -53,6 +62,10 @@ export interface NarrativeAudit {
   validationScore?: number;
   validationErrors?: string[];
   validationWarnings?: string[];
+  
+  // Tenant AI configuration
+  tenantAIConfig?: TenantSettings;
+  customPrompt?: string;
 }
 
 export interface ExperimentConfig {

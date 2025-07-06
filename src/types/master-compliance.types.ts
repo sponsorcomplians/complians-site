@@ -48,15 +48,17 @@ export interface MasterComplianceWorker {
   overallComplianceStatus: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
   overallRiskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
   totalRedFlags: number;
-  agentCompliance: {
-    [agentType: string]: {
-      status: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
-      riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
-      redFlag: boolean;
-      lastAssessmentDate?: string;
-    };
-  };
-  lastUpdated: string;
+  globalRiskScore: number; // 0-100
+  agentCompliance: Record<string, {
+    status: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
+    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+    redFlag: boolean;
+    lastAssessmentDate?: string;
+  }>;
+  remediationActions: RemediationAction[];
+  createdAt: string;
+  updatedAt: string;
+  lastUpdated?: string;
 }
 
 export interface ComplianceTrend {
@@ -113,5 +115,66 @@ export interface MasterComplianceTableData {
     page: number;
     pageSize: number;
     totalPages: number;
+  };
+}
+
+// Remediation Action Types
+export interface RemediationAction {
+  id: string;
+  userId: string;
+  workerId: string;
+  agentType: string;
+  actionSummary: string;
+  detailedNotes?: string;
+  status: 'Open' | 'In Progress' | 'Completed';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateRemediationActionRequest {
+  workerId: string;
+  agentType: string;
+  actionSummary: string;
+  detailedNotes?: string;
+}
+
+export interface UpdateRemediationActionRequest {
+  actionSummary?: string;
+  detailedNotes?: string;
+  status?: 'Open' | 'In Progress' | 'Completed';
+}
+
+// Alert Types
+export interface Alert {
+  id: string;
+  userId: string;
+  workerId?: string;
+  agentType: string;
+  alertMessage: string;
+  status: 'Unread' | 'Read' | 'Dismissed';
+  createdAt: string;
+  compliance_workers?: {
+    name: string;
+    job_title: string;
+    cos_reference: string;
+  };
+}
+
+export interface CreateAlertRequest {
+  workerId?: string;
+  agentType: string;
+  alertMessage: string;
+}
+
+// Global Risk Score Types
+export interface GlobalRiskScore {
+  workerId: string;
+  score: number; // 0-100
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  factors: {
+    agentRiskLevels: Record<string, 'LOW' | 'MEDIUM' | 'HIGH'>;
+    seriousBreaches: number;
+    totalBreaches: number;
+    redFlags: number;
   };
 } 

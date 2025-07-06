@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { trackNarrativeGeneration } from '@/lib/tenant-metrics-service';
+import { canPerformAction } from '@/lib/stripe-billing-service';
+import { logAuditEvent } from '@/lib/audit-service';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-config';
+import { headers } from 'next/headers';
 
 const openai = new OpenAI();
 
@@ -9,6 +15,29 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const session = await getServerSession(authOptions);
+    const headersList = await headers();
+    
+    if (!session?.user?.id || !session?.user?.tenant_id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Check if tenant can generate more narratives
+    const canGenerateNarrative = await canPerformAction(session.user.tenant_id, 'generate_narrative');
+    
+    if (!canGenerateNarrative) {
+      return NextResponse.json(
+        { 
+          error: 'Narrative limit exceeded',
+          message: 'You have reached the maximum number of narratives for your current plan. Please upgrade your plan to generate more narratives.'
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     console.log('📥 [API] Received request body:', JSON.stringify(body, null, 2));
     
@@ -27,10 +56,12 @@ export async function POST(request: NextRequest) {
       inconsistencies = 'No inconsistencies identified',
       experienceConcerns = 'No experience concerns identified',
       isCompliant = false,
+      customPrompt = null, // New field for tenant-specific prompts
     } = body;
 
     console.log('🔍 [API] Extracted workerName:', workerName);
     console.log('🔍 [API] Extracted jobTitle:', jobTitle);
+    console.log('🔍 [API] Custom prompt provided:', !!customPrompt);
 
     // Validate required fields with better error messages
     if (!workerName || workerName.trim() === '' || workerName === 'Unknown Worker') {
@@ -41,7 +72,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const systemPrompt = `
+    // Use custom prompt if provided, otherwise use default
+    const systemPrompt = customPrompt || `
 You are a Senior Immigration Solicitor and UK sponsor compliance expert. 
 You will generate a formal compliance assessment letter in British English, using complete paragraphs (no steps, no bullet points).
 Use only the data provided below — do not invent or summarise. Do not include placeholders or static templates.
@@ -77,6 +109,7 @@ Return only the final letter text in your response.
     `;
 
     console.log('🤖 [API] Calling OpenAI with workerName:', workerName);
+    console.log('🤖 [API] Using custom prompt:', !!customPrompt);
     
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -95,7 +128,41 @@ Return only the final letter text in your response.
       throw new Error('AI returned placeholder or invalid narrative.');
     }
 
+    // Track narrative generation metric
+    try {
+      await trackNarrativeGeneration();
+      console.log('📊 [API] Tracked narrative generation metric');
+    } catch (trackingError) {
+      console.warn('⚠️ [API] Failed to track narrative generation metric:', trackingError);
+      // Don't fail the request if tracking fails
+    }
+
+    // Log audit event for narrative generation
+    try {
+      await logAuditEvent(
+        'narrative_generated',
+        {
+          worker_name: workerName,
+          job_title: jobTitle,
+          soc_code: socCode,
+          narrative_length: output.length,
+          is_compliant: isCompliant,
+          custom_prompt_used: !!customPrompt
+        },
+        'narrative',
+        workerName,
+        undefined,
+        { narrative_length: output.length },
+        headersList
+      );
+      console.log('📝 [API] Logged narrative generation audit event');
+    } catch (auditError) {
+      console.warn('⚠️ [API] Failed to log narrative generation audit event:', auditError);
+      // Don't fail the request if audit logging fails
+    }
+
     console.log('✅ [API] AI Raw Output generated successfully for worker:', workerName);
+    console.log('✅ [API] Custom prompt used:', !!customPrompt);
 
     return NextResponse.json({ narrative: output });
   } catch (error: any) {

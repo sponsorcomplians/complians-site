@@ -4,6 +4,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function SignUpPage() {
   const [fullName, setFullName] = useState('');
@@ -14,6 +20,7 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -69,6 +76,7 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (!validateForm()) {
       return;
@@ -94,11 +102,17 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error(data.error || 'Too many signup attempts. Please try again later.');
+        }
         throw new Error(data.error || 'Failed to create account');
       }
 
       // Success! Show verification message
-      router.push('/auth/verify-email?email=' + encodeURIComponent(email));
+      setSuccess('Account created successfully! Please check your email to verify your account.');
+      setTimeout(() => {
+        router.push('/auth/verify-email?email=' + encodeURIComponent(email));
+      }, 2000);
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign up');
     } finally {
@@ -108,124 +122,138 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <Card className="max-w-md w-full">
+        <CardHeader>
+          <CardTitle className="text-center text-3xl font-extrabold text-gray-900">
             Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          </CardTitle>
+          <CardDescription className="text-center">
             Or{' '}
             <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
               sign in to your existing account
             </Link>
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {error && (
+              <Alert className="border-red-200 bg-red-50 text-red-800">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {success && (
+              <Alert className="border-green-200 bg-green-50 text-green-800">
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="fullName">
                 Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="fullName"
                 name="fullName"
                 type="text"
                 autoComplete="name"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="email">
                 Email Address <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="john@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="company">
                 Company Name <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="company"
                 name="company"
                 type="text"
                 autoComplete="organization"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Acme Corp"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="phone">
                 Phone Number <span className="text-gray-500 text-xs">(optional)</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="phone"
                 name="phone"
                 type="tel"
                 autoComplete="tel"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="+44 20 7946 0958"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="password">
                 Password <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Minimum 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
-              <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+              <p className="text-xs text-gray-500">Must be at least 8 characters long</p>
             </div>
 
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">
                 Confirm Password <span className="text-red-500">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
-            <div className="flex items-start">
+            <div className="flex items-start space-x-2">
               <input
                 id="acceptTerms"
                 name="acceptTerms"
@@ -233,8 +261,9 @@ export default function SignUpPage() {
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
+                disabled={isLoading}
               />
-              <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-900">
+              <Label htmlFor="acceptTerms" className="text-sm text-gray-900">
                 I agree to the{' '}
                 <Link href="/terms" className="text-blue-600 hover:text-blue-500">
                   Terms of Service
@@ -244,42 +273,28 @@ export default function SignUpPage() {
                   Privacy Policy
                 </Link>
                 <span className="text-red-500"> *</span>
-              </label>
+              </Label>
             </div>
-          </div>
+          </CardContent>
 
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <button
+          <CardFooter>
+            <Button
               type="submit"
+              className="w-full"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : null}
-              {isLoading ? 'Creating account...' : 'Sign up'}
-            </button>
-          </div>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                'Sign up'
+              )}
+            </Button>
+          </CardFooter>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

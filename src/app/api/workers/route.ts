@@ -1,84 +1,25 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseClient } from '@/lib/supabase-client';
+import { getTenantComplianceWorkers, createTenantComplianceWorker } from '@/lib/multi-tenant-service';
+import { trackWorkerAddition, canPerformAction } from '@/lib/tenant-metrics-service';
+import { logAuditEvent } from '@/lib/audit-service';
+import { headers } from 'next/headers';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    console.log('Workers GET: Starting...');
-    
-    const supabase = getSupabaseClient();
-    
-    if (!supabase) {
-      console.error('Workers GET: Supabase client is null');
-      return NextResponse.json(
-        { error: 'Database connection not available' },
-        { status: 503 }
-      );
-    }
+    const { searchParams } = new URL(request.url);
+    const agentType = searchParams.get('agent_type');
 
-    console.log('Workers GET: Supabase client created, fetching workers...');
-    
-    const { data: workers, error } = await supabase
-      .from('workers')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const workers = await getTenantComplianceWorkers(agentType || undefined);
 
-    if (error) {
-      console.error('Workers GET: Supabase error:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      });
-      return NextResponse.json(
-        { 
-          error: 'Failed to fetch workers',
-          details: error.message,
-          code: error.code 
-        },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({
+      success: true,
+      data: workers
+    });
 
-    console.log('Workers GET: Success! Found ' + (workers?.length || 0) + ' workers');
-    
-    // Transform snake_case to camelCase manually for better control
-    const transformedWorkers = workers?.map((worker: any) => ({
-      id: worker.id,
-      firstName: worker.first_name,
-      lastName: worker.last_name,
-      email: worker.email,
-      phone: worker.phone,
-      dateOfBirth: worker.date_of_birth,
-      nationality: worker.nationality,
-      passportNumber: worker.passport_number,
-      createdAt: worker.created_at,
-      updatedAt: worker.updated_at,
-      userId: worker.user_id,
-      complianceStatus: worker.compliance_status,
-      complianceScore: worker.compliance_score,
-      lastComplianceCheck: worker.last_compliance_check,
-      visaStatus: worker.visa_status,
-      visaExpiry: worker.visa_expiry,
-      isActive: worker.is_active,
-      role: worker.role,
-      department: worker.department,
-      startDate: worker.start_date,
-      cosNumber: worker.cos_number,
-      passportExpiry: worker.passport_expiry,
-      salary: worker.salary,
-      address: worker.address,
-      createdBy: worker.created_by,
-      status: worker.is_active ? 'active' : 'inactive' // Add status field for UI
-    }));
-    
-    return NextResponse.json({ workers: transformedWorkers || [] });
   } catch (error) {
-    console.error('Workers GET: Unexpected error:', error);
+    console.error('Error fetching workers:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to fetch workers' },
       { status: 500 }
     );
   }
@@ -86,96 +27,78 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getSupabaseClient();
-    
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Database connection not available' },
-        { status: 503 }
-      );
-    }
-
     const body = await request.json();
+    const headersList = await headers();
     
-    // Map camelCase to snake_case for ALL required fields
-    const dbData: any = {
-      // Required fields
-      first_name: body.firstName || body.first_name,
-      last_name: body.lastName || body.last_name,
-      email: body.email,
-      phone: body.phone,
-      date_of_birth: body.dateOfBirth || body.date_of_birth,
-      nationality: body.nationality,
-      passport_number: body.passportNumber || body.passport_number,
-      visa_expiry: body.visaExpiry || body.visa_expiry,
-      role: body.role,
-      start_date: body.startDate || body.start_date
-    };
+    // Check if tenant can add more workers
+    const canAddWorker = await canPerformAction(body.tenant_id || 'current', 'add_worker');
     
-    // Optional fields - only add if they exist
-    if (body.department) dbData.department = body.department;
-    if (body.address) dbData.address = body.address;
-    if (body.salary) dbData.salary = body.salary;
-    if (body.cosNumber || body.cos_number) dbData.cos_number = body.cosNumber || body.cos_number;
-    if (body.passportExpiry || body.passport_expiry) dbData.passport_expiry = body.passportExpiry || body.passport_expiry;
-    if (body.visaStatus || body.visa_status) dbData.visa_status = body.visaStatus || body.visa_status;
-    if (body.complianceStatus || body.compliance_status) dbData.compliance_status = body.complianceStatus || body.compliance_status;
-    if (body.complianceScore !== undefined) dbData.compliance_score = body.complianceScore || body.compliance_score;
-    if (body.isActive !== undefined) dbData.is_active = body.isActive ?? true; // Default to true if not specified
-    
-    console.log('Creating worker with data:', dbData);
-    
-    const { data: worker, error } = await supabase
-      .from('workers')
-      .insert(dbData)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating worker:', error);
+    if (!canAddWorker) {
       return NextResponse.json(
-        { error: 'Failed to create worker', details: error.message },
-        { status: 500 }
+        { 
+          error: 'Worker limit exceeded',
+          message: 'You have reached the maximum number of workers for your current plan. Please upgrade your plan to add more workers.'
+        },
+        { status: 403 }
       );
     }
-
-    console.log('Worker created successfully:', worker);
     
-    // Transform the response to camelCase
-    const transformedWorker = {
-      id: worker.id,
-      firstName: worker.first_name,
-      lastName: worker.last_name,
-      email: worker.email,
-      phone: worker.phone,
-      dateOfBirth: worker.date_of_birth,
-      nationality: worker.nationality,
-      passportNumber: worker.passport_number,
-      createdAt: worker.created_at,
-      updatedAt: worker.updated_at,
-      userId: worker.user_id,
-      complianceStatus: worker.compliance_status,
-      complianceScore: worker.compliance_score,
-      lastComplianceCheck: worker.last_compliance_check,
-      visaStatus: worker.visa_status,
-      visaExpiry: worker.visa_expiry,
-      isActive: worker.is_active,
-      role: worker.role,
-      department: worker.department,
-      startDate: worker.start_date,
-      cosNumber: worker.cos_number,
-      passportExpiry: worker.passport_expiry,
-      salary: worker.salary,
-      address: worker.address,
-      createdBy: worker.created_by,
-      status: worker.is_active ? 'active' : 'inactive'
+    // Map camelCase to snake_case for required fields
+    const workerData = {
+      agent_type: body.agentType || body.agent_type,
+      name: body.name || `${body.firstName || body.first_name} ${body.lastName || body.last_name}`,
+      job_title: body.jobTitle || body.job_title || body.role,
+      soc_code: body.socCode || body.soc_code,
+      cos_reference: body.cosReference || body.cos_reference || body.cosNumber,
+      compliance_status: body.complianceStatus || body.compliance_status || 'COMPLIANT',
+      risk_level: body.riskLevel || body.risk_level || 'LOW',
+      red_flag: body.redFlag || body.red_flag || false,
+      global_risk_score: body.globalRiskScore || body.global_risk_score || 0,
+      assignment_date: body.assignmentDate || body.assignment_date || new Date().toISOString().split('T')[0]
     };
-    
-    return NextResponse.json({ worker: transformedWorker });
+
+    const worker = await createTenantComplianceWorker(workerData);
+
+    // Track worker addition metric
+    try {
+      await trackWorkerAddition();
+      console.log('📊 [API] Tracked worker addition metric');
+    } catch (trackingError) {
+      console.warn('⚠️ [API] Failed to track worker addition metric:', trackingError);
+      // Don't fail the request if tracking fails
+    }
+
+    // Log audit event for worker creation
+    try {
+      await logAuditEvent(
+        'worker_created',
+        {
+          worker_name: workerData.name,
+          job_title: workerData.job_title,
+          soc_code: workerData.soc_code,
+          compliance_status: workerData.compliance_status
+        },
+        'compliance_worker',
+        worker.id,
+        undefined,
+        worker,
+        headersList
+      );
+      console.log('📝 [API] Logged worker creation audit event');
+    } catch (auditError) {
+      console.warn('⚠️ [API] Failed to log worker creation audit event:', auditError);
+      // Don't fail the request if audit logging fails
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: worker
+    });
+
   } catch (error) {
-    console.error('Workers API error:', error);
+    console.error('Error creating worker:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to create worker' },
       { status: 500 }
     );
   }

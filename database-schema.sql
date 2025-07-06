@@ -193,6 +193,7 @@ CREATE TABLE public.compliance_workers (
   compliance_status TEXT NOT NULL CHECK (compliance_status IN ('COMPLIANT', 'BREACH', 'SERIOUS_BREACH')),
   risk_level TEXT NOT NULL CHECK (risk_level IN ('LOW', 'MEDIUM', 'HIGH')),
   red_flag BOOLEAN DEFAULT false,
+  global_risk_score INTEGER DEFAULT 0 CHECK (global_risk_score >= 0 AND global_risk_score <= 100),
   assignment_date DATE NOT NULL,
   last_assessment_date DATE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -369,4 +370,40 @@ BEGIN
   ORDER BY ca.generated_at DESC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Remediation Actions Table
+CREATE TABLE IF NOT EXISTS remediation_actions (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    worker_id UUID NOT NULL REFERENCES compliance_workers(id) ON DELETE CASCADE,
+    agent_type TEXT NOT NULL,
+    action_summary TEXT NOT NULL,
+    detailed_notes TEXT,
+    status TEXT NOT NULL DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Completed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index for efficient queries
+CREATE INDEX IF NOT EXISTS idx_remediation_actions_user_id ON remediation_actions(user_id);
+CREATE INDEX IF NOT EXISTS idx_remediation_actions_worker_id ON remediation_actions(worker_id);
+CREATE INDEX IF NOT EXISTS idx_remediation_actions_status ON remediation_actions(status);
+CREATE INDEX IF NOT EXISTS idx_remediation_actions_agent_type ON remediation_actions(agent_type);
+
+-- Alerts Table for notification system
+CREATE TABLE IF NOT EXISTS alerts (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    worker_id UUID REFERENCES compliance_workers(id) ON DELETE CASCADE,
+    agent_type TEXT NOT NULL,
+    alert_message TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Unread' CHECK (status IN ('Unread', 'Read', 'Dismissed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index for efficient queries
+CREATE INDEX IF NOT EXISTS idx_alerts_user_id ON alerts(user_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_worker_id ON alerts(worker_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
+CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
 

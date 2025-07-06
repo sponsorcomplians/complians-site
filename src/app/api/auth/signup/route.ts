@@ -4,6 +4,10 @@ import bcrypt from 'bcryptjs';
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
 import { sendVerificationEmail } from '@/lib/email';
+import { v4 as uuidv4 } from 'uuid';
+import { logAuditEvent } from '@/lib/audit-service';
+import { headers } from 'next/headers';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit-service';
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -12,111 +16,344 @@ const supabase = createClient(
 );
 
 export async function POST(request: NextRequest) {
+  const headersList = await headers();
+  
   try {
-    const { fullName, email, company, phone, password } = await request.json();
+    const { email, password, fullName, company, phone } = await request.json();
 
-    // Validate input
-    if (!fullName || !email || !company || !password) {
+    // Rate limiting check
+    const clientIP = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                    headersList.get('x-real-ip') || 
+                    'unknown';
+    const rateLimitIdentifier = `signup:${clientIP}`;
+    
+    const rateLimitResult = await checkRateLimit(
+      rateLimitIdentifier,
+      RATE_LIMITS.SIGNUP.maxAttempts,
+      RATE_LIMITS.SIGNUP.windowMs
+    );
+
+    if (!rateLimitResult.success) {
+      // Log rate limit exceeded
+      try {
+        await logAuditEvent(
+          'signup_failed',
+          {
+            email: email || 'unknown',
+            reason: 'Rate limit exceeded',
+            client_ip: clientIP,
+            retry_after: rateLimitResult.retryAfter
+          },
+          'user',
+          email || 'unknown',
+          undefined,
+          undefined,
+          headersList
+        );
+      } catch (auditError) {
+        console.warn('Failed to log rate limit exceeded:', auditError);
+      }
+
       return NextResponse.json(
-        { error: 'Required fields are missing' },
-        { status: 400 }
+        { 
+          error: 'Too many signup attempts. Please try again later.',
+          retryAfter: rateLimitResult.retryAfter
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': RATE_LIMITS.SIGNUP.maxAttempts.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+            'Retry-After': rateLimitResult.retryAfter?.toString() || '60'
+          }
+        }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    // Validate required fields
+    if (!email || !password || !fullName || !company) {
+      // Log failed signup attempt
+      try {
+        await logAuditEvent(
+          'signup_failed',
+          {
+            email: email || 'unknown',
+            reason: 'Missing required fields',
+            fields_missing: {
+              email: !email,
+              password: !password,
+              fullName: !fullName,
+              company: !company
+            }
+          },
+          'user',
+          email || 'unknown',
+          undefined,
+          undefined,
+          headersList
+        );
+      } catch (auditError) {
+        console.warn('Failed to log signup failure:', auditError);
+      }
 
-    // Validate password length
-    if (password.length < 8) {
       return NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
     // Check if user already exists
-    const { data: existingUser, error: checkError } = await supabase
+    const { data: existingUser } = await supabase
       .from('users')
       .select('id')
-      .eq('email', email.toLowerCase())
+      .eq('email', email)
       .single();
 
     if (existingUser) {
+      // Log failed signup attempt
+      try {
+        await logAuditEvent(
+          'signup_failed',
+          {
+            email,
+            reason: 'User already exists'
+          },
+          'user',
+          email,
+          undefined,
+          undefined,
+          headersList
+        );
+      } catch (auditError) {
+        console.warn('Failed to log signup failure:', auditError);
+      }
+
       return NextResponse.json(
-        { error: 'An account with this email already exists' },
+        { error: 'User already exists' },
         { status: 409 }
       );
     }
 
-    // Hash the password
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Generate verification token
-    const verificationToken = randomBytes(32).toString('hex');
-    const verificationExpires = new Date();
-    verificationExpires.setHours(verificationExpires.getHours() + 24); // 24 hour expiry
-
-    // Create the user
-    const { data: newUser, error: insertError } = await supabase
-      .from('users')
-      .insert({
-        email: email.toLowerCase(),
-        password_hash: passwordHash,
-        full_name: fullName,
-        company: company,
-        phone: phone || null,
-        is_email_verified: false,
-        email_verification_token: verificationToken,
-        email_verification_expires: verificationExpires.toISOString(),
-        created_at: new Date().toISOString()
-      })
-      .select()
+    // Check if tenant (company) already exists
+    let { data: existingTenant } = await supabase
+      .from('tenants')
+      .select('id, name, max_workers, subscription_plan')
+      .eq('name', company)
       .single();
 
-    if (insertError) {
-      console.error('Error creating user:', insertError);
+    let tenantId: string;
+    let isFirstUser = false;
+
+    if (existingTenant) {
+      // Use existing tenant
+      tenantId = existingTenant.id;
+      console.log(`Using existing tenant: ${existingTenant.name} (ID: ${tenantId})`);
+    } else {
+      // Create new tenant
+      const { data: newTenant, error: tenantError } = await supabase
+        .from('tenants')
+        .insert({
+          name: company,
+          industry: 'General',
+          max_workers: 100,
+          subscription_plan: 'Basic',
+          subscription_status: 'active'
+        })
+        .select('id, name, max_workers, subscription_plan')
+        .single();
+
+      if (tenantError) {
+        console.error('Error creating tenant:', tenantError);
+        
+        // Log failed signup attempt
+        try {
+          await logAuditEvent(
+            'signup_failed',
+            {
+              email,
+              reason: 'Failed to create tenant',
+              tenant_error: tenantError.message
+            },
+            'user',
+            email,
+            undefined,
+            undefined,
+            headersList
+          );
+        } catch (auditError) {
+          console.warn('Failed to log signup failure:', auditError);
+        }
+
+        return NextResponse.json(
+          { error: 'Failed to create tenant' },
+          { status: 500 }
+        );
+      }
+
+      tenantId = newTenant.id;
+      isFirstUser = true;
+      console.log(`Created new tenant: ${newTenant.name} (ID: ${tenantId})`);
+    }
+
+    // Determine user role - first user in a tenant becomes Admin, others become Viewer
+    const defaultRole = isFirstUser ? 'Admin' : 'Viewer';
+
+    // Create user with tenant_id
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .insert({
+        id: uuidv4(),
+        email,
+        password: hashedPassword,
+        full_name: fullName,
+        company,
+        phone: phone || null,
+        tenant_id: tenantId,
+        role: defaultRole,
+        is_email_verified: false
+      })
+      .select('id, email, full_name, company, tenant_id, role, is_email_verified, created_at')
+      .single();
+
+    if (userError) {
+      console.error('Error creating user:', userError);
+      
+      // Log failed signup attempt
+      try {
+        await logAuditEvent(
+          'signup_failed',
+          {
+            email,
+            reason: 'Failed to create user',
+            user_error: userError.message
+          },
+          'user',
+          email,
+          undefined,
+          undefined,
+          headersList
+        );
+      } catch (auditError) {
+        console.warn('Failed to log signup failure:', auditError);
+      }
+
       return NextResponse.json(
-        { error: 'Failed to create account' },
+        { error: 'Failed to create user' },
         { status: 500 }
       );
     }
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, fullName, verificationToken);
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
-      // Don't fail the signup if email fails, user can resend
+    // Create user_roles record
+    const { error: roleError } = await supabase
+      .from('user_roles')
+      .insert({
+        user_id: user.id,
+        tenant_id: tenantId,
+        role: defaultRole
+      });
+
+    if (roleError) {
+      console.error('Error creating user role:', roleError);
+      // Continue anyway as the trigger should handle this
     }
 
-    // Send welcome email
-    try {
-      await sendWelcomeEmail(email, fullName);
-    } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError);
+    // Create Auth user (if using Supabase Auth)
+    const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: fullName,
+        company,
+        tenant_id: tenantId,
+        role: defaultRole
+      }
+    });
+
+    if (authError) {
+      console.error('Error creating auth user:', authError);
+      // Continue anyway as we have the user in our custom table
     }
 
-    // Success!
+    console.log(`User created successfully: ${user.email} (Tenant: ${tenantId}, Role: ${defaultRole})`);
+
+    // Log successful signup
+    try {
+      await logAuditEvent(
+        'signup_success',
+        {
+          email: user.email,
+          full_name: user.full_name,
+          company: user.company,
+          tenant_id: user.tenant_id,
+          role: defaultRole,
+          is_first_user: isFirstUser
+        },
+        'user',
+        user.id,
+        undefined,
+        {
+          id: user.id,
+          email: user.email,
+          full_name: user.full_name,
+          company: user.company,
+          tenant_id: user.tenant_id,
+          role: defaultRole,
+          is_email_verified: false
+        },
+        headersList
+      );
+    } catch (auditError) {
+      console.warn('Failed to log signup success:', auditError);
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'Account created successfully! Please check your email to verify your account.',
       user: {
-        id: newUser.id,
-        email: newUser.email,
-        fullName: newUser.full_name
-      }
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        company: user.company,
+        tenant_id: user.tenant_id,
+        role: user.role,
+        is_email_verified: user.is_email_verified
+      },
+      tenant: {
+        id: tenantId,
+        name: company
+      },
+      role: defaultRole,
+      isFirstUser
     });
 
   } catch (error) {
     console.error('Signup error:', error);
+    
+    // Log failed signup attempt
+    try {
+      await logAuditEvent(
+        'signup_failed',
+        {
+          email: 'unknown',
+          reason: 'Internal server error',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        },
+        'user',
+        'unknown',
+        undefined,
+        undefined,
+        headersList
+      );
+    } catch (auditError) {
+      console.warn('Failed to log signup failure:', auditError);
+    }
+
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
