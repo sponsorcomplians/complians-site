@@ -149,7 +149,7 @@ Return only the final letter text in your response.
           is_compliant: isCompliant,
           custom_prompt_used: !!customPrompt
         },
-        'narrative',
+        'worker',
         workerName,
         undefined,
         { narrative_length: output.length },
