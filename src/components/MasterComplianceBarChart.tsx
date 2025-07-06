@@ -43,7 +43,10 @@ export default function MasterComplianceBarChart({
                 <HelpCircle className="h-4 w-4 text-gray-400" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Shows the combined risk level across all sponsored workers, from low to high.</p>
+                <p>{title === "Risk Level Breakdown" 
+                  ? "Displays the distribution of workers by overall risk level, enabling you to quickly prioritise high-risk cases for intervention."
+                  : "Shows compliance outcomes across each individual AI agent module, highlighting which compliance areas may require additional focus or improvement."
+                }</p>
               </TooltipContent>
             </Tooltip>
           </CardTitle>

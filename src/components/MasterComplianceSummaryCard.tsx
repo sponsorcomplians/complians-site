@@ -77,9 +77,9 @@ export default function MasterComplianceSummaryCard({
                   <TooltipTrigger>
                     <HelpCircle className="h-4 w-4 text-gray-400 ml-1" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Percentage of sponsored workers assessed as compliant across all 15 AI agents. Based on the strictest risk criteria.</p>
-                  </TooltipContent>
+                                  <TooltipContent>
+                  <p>Percentage of all sponsored workers assessed as fully compliant across all 15 AI compliance areas. Calculated using the strictest risk criteria for each worker.</p>
+                </TooltipContent>
                 </Tooltip>
               </div>
               <div className={`text-2xl font-bold ${getComplianceRateColor(summary.overallComplianceRate)}`}>
@@ -99,9 +99,9 @@ export default function MasterComplianceSummaryCard({
                   <TooltipTrigger>
                     <HelpCircle className="h-4 w-4 text-gray-400 ml-1" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Number of workers flagged as serious compliance breaches. These require immediate corrective action.</p>
-                  </TooltipContent>
+                                  <TooltipContent>
+                  <p>Number of workers identified as serious compliance breaches requiring immediate review and remedial action under sponsor guidance.</p>
+                </TooltipContent>
                 </Tooltip>
               </div>
               <div className="text-2xl font-bold text-red-600">{summary.totalRedFlags}</div>
@@ -121,9 +121,9 @@ export default function MasterComplianceSummaryCard({
                   <TooltipTrigger>
                     <HelpCircle className="h-4 w-4 text-gray-400 ml-1" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Number of workers classified as high risk across all compliance areas. These require enhanced monitoring.</p>
-                  </TooltipContent>
+                                  <TooltipContent>
+                  <p>Overall distribution of compliance risk levels (Low, Medium, High) across your entire workforce and all compliance areas.</p>
+                </TooltipContent>
                 </Tooltip>
               </div>
               <div className="text-2xl font-bold text-yellow-600">{summary.highRiskWorkers}</div>
@@ -142,7 +142,17 @@ export default function MasterComplianceSummaryCard({
               <div className="text-lg font-semibold text-brand-dark">{summary.totalAssessments}</div>
             </div>
             <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">Breaches</div>
+              <div className="flex items-center justify-center mb-1">
+                <span className="text-sm text-gray-600">Breaches</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-3 w-3 text-gray-400 ml-1" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Total number of detected compliance failures or breaches across all assessments. Includes both serious and minor breaches.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <div className="text-lg font-semibold text-yellow-600">{summary.totalBreaches}</div>
             </div>
             <div className="text-center">

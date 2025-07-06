@@ -39,7 +39,7 @@ export default function MasterCompliancePieChart({
                 <HelpCircle className="h-4 w-4 text-gray-400" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Distribution of compliance outcomes per AI agent, helping you spot areas of systemic weakness.</p>
+                <p>Visual breakdown showing the proportion of workers who are fully compliant versus those with compliance breaches. Helps identify overall compliance health at a glance.</p>
               </TooltipContent>
             </Tooltip>
           </CardTitle>

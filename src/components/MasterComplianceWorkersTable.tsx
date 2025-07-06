@@ -160,7 +160,7 @@ export default function MasterComplianceWorkersTable({
                 <HelpCircle className="h-4 w-4 text-gray-400" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Comprehensive view of all workers with their compliance status across all 15 AI agents. Click to expand for detailed breakdown.</p>
+                <p>Detailed list of all workers assessed, including their compliance status, risk level, and related agent assessments. Click 'View Report' to see full individual narratives.</p>
               </TooltipContent>
             </Tooltip>
           </CardTitle>
