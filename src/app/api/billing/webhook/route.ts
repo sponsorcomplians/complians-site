@@ -3,9 +3,7 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { handleStripeWebhook } from '@/lib/stripe-billing-service';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
