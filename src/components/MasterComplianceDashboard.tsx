@@ -15,7 +15,8 @@ import {
   Clock,
   RefreshCw,
   Download,
-  Filter
+  Filter,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import MasterComplianceSummaryCard from './MasterComplianceSummaryCard';
@@ -45,6 +46,7 @@ export default function MasterComplianceDashboard() {
   });
   const [exporting, setExporting] = useState(false);
   const [generatingNarrative, setGeneratingNarrative] = useState<string | null>(null);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
 
   // Load metrics on component mount
   useEffect(() => {
@@ -246,6 +248,45 @@ export default function MasterComplianceDashboard() {
     }
   };
 
+  const handleGeneratePDF = async () => {
+    try {
+      setGeneratingPDF(true);
+      setError(null);
+      
+      const response = await fetch('/api/master-compliance/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        // Create and download the PDF file
+        const blob = new Blob([result.pdfContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `master-compliance-report-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        throw new Error(result.error || 'Failed to generate PDF');
+      }
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setGeneratingPDF(false);
+    }
+  };
+
   if (loading && !metrics) {
     return (
       <div className="container mx-auto p-6">
@@ -327,6 +368,14 @@ export default function MasterComplianceDashboard() {
             >
               <Download className={`h-4 w-4 mr-2 ${exporting ? 'animate-spin' : ''}`} />
               {exporting ? 'Exporting...' : 'Export Summary'}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleGeneratePDF} 
+              disabled={generatingPDF}
+            >
+              <FileText className={`h-4 w-4 mr-2 ${generatingPDF ? 'animate-spin' : ''}`} />
+              {generatingPDF ? 'Generating PDF...' : 'Download Master PDF'}
             </Button>
           </div>
         </div>

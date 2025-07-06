@@ -22,10 +22,17 @@ import {
   XCircle,
   Clock,
   FileText,
-  RefreshCw
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { MasterComplianceWorker } from '@/types/master-compliance.types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface MasterComplianceWorkersTableProps {
   workers: MasterComplianceWorker[];
@@ -139,187 +146,281 @@ export default function MasterComplianceWorkersTable({
   };
 
   return (
-    <Card className={`${className}`}>
-      <CardHeader>
-        <CardTitle className="text-brand-dark flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Workers Overview
-          <span className="text-sm font-normal text-gray-500 ml-2">
-            ({filteredCount} of {totalCount})
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-12"></TableHead>
-                <TableHead>Worker Name</TableHead>
-                <TableHead>Job Title</TableHead>
-                <TableHead>SOC Code</TableHead>
-                <TableHead>CoS Reference</TableHead>
-                <TableHead>Overall Status</TableHead>
-                <TableHead>Risk Level</TableHead>
-                <TableHead>Red Flags</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {workers.map((worker) => (
-                <>
-                  <TableRow key={worker.id} className="hover:bg-gray-50">
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleRow(worker.id)}
-                        className="p-1 h-6 w-6"
-                      >
-                        {expandedRows.has(worker.id) ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </TableCell>
-                    <TableCell className="font-medium">{worker.name}</TableCell>
-                    <TableCell>{worker.jobTitle}</TableCell>
-                    <TableCell>{worker.socCode}</TableCell>
-                    <TableCell>{worker.cosReference}</TableCell>
-                    <TableCell>
-                      {getStatusBadge(worker.overallComplianceStatus, worker.totalRedFlags > 0)}
-                    </TableCell>
-                    <TableCell>
-                      {getRiskLevelBadge(worker.overallRiskLevel)}
-                    </TableCell>
-                    <TableCell>
-                      {worker.totalRedFlags > 0 ? (
-                        <Badge className="bg-red-100 text-red-800 border-red-200">
-                          {worker.totalRedFlags}
-                        </Badge>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
+    <TooltipProvider>
+      <Card className={`${className}`}>
+        <CardHeader>
+          <CardTitle className="text-brand-dark flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Workers Overview
+            <span className="text-sm font-normal text-gray-500 ml-2">
+              ({filteredCount} of {totalCount})
+            </span>
+            <Tooltip>
+              <TooltipTrigger>
+                <HelpCircle className="h-4 w-4 text-gray-400" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Comprehensive view of all workers with their compliance status across all 15 AI agents. Click to expand for detailed breakdown.</p>
+              </TooltipContent>
+            </Tooltip>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-12"></TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      Worker Name
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Name of the sponsored worker</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      Job Title
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Job title as specified in the Certificate of Sponsorship</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      SOC Code
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Standard Occupational Classification code for the role</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      CoS Reference
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Certificate of Sponsorship reference number</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      Overall Status
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Overall compliance status across all 15 AI agents. Red flags indicate critical issues.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      Risk Level
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Combined risk assessment across all compliance areas</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-1">
+                      Red Flags
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="h-3 w-3 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Number of serious compliance breaches requiring immediate attention</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {workers.map((worker) => (
+                  <>
+                    <TableRow key={worker.id} className="hover:bg-gray-50">
+                      <TableCell>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          onClick={() => {
-                            const newExpanded = new Set(expandedRows);
-                            if (newExpanded.has(worker.id)) {
-                              newExpanded.delete(worker.id);
-                            } else {
-                              newExpanded.add(worker.id);
-                            }
-                            setExpandedRows(newExpanded);
-                          }}
+                          onClick={() => toggleRow(worker.id)}
+                          className="p-1 h-6 w-6"
                         >
-                          {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
+                          {expandedRows.has(worker.id) ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
                         </Button>
-                        {onGenerateNarrative && (
+                      </TableCell>
+                      <TableCell className="font-medium">{worker.name}</TableCell>
+                      <TableCell>{worker.jobTitle}</TableCell>
+                      <TableCell>{worker.socCode}</TableCell>
+                      <TableCell>{worker.cosReference}</TableCell>
+                      <TableCell>
+                        {getStatusBadge(worker.overallComplianceStatus, worker.totalRedFlags > 0)}
+                      </TableCell>
+                      <TableCell>
+                        {getRiskLevelBadge(worker.overallRiskLevel)}
+                      </TableCell>
+                      <TableCell>
+                        {worker.totalRedFlags > 0 ? (
+                          <Badge className="bg-red-100 text-red-800 border-red-200">
+                            {worker.totalRedFlags}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onGenerateNarrative(worker.name)}
-                            disabled={generatingNarrative === worker.name}
+                            onClick={() => {
+                              const newExpanded = new Set(expandedRows);
+                              if (newExpanded.has(worker.id)) {
+                                newExpanded.delete(worker.id);
+                              } else {
+                                newExpanded.add(worker.id);
+                              }
+                              setExpandedRows(newExpanded);
+                            }}
                           >
-                            {generatingNarrative === worker.name ? (
-                              <>
-                                <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                                Generating...
-                              </>
-                            ) : (
-                              <>
-                                <FileText className="h-3 w-3 mr-1" />
-                                Narrative
-                              </>
-                            )}
+                            {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
                           </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  
-                  {/* Expanded row with agent details */}
-                  {expandedRows.has(worker.id) && (
-                    <TableRow>
-                      <TableCell colSpan={9} className="bg-gray-50 p-4">
-                        <div className="space-y-3">
-                          <h4 className="font-medium text-gray-900">Agent Compliance Details</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {Object.entries(worker.agentCompliance).map(([agentType, compliance]) => (
-                              <div key={agentType} className="bg-white p-3 rounded-lg border">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium text-gray-700">
-                                    {agentType.replace('ai-', '').replace('-compliance', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                  </span>
-                                  <Link href={`/${agentType}`}>
-                                    <Button variant="ghost" size="sm" className="h-6 text-xs">
-                                      View
-                                    </Button>
-                                  </Link>
-                                </div>
-                                <div className="space-y-1">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">Status:</span>
-                                    {getStatusBadge(compliance.status, compliance.redFlag)}
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">Risk:</span>
-                                    {getRiskLevelBadge(compliance.riskLevel)}
-                                  </div>
-                                  {compliance.redFlag && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-gray-500">Red Flag:</span>
-                                      <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
-                                        Yes
-                                      </Badge>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                          {onGenerateNarrative && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onGenerateNarrative(worker.name)}
+                              disabled={generatingNarrative === worker.name}
+                            >
+                              {generatingNarrative === worker.name ? (
+                                <>
+                                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  Narrative
+                                </>
+                              )}
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
-                  )}
-                </>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
-              Page {pagination.page} of {pagination.totalPages}
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(pagination.page - 1)}
-                disabled={pagination.page <= 1}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPageChange(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages}
-              >
-                Next
-              </Button>
-            </div>
+                    
+                    {/* Expanded row with agent details */}
+                    {expandedRows.has(worker.id) && (
+                      <TableRow>
+                        <TableCell colSpan={9} className="bg-gray-50 p-4">
+                          <div className="space-y-3">
+                            <h4 className="font-medium text-gray-900">Agent Compliance Details</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                              {Object.entries(worker.agentCompliance).map(([agentType, compliance]) => (
+                                <div key={agentType} className="bg-white p-3 rounded-lg border">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {agentType.replace('ai-', '').replace('-compliance', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                    </span>
+                                    <Link href={`/${agentType}`}>
+                                      <Button variant="ghost" size="sm" className="h-6 text-xs">
+                                        View
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs text-gray-500">Status:</span>
+                                      {getStatusBadge(compliance.status, compliance.redFlag)}
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs text-gray-500">Risk:</span>
+                                      {getRiskLevelBadge(compliance.riskLevel)}
+                                    </div>
+                                    {compliance.redFlag && (
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs text-gray-500">Red Flag:</span>
+                                        <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
+                                          Yes
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+              <div className="text-sm text-gray-600">
+                Page {pagination.page} of {pagination.totalPages}
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onPageChange(pagination.page + 1)}
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 } 
