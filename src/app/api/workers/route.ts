@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 import { getTenantComplianceWorkers, createTenantComplianceWorker } from '@/lib/multi-tenant-service';
-import { trackWorkerAddition, canPerformAction } from '@/lib/tenant-metrics-service';
+import { trackWorkerAddition } from '@/lib/tenant-metrics-service';
+import { canPerformAction } from '@/lib/stripe-billing-service';
 import { logAuditEvent } from '@/lib/audit-service';
 import { headers } from 'next/headers';
 

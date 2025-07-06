@@ -245,7 +245,7 @@ export default function UserManagementPage() {
                           <div className="flex items-center gap-2">
                             <Select
                               value={user.role}
-                              onValueChange={(value: UserRoleType) => updateUserRole(user.user_id, value)}
+                              onValueChange={(value: string) => updateUserRole(user.user_id, value as UserRoleType)}
                               disabled={updatingUser === user.user_id}
                             >
                               <SelectTrigger className="w-32">
