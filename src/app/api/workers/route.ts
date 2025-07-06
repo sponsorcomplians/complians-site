@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
           soc_code: workerData.soc_code,
           compliance_status: workerData.compliance_status
         },
-        'compliance_worker',
+        'worker',
         worker.id,
         undefined,
         worker,
