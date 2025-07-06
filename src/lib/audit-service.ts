@@ -232,13 +232,13 @@ export async function logAuditEvent(
         ...details,
         client_ip: clientIP,
         user_agent: userAgent,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        entity_type: entityType,
+        entity_id: entityId,
+        previous_data: previousData,
+        new_data: newData
       },
-      entity_type: entityType,
-      entity_id: entityId,
-      previous_data: previousData,
-      new_data: newData,
-      ip_address: clientIP,
+      ip_address: clientIP || undefined,
       user_agent: userAgent
     };
 
@@ -319,7 +319,15 @@ export async function getAuditLogs(
 export async function getAuditSummary(
   tenantId?: string,
   daysBack: number = 30
-): Promise<AuditSummary> {
+): Promise<{
+  totalEvents: number;
+  actionBreakdown: Record<string, number>;
+  dailyBreakdown: Record<string, number>;
+  period: {
+    start: string;
+    end: string;
+  };
+}> {
   try {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - daysBack);
