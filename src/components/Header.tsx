@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu, X, ChevronDown, User, LogOut, Users } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut, Users, BarChart3 } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -146,6 +146,10 @@ export default function Header() {
                       <User className="h-4 w-4 mr-2" />
                       Dashboard
                     </Link>
+                    <Link href="/master-compliance-dashboard" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Master Dashboard
+                    </Link>
                     <Link href="/workers" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                       <Users className="h-4 w-4 mr-2" />
                       Workers
@@ -243,6 +247,9 @@ export default function Header() {
                     </div>
                     <Link href="/dashboard" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                       Dashboard
+                    </Link>
+                    <Link href="/master-compliance-dashboard" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
+                      Master Dashboard
                     </Link>
                     <Link href="/workers" className="block text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(false)}>
                       Workers Management

@@ -108,7 +108,7 @@ const Badge = ({ children, variant = "default", className = "" }: { children: Re
 
 // Custom Tabs Components
 const Tabs = ({ children, value, onValueChange, className = "" }: { children: React.ReactNode; value: string; onValueChange: (value: string) => void; className?: string; }) => (
-  <div className={className} data-value={value} data-onvaluechange={onValueChange}>{children}</div>
+  <div className={className} data-value={value}>{children}</div>
 );
 const TabsList = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className={`inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500 ${className}`}>{children}</div>
