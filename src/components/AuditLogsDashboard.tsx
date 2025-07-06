@@ -315,6 +315,7 @@ export default function AuditLogsDashboard({ className }: AuditLogsDashboardProp
                       <Label htmlFor="user-filter">User ID</Label>
                       <Input
                         id="user-filter"
+                        name="user-filter"
                         placeholder="Filter by user ID"
                         value={filters.user_id}
                         onChange={(e) => handleFilterChange('user_id', e.target.value)}
@@ -324,6 +325,7 @@ export default function AuditLogsDashboard({ className }: AuditLogsDashboardProp
                       <Label htmlFor="start-date">Start Date</Label>
                       <Input
                         id="start-date"
+                        name="start-date"
                         type="date"
                         value={filters.start_date}
                         onChange={(e) => handleFilterChange('start_date', e.target.value)}
@@ -333,6 +335,7 @@ export default function AuditLogsDashboard({ className }: AuditLogsDashboardProp
                       <Label htmlFor="end-date">End Date</Label>
                       <Input
                         id="end-date"
+                        name="end-date"
                         type="date"
                         value={filters.end_date}
                         onChange={(e) => handleFilterChange('end_date', e.target.value)}
