@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const summary = searchParams.get('summary');
     if (summary === 'true') {
       const days = searchParams.get('days') ? parseInt(searchParams.get('days')!) : 30;
-      const auditSummary = await getAuditSummary(days);
+      const auditSummary = await getAuditSummary(undefined, days);
       
       return NextResponse.json({
         success: true,
@@ -68,11 +68,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: auditLogs,
+      data: auditLogs.logs,
       pagination: {
         limit: filters.limit || 100,
         offset: filters.offset || 0,
-        total: auditLogs.length
+        total: auditLogs.total
       }
     });
 
@@ -118,13 +118,13 @@ export async function POST(request: NextRequest) {
       }
 
       // Import the clean function
-      const { cleanOldAuditLogs } = await import('@/lib/audit-service');
-      const deletedCount = await cleanOldAuditLogs(daysToKeep);
+      const { cleanupOldAuditLogs } = await import('@/lib/audit-service');
+      const result = await cleanupOldAuditLogs(daysToKeep);
 
       return NextResponse.json({
         success: true,
-        message: `Cleaned ${deletedCount} old audit logs`,
-        deleted_count: deletedCount
+        message: `Cleaned ${result.deleted} old audit logs`,
+        deleted_count: result.deleted
       });
     }
 
