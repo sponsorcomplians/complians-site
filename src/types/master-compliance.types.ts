@@ -45,12 +45,12 @@ export interface MasterComplianceWorker {
   socCode: string;
   cosReference: string;
   assignmentDate: string;
-  overallComplianceStatus: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH' | 'PENDING';
+  overallComplianceStatus: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
   overallRiskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
   totalRedFlags: number;
   agentCompliance: {
     [agentType: string]: {
-      status: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH' | 'PENDING';
+      status: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
       riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
       redFlag: boolean;
       lastAssessmentDate?: string;
@@ -72,7 +72,7 @@ export interface MasterComplianceFilters {
     start: string;
     end: string;
   };
-  complianceStatus?: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH' | 'PENDING';
+  complianceStatus?: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
   riskLevel?: 'LOW' | 'MEDIUM' | 'HIGH';
   agentType?: string;
   hasRedFlags?: boolean;

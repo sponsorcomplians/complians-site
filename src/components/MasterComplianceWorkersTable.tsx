@@ -20,7 +20,9 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  FileText,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { MasterComplianceWorker } from '@/types/master-compliance.types';
@@ -34,8 +36,10 @@ interface MasterComplianceWorkersTableProps {
     pageSize: number;
     totalPages: number;
   };
-  onPageChange?: (page: number) => void;
+  onPageChange: (page: number) => void;
   className?: string;
+  onGenerateNarrative?: (workerName: string) => void;
+  generatingNarrative?: string | null;
 }
 
 export default function MasterComplianceWorkersTable({
@@ -44,7 +48,9 @@ export default function MasterComplianceWorkersTable({
   filteredCount,
   pagination,
   onPageChange,
-  className = ""
+  className = "",
+  onGenerateNarrative,
+  generatingNarrative
 }: MasterComplianceWorkersTableProps) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -60,6 +66,15 @@ export default function MasterComplianceWorkersTable({
 
   const getStatusBadge = (status: string, redFlag: boolean = false) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
+    
+    if (redFlag) {
+      return (
+        <Badge className={`${baseClasses} bg-red-100 text-red-800 border-red-200`}>
+          <AlertTriangle className="w-3 h-3 mr-1" />
+          Red Flag
+        </Badge>
+      );
+    }
     
     switch (status) {
       case 'COMPLIANT':
@@ -81,13 +96,6 @@ export default function MasterComplianceWorkersTable({
           <Badge className={`${baseClasses} bg-red-100 text-red-800 border-red-200`}>
             <XCircle className="w-3 h-3 mr-1" />
             Serious Breach
-          </Badge>
-        );
-      case 'PENDING':
-        return (
-          <Badge className={`${baseClasses} bg-gray-100 text-gray-800 border-gray-200`}>
-            <Clock className="w-3 h-3 mr-1" />
-            Pending
           </Badge>
         );
       default:
@@ -196,12 +204,41 @@ export default function MasterComplianceWorkersTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Link href={`/workers/${worker.id}`}>
-                          <Button variant="outline" size="sm" className="h-7">
-                            <Eye className="w-3 h-3 mr-1" />
-                            View
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newExpanded = new Set(expandedRows);
+                            if (newExpanded.has(worker.id)) {
+                              newExpanded.delete(worker.id);
+                            } else {
+                              newExpanded.add(worker.id);
+                            }
+                            setExpandedRows(newExpanded);
+                          }}
+                        >
+                          {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
+                        </Button>
+                        {onGenerateNarrative && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onGenerateNarrative(worker.name)}
+                            disabled={generatingNarrative === worker.name}
+                          >
+                            {generatingNarrative === worker.name ? (
+                              <>
+                                <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                Generating...
+                              </>
+                            ) : (
+                              <>
+                                <FileText className="h-3 w-3 mr-1" />
+                                Narrative
+                              </>
+                            )}
                           </Button>
-                        </Link>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -266,7 +303,7 @@ export default function MasterComplianceWorkersTable({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onPageChange?.(pagination.page - 1)}
+                onClick={() => onPageChange(pagination.page - 1)}
                 disabled={pagination.page <= 1}
               >
                 Previous
@@ -274,7 +311,7 @@ export default function MasterComplianceWorkersTable({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onPageChange?.(pagination.page + 1)}
+                onClick={() => onPageChange(pagination.page + 1)}
                 disabled={pagination.page >= pagination.totalPages}
               >
                 Next

@@ -43,6 +43,8 @@ export default function MasterComplianceDashboard() {
     pageSize: 20,
     totalPages: 1
   });
+  const [exporting, setExporting] = useState(false);
+  const [generatingNarrative, setGeneratingNarrative] = useState<string | null>(null);
 
   // Load metrics on component mount
   useEffect(() => {
@@ -156,19 +158,91 @@ export default function MasterComplianceDashboard() {
             Serious Breach
           </Badge>
         );
-      case 'PENDING':
-        return (
-          <Badge className={`${baseClasses} bg-gray-100 text-gray-800 border-gray-200`}>
-            <Clock className="w-3 h-3 mr-1" />
-            Pending
-          </Badge>
-        );
       default:
         return (
           <Badge className={`${baseClasses} bg-gray-100 text-gray-800 border-gray-200`}>
             {status}
           </Badge>
         );
+    }
+  };
+
+  const handleExportSummary = async () => {
+    try {
+      setExporting(true);
+      setError(null);
+      
+      const response = await fetch('/api/master-compliance/export/summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export summary');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        // Create and download the file
+        const blob = new Blob([result.content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `master-compliance-summary-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        throw new Error(result.error || 'Failed to export summary');
+      }
+    } catch (err) {
+      console.error('Error exporting summary:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleGenerateNarrative = async (workerName: string) => {
+    try {
+      setGeneratingNarrative(workerName);
+      setError(null);
+      
+      const response = await fetch('/api/master-compliance/narrative', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ workerId: workerName })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate narrative');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        // Create and download the narrative file
+        const blob = new Blob([result.narrative], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `combined-narrative-${workerName}-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        throw new Error(result.error || 'Failed to generate narrative');
+      }
+    } catch (err) {
+      console.error('Error generating narrative:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setGeneratingNarrative(null);
     }
   };
 
@@ -246,9 +320,13 @@ export default function MasterComplianceDashboard() {
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Export
+            <Button 
+              variant="outline" 
+              onClick={handleExportSummary} 
+              disabled={exporting}
+            >
+              <Download className={`h-4 w-4 mr-2 ${exporting ? 'animate-spin' : ''}`} />
+              {exporting ? 'Exporting...' : 'Export Summary'}
             </Button>
           </div>
         </div>
@@ -399,6 +477,8 @@ export default function MasterComplianceDashboard() {
             filteredCount={workers.length}
             pagination={pagination}
             onPageChange={handlePageChange}
+            onGenerateNarrative={handleGenerateNarrative}
+            generatingNarrative={generatingNarrative}
           />
         </TabsContent>
 

@@ -67,42 +67,157 @@ export const AI_AGENT_SLUGS: Record<string, string> = {
 
 export class MasterComplianceService {
   private supabase = getSupabaseClient();
+  private requestCount = 0;
+  private lastRequestTime = 0;
+  private readonly RATE_LIMIT = 100; // requests per minute
+  private readonly RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
+
+  private checkRateLimit(): void {
+    const now = Date.now();
+    if (now - this.lastRequestTime > this.RATE_LIMIT_WINDOW) {
+      this.requestCount = 0;
+      this.lastRequestTime = now;
+    }
+    
+    this.requestCount++;
+    if (this.requestCount > this.RATE_LIMIT) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+  }
+
+  private validateUserAccess(userId: string): void {
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('Invalid user authentication');
+    }
+  }
+
+  private sanitizeFilters(filters?: MasterComplianceFilters): MasterComplianceFilters | undefined {
+    if (!filters) return undefined;
+    
+    const sanitized: MasterComplianceFilters = {};
+    
+    if (filters.complianceStatus && ['COMPLIANT', 'BREACH', 'SERIOUS_BREACH'].includes(filters.complianceStatus)) {
+      sanitized.complianceStatus = filters.complianceStatus;
+    }
+    
+    if (filters.riskLevel && ['LOW', 'MEDIUM', 'HIGH'].includes(filters.riskLevel)) {
+      sanitized.riskLevel = filters.riskLevel;
+    }
+    
+    if (filters.agentType && typeof filters.agentType === 'string') {
+      sanitized.agentType = filters.agentType;
+    }
+    
+    if (typeof filters.hasRedFlags === 'boolean') {
+      sanitized.hasRedFlags = filters.hasRedFlags;
+    }
+    
+    if (filters.dateRange && filters.dateRange.start && filters.dateRange.end) {
+      const startDate = new Date(filters.dateRange.start);
+      const endDate = new Date(filters.dateRange.end);
+      
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && startDate <= endDate) {
+        sanitized.dateRange = {
+          start: filters.dateRange.start,
+          end: filters.dateRange.end
+        };
+      }
+    }
+    
+    return Object.keys(sanitized).length > 0 ? sanitized : undefined;
+  }
 
   async getMasterComplianceMetrics(filters?: MasterComplianceFilters): Promise<MasterComplianceMetrics> {
     try {
+      // Apply rate limiting
+      this.checkRateLimit();
+
       if (!this.supabase) {
         throw new Error('Database connection not available');
       }
 
-      // Get all compliance workers across all agents
-      const { data: workers, error: workersError } = await this.supabase
-        .from('compliance_workers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (workersError) {
-        throw new Error(`Failed to fetch workers: ${workersError.message}`);
+      // Get current user
+      const { data: { user } } = await this.supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
       }
 
-      // Get all assessments
-      const { data: assessments, error: assessmentsError } = await this.supabase
+      // Validate user access
+      this.validateUserAccess(user.id);
+
+      // Sanitize filters
+      const sanitizedFilters = this.sanitizeFilters(filters);
+
+      // Build optimized queries with filters
+      let workersQuery = this.supabase
+        .from('compliance_workers')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      let assessmentsQuery = this.supabase
         .from('compliance_assessments')
         .select('*')
+        .eq('user_id', user.id)
         .order('generated_at', { ascending: false });
 
-      if (assessmentsError) {
-        throw new Error(`Failed to fetch assessments: ${assessmentsError.message}`);
+      // Apply sanitized filters to both queries
+      if (sanitizedFilters?.complianceStatus) {
+        workersQuery = workersQuery.eq('compliance_status', sanitizedFilters.complianceStatus);
+        assessmentsQuery = assessmentsQuery.eq('compliance_status', sanitizedFilters.complianceStatus);
+      }
+      if (sanitizedFilters?.riskLevel) {
+        workersQuery = workersQuery.eq('risk_level', sanitizedFilters.riskLevel);
+        assessmentsQuery = assessmentsQuery.eq('risk_level', sanitizedFilters.riskLevel);
+      }
+      if (sanitizedFilters?.agentType) {
+        workersQuery = workersQuery.eq('agent_type', sanitizedFilters.agentType);
+        assessmentsQuery = assessmentsQuery.eq('agent_type', sanitizedFilters.agentType);
+      }
+      if (sanitizedFilters?.hasRedFlags) {
+        workersQuery = workersQuery.eq('red_flag', true);
+        assessmentsQuery = assessmentsQuery.eq('red_flag', true);
+      }
+      if (sanitizedFilters?.dateRange) {
+        workersQuery = workersQuery
+          .gte('created_at', sanitizedFilters.dateRange.start)
+          .lte('created_at', sanitizedFilters.dateRange.end);
+        assessmentsQuery = assessmentsQuery
+          .gte('generated_at', sanitizedFilters.dateRange.start)
+          .lte('generated_at', sanitizedFilters.dateRange.end);
+      }
+
+      // Execute queries in parallel for better performance
+      const [workersResult, assessmentsResult] = await Promise.all([
+        workersQuery,
+        assessmentsQuery
+      ]);
+
+      if (workersResult.error) {
+        throw new Error(`Failed to fetch workers: ${workersResult.error.message}`);
+      }
+
+      if (assessmentsResult.error) {
+        throw new Error(`Failed to fetch assessments: ${assessmentsResult.error.message}`);
+      }
+
+      const workers = workersResult.data || [];
+      const assessments = assessmentsResult.data || [];
+
+      // Add performance logging for large datasets
+      if (workers.length > 100 || assessments.length > 100) {
+        console.log(`Performance: Processing ${workers.length} workers and ${assessments.length} assessments`);
       }
 
       // Calculate summary metrics
-      const summary = this.calculateSummaryMetrics(workers || [], assessments || []);
+      const summary = this.calculateSummaryMetrics(workers, assessments);
 
       // Calculate agent summaries
-      const agentSummaries = this.calculateAgentSummaries(workers || [], assessments || []);
+      const agentSummaries = this.calculateAgentSummaries(workers, assessments);
 
       // Calculate distributions
-      const statusDistribution = this.calculateStatusDistribution(workers || []);
-      const riskDistribution = this.calculateRiskDistribution(workers || []);
+      const statusDistribution = this.calculateStatusDistribution(workers);
+      const riskDistribution = this.calculateRiskDistribution(workers);
 
       // Get top performing agents (by compliance rate)
       const topAgents = agentSummaries
@@ -110,8 +225,8 @@ export class MasterComplianceService {
         .sort((a, b) => b.complianceRate - a.complianceRate)
         .slice(0, 5);
 
-      // Calculate recent trends (last 30 days)
-      const recentTrends = this.calculateRecentTrends(workers || [], assessments || []);
+      // Calculate recent trends (last 30 days) - optimized for performance
+      const recentTrends = this.calculateRecentTrends(workers, assessments);
 
       return {
         summary,
@@ -137,10 +252,17 @@ export class MasterComplianceService {
         throw new Error('Database connection not available');
       }
 
+      // Get current user
+      const { data: { user } } = await this.supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       // Build query with filters
       let query = this.supabase
         .from('compliance_workers')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       // Apply filters
@@ -250,7 +372,7 @@ export class MasterComplianceService {
       compliant: workers.filter(w => w.compliance_status === 'COMPLIANT').length,
       breach: workers.filter(w => w.compliance_status === 'BREACH').length,
       seriousBreach: workers.filter(w => w.compliance_status === 'SERIOUS_BREACH').length,
-      pending: workers.filter(w => w.compliance_status === 'PENDING').length
+      pending: 0 // Database schema doesn't support PENDING for compliance_workers
     };
   }
 
@@ -351,15 +473,12 @@ export class MasterComplianceService {
     return masterWorkers;
   }
 
-  private calculateOverallComplianceStatus(workerGroup: any[]): 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH' | 'PENDING' {
+  private calculateOverallComplianceStatus(workerGroup: any[]): 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH' {
     if (workerGroup.some(w => w.compliance_status === 'SERIOUS_BREACH')) {
       return 'SERIOUS_BREACH';
     }
     if (workerGroup.some(w => w.compliance_status === 'BREACH')) {
       return 'BREACH';
-    }
-    if (workerGroup.some(w => w.compliance_status === 'PENDING')) {
-      return 'PENDING';
     }
     return 'COMPLIANT';
   }
@@ -372,6 +491,197 @@ export class MasterComplianceService {
       return 'MEDIUM';
     }
     return 'LOW';
+  }
+
+  async generateGlobalSummaryPDF(): Promise<{ success: boolean; filePath?: string; content?: string; error?: string }> {
+    try {
+      if (!this.supabase) {
+        throw new Error('Database connection not available');
+      }
+
+      // Get current user
+      const { data: { user } } = await this.supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get all metrics for the summary
+      const metrics = await this.getMasterComplianceMetrics();
+      
+      // Generate comprehensive summary content
+      const summaryContent = this.generateSummaryContent(metrics);
+      
+      // For now, return the content structure - PDF generation can be implemented later
+      return {
+        success: true,
+        filePath: `/api/master-compliance/export/summary-${Date.now()}.pdf`,
+        content: summaryContent
+      };
+    } catch (error) {
+      console.error('Error generating global summary PDF:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  async generateCombinedNarrative(workerId: string): Promise<{ success: boolean; narrative?: string; error?: string }> {
+    try {
+      if (!this.supabase) {
+        throw new Error('Database connection not available');
+      }
+
+      // Get current user
+      const { data: { user } } = await this.supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get all assessments for this worker across all agents
+      const { data: assessments, error } = await this.supabase
+        .from('compliance_assessments')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('worker_name', workerId) // Using worker_name as identifier
+        .order('generated_at', { ascending: false });
+
+      if (error) {
+        throw new Error(`Failed to fetch assessments: ${error.message}`);
+      }
+
+      if (!assessments || assessments.length === 0) {
+        return {
+          success: false,
+          error: 'No assessments found for this worker'
+        };
+      }
+
+      // Generate combined narrative from all assessments
+      const combinedNarrative = this.generateCombinedNarrativeContent(assessments);
+      
+      return {
+        success: true,
+        narrative: combinedNarrative
+      };
+    } catch (error) {
+      console.error('Error generating combined narrative:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  private generateSummaryContent(metrics: MasterComplianceMetrics): string {
+    const { summary, agentSummaries, statusDistribution, riskDistribution, topAgents } = metrics;
+    
+    let content = `MASTER COMPLIANCE SUMMARY REPORT\n`;
+    content += `Generated: ${new Date().toLocaleDateString('en-GB')}\n\n`;
+    
+    // Overall Summary
+    content += `OVERALL COMPLIANCE SUMMARY\n`;
+    content += `Total Workers: ${summary.totalWorkers}\n`;
+    content += `Total Assessments: ${summary.totalAssessments}\n`;
+    content += `Overall Compliance Rate: ${summary.overallComplianceRate}%\n`;
+    content += `Total Breaches: ${summary.totalBreaches}\n`;
+    content += `Total Serious Breaches: ${summary.totalSeriousBreaches}\n`;
+    content += `Total Red Flags: ${summary.totalRedFlags}\n`;
+    content += `High Risk Workers: ${summary.highRiskWorkers}\n\n`;
+    
+    // Status Distribution
+    content += `COMPLIANCE STATUS DISTRIBUTION\n`;
+    content += `Compliant: ${statusDistribution.compliant}\n`;
+    content += `Breach: ${statusDistribution.breach}\n`;
+    content += `Serious Breach: ${statusDistribution.seriousBreach}\n\n`;
+    
+    // Risk Distribution
+    content += `RISK LEVEL DISTRIBUTION\n`;
+    content += `Low Risk: ${riskDistribution.low}\n`;
+    content += `Medium Risk: ${riskDistribution.medium}\n`;
+    content += `High Risk: ${riskDistribution.high}\n\n`;
+    
+    // Top Performing Agents
+    content += `TOP PERFORMING AGENTS\n`;
+    topAgents.forEach((agent, index) => {
+      content += `${index + 1}. ${agent.agentName}: ${agent.complianceRate}% (${agent.totalWorkers} workers)\n`;
+    });
+    content += `\n`;
+    
+    // Agent Breakdown
+    content += `DETAILED AGENT BREAKDOWN\n`;
+    agentSummaries.forEach(agent => {
+      if (agent.totalWorkers > 0) {
+        content += `${agent.agentName}:\n`;
+        content += `  - Total Workers: ${agent.totalWorkers}\n`;
+        content += `  - Compliance Rate: ${agent.complianceRate}%\n`;
+        content += `  - Breaches: ${agent.breachWorkers}\n`;
+        content += `  - Serious Breaches: ${agent.seriousBreachWorkers}\n`;
+        content += `  - Red Flags: ${agent.redFlags}\n`;
+        content += `  - High Risk: ${agent.highRiskWorkers}\n\n`;
+      }
+    });
+    
+    return content;
+  }
+
+  private generateCombinedNarrativeContent(assessments: any[]): string {
+    let narrative = `COMBINED COMPLIANCE ASSESSMENT NARRATIVE\n\n`;
+    
+    // Group assessments by agent type
+    const agentGroups = new Map<string, any[]>();
+    assessments.forEach(assessment => {
+      if (!agentGroups.has(assessment.agent_type)) {
+        agentGroups.set(assessment.agent_type, []);
+      }
+      agentGroups.get(assessment.agent_type)!.push(assessment);
+    });
+    
+    // Generate narrative for each agent type
+    agentGroups.forEach((agentAssessments, agentType) => {
+      const latestAssessment = agentAssessments[0]; // Most recent
+      
+      narrative += `${agentType.toUpperCase().replace(/-/g, ' ')} ASSESSMENT\n`;
+      narrative += `Worker: ${latestAssessment.worker_name}\n`;
+      narrative += `Job Title: ${latestAssessment.job_title}\n`;
+      narrative += `SOC Code: ${latestAssessment.soc_code}\n`;
+      narrative += `Compliance Status: ${latestAssessment.compliance_status}\n`;
+      narrative += `Risk Level: ${latestAssessment.risk_level}\n`;
+      narrative += `Red Flag: ${latestAssessment.red_flag ? 'Yes' : 'No'}\n`;
+      narrative += `Assessment Date: ${new Date(latestAssessment.generated_at).toLocaleDateString('en-GB')}\n\n`;
+      
+      narrative += `Professional Assessment:\n${latestAssessment.professional_assessment}\n\n`;
+      
+      if (latestAssessment.breach_type) {
+        narrative += `Breach Type: ${latestAssessment.breach_type}\n`;
+      }
+      
+      narrative += `\n---\n\n`;
+    });
+    
+    // Overall summary
+    const totalAssessments = assessments.length;
+    const compliantAssessments = assessments.filter(a => a.compliance_status === 'COMPLIANT').length;
+    const breachAssessments = assessments.filter(a => a.compliance_status === 'BREACH').length;
+    const seriousBreachAssessments = assessments.filter(a => a.compliance_status === 'SERIOUS_BREACH').length;
+    const redFlagAssessments = assessments.filter(a => a.red_flag).length;
+    
+    narrative += `OVERALL SUMMARY\n`;
+    narrative += `Total Assessments: ${totalAssessments}\n`;
+    narrative += `Compliant: ${compliantAssessments}\n`;
+    narrative += `Breaches: ${breachAssessments}\n`;
+    narrative += `Serious Breaches: ${seriousBreachAssessments}\n`;
+    narrative += `Red Flags: ${redFlagAssessments}\n\n`;
+    
+    if (seriousBreachAssessments > 0) {
+      narrative += `CRITICAL: This worker has ${seriousBreachAssessments} serious breach(es) requiring immediate attention.\n`;
+    } else if (breachAssessments > 0) {
+      narrative += `WARNING: This worker has ${breachAssessments} breach(es) that need to be addressed.\n`;
+    } else {
+      narrative += `POSITIVE: This worker is compliant across all assessed areas.\n`;
+    }
+    
+    return narrative;
   }
 }
 
