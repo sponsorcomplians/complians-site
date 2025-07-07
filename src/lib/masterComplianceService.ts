@@ -129,24 +129,61 @@ export class MasterComplianceService {
 
   async getMasterComplianceMetrics(filters?: MasterComplianceFilters): Promise<MasterComplianceMetrics> {
     try {
+      console.log('🔍 MasterComplianceService: Starting getMasterComplianceMetrics');
+      
       // Apply rate limiting
       this.checkRateLimit();
 
       if (!this.supabase) {
+        console.error('❌ MasterComplianceService: Database connection not available');
         throw new Error('Database connection not available');
       }
 
       // Get current user
-      const { data: { user } } = await this.supabase.auth.getUser();
+      const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+      if (authError) {
+        console.error('❌ MasterComplianceService: Auth error:', authError);
+        throw new Error(`Authentication error: ${authError.message}`);
+      }
+      
       if (!user) {
+        console.error('❌ MasterComplianceService: User not authenticated');
         throw new Error('User not authenticated');
       }
+
+      console.log('✅ MasterComplianceService: User authenticated:', user.id);
 
       // Validate user access
       this.validateUserAccess(user.id);
 
       // Sanitize filters
       const sanitizedFilters = this.sanitizeFilters(filters);
+      console.log('🔍 MasterComplianceService: Sanitized filters:', sanitizedFilters);
+
+      // Check if tables exist and have data
+      const { data: workersCheck, error: workersCheckError } = await this.supabase
+        .from('compliance_workers')
+        .select('id')
+        .limit(1);
+      
+      if (workersCheckError) {
+        console.error('❌ MasterComplianceService: compliance_workers table check failed:', workersCheckError);
+        // Return empty metrics instead of throwing
+        return this.getEmptyMetrics();
+      }
+
+      const { data: assessmentsCheck, error: assessmentsCheckError } = await this.supabase
+        .from('compliance_assessments')
+        .select('id')
+        .limit(1);
+      
+      if (assessmentsCheckError) {
+        console.error('❌ MasterComplianceService: compliance_assessments table check failed:', assessmentsCheckError);
+        // Return empty metrics instead of throwing
+        return this.getEmptyMetrics();
+      }
+
+      console.log('✅ MasterComplianceService: Tables exist, building queries');
 
       // Build optimized queries with filters
       let workersQuery = this.supabase
@@ -187,6 +224,8 @@ export class MasterComplianceService {
           .lte('generated_at', sanitizedFilters.dateRange.end);
       }
 
+      console.log('🔍 MasterComplianceService: Executing queries in parallel');
+
       // Execute queries in parallel for better performance
       const [workersResult, assessmentsResult] = await Promise.all([
         workersQuery,
@@ -194,15 +233,19 @@ export class MasterComplianceService {
       ]);
 
       if (workersResult.error) {
+        console.error('❌ MasterComplianceService: Workers query failed:', workersResult.error);
         throw new Error(`Failed to fetch workers: ${workersResult.error.message}`);
       }
 
       if (assessmentsResult.error) {
+        console.error('❌ MasterComplianceService: Assessments query failed:', assessmentsResult.error);
         throw new Error(`Failed to fetch assessments: ${assessmentsResult.error.message}`);
       }
 
       const workers = workersResult.data || [];
       const assessments = assessmentsResult.data || [];
+
+      console.log(`✅ MasterComplianceService: Retrieved ${workers.length} workers and ${assessments.length} assessments`);
 
       // Add performance logging for large datasets
       if (workers.length > 100 || assessments.length > 100) {
@@ -211,13 +254,16 @@ export class MasterComplianceService {
 
       // Calculate summary metrics
       const summary = this.calculateSummaryMetrics(workers, assessments);
+      console.log('✅ MasterComplianceService: Summary metrics calculated');
 
       // Calculate agent summaries
       const agentSummaries = this.calculateAgentSummaries(workers, assessments);
+      console.log('✅ MasterComplianceService: Agent summaries calculated');
 
       // Calculate distributions
       const statusDistribution = this.calculateStatusDistribution(workers);
       const riskDistribution = this.calculateRiskDistribution(workers);
+      console.log('✅ MasterComplianceService: Distributions calculated');
 
       // Get top performing agents (by compliance rate)
       const topAgents = agentSummaries
@@ -227,8 +273,9 @@ export class MasterComplianceService {
 
       // Calculate recent trends (last 30 days) - optimized for performance
       const recentTrends = this.calculateRecentTrends(workers, assessments);
+      console.log('✅ MasterComplianceService: Recent trends calculated');
 
-      return {
+      const result = {
         summary,
         agentSummaries,
         statusDistribution,
@@ -236,10 +283,65 @@ export class MasterComplianceService {
         topAgents,
         recentTrends
       };
+
+      console.log('✅ MasterComplianceService: All metrics calculated successfully');
+      return result;
+      
     } catch (error) {
-      console.error('Error fetching master compliance metrics:', error);
-      throw error;
+      console.error('❌ MasterComplianceService: Error fetching master compliance metrics:', error);
+      
+      // Log detailed error information
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      
+      // Return empty metrics instead of throwing
+      console.log('🔄 MasterComplianceService: Returning empty metrics due to error');
+      return this.getEmptyMetrics();
     }
+  }
+
+  private getEmptyMetrics(): MasterComplianceMetrics {
+    return {
+      summary: {
+        totalWorkers: 0,
+        totalAssessments: 0,
+        overallComplianceRate: 0,
+        totalBreaches: 0,
+        totalSeriousBreaches: 0,
+        totalRedFlags: 0,
+        highRiskWorkers: 0,
+        lastUpdated: new Date().toISOString()
+      },
+      agentSummaries: AI_AGENT_TYPES.map(agentType => ({
+        agentType,
+        agentName: AI_AGENT_NAMES[agentType],
+        agentSlug: AI_AGENT_SLUGS[agentType],
+        totalWorkers: 0,
+        compliantWorkers: 0,
+        breachWorkers: 0,
+        seriousBreachWorkers: 0,
+        complianceRate: 0,
+        redFlags: 0,
+        highRiskWorkers: 0,
+        lastAssessmentDate: undefined
+      })),
+      statusDistribution: {
+        compliant: 0,
+        breach: 0,
+        seriousBreach: 0,
+        pending: 0
+      },
+      riskDistribution: {
+        low: 0,
+        medium: 0,
+        high: 0
+      },
+      topAgents: [],
+      recentTrends: []
+    };
   }
 
   async getMasterComplianceWorkers(
@@ -248,15 +350,49 @@ export class MasterComplianceService {
     pageSize: number = 20
   ): Promise<MasterComplianceTableData> {
     try {
+      console.log('🔍 MasterComplianceService: Starting getMasterComplianceWorkers');
+      
       if (!this.supabase) {
+        console.error('❌ MasterComplianceService: Database connection not available');
         throw new Error('Database connection not available');
       }
 
       // Get current user
-      const { data: { user } } = await this.supabase.auth.getUser();
+      const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+      if (authError) {
+        console.error('❌ MasterComplianceService: Auth error:', authError);
+        throw new Error(`Authentication error: ${authError.message}`);
+      }
+      
       if (!user) {
+        console.error('❌ MasterComplianceService: User not authenticated');
         throw new Error('User not authenticated');
       }
+
+      console.log('✅ MasterComplianceService: User authenticated:', user.id);
+
+      // Check if tables exist
+      const { data: tablesCheck, error: tablesError } = await this.supabase
+        .from('compliance_workers')
+        .select('id')
+        .limit(1);
+      
+      if (tablesError) {
+        console.error('❌ MasterComplianceService: compliance_workers table check failed:', tablesError);
+        // Return empty workers data instead of throwing
+        return {
+          workers: [],
+          totalCount: 0,
+          filteredCount: 0,
+          pagination: {
+            page,
+            pageSize,
+            totalPages: 0
+          }
+        };
+      }
+
+      console.log('✅ MasterComplianceService: Tables exist, building query');
 
       // Build query with filters
       let query = this.supabase
@@ -284,21 +420,31 @@ export class MasterComplianceService {
           .lte('created_at', filters.dateRange.end);
       }
 
+      console.log('🔍 MasterComplianceService: Executing workers query');
+
       // Get total count for pagination
-      const { count: totalCount } = await query;
+      const { count: totalCount, error: countError } = await query;
+      
+      if (countError) {
+        console.error('❌ MasterComplianceService: Count query failed:', countError);
+        throw new Error(`Failed to get workers count: ${countError.message}`);
+      }
 
       // Apply pagination
       const { data: workers, error } = await query
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (error) {
+        console.error('❌ MasterComplianceService: Workers query failed:', error);
         throw new Error(`Failed to fetch workers: ${error.message}`);
       }
+
+      console.log(`✅ MasterComplianceService: Retrieved ${workers?.length || 0} workers`);
 
       // Transform workers to master compliance format
       const masterWorkers = await this.transformToMasterComplianceWorkers(workers || []);
 
-      return {
+      const result = {
         workers: masterWorkers,
         totalCount: totalCount || 0,
         filteredCount: masterWorkers.length,
@@ -308,9 +454,32 @@ export class MasterComplianceService {
           totalPages: Math.ceil((totalCount || 0) / pageSize)
         }
       };
+
+      console.log('✅ MasterComplianceService: Workers data prepared successfully');
+      return result;
+      
     } catch (error) {
-      console.error('Error fetching master compliance workers:', error);
-      throw error;
+      console.error('❌ MasterComplianceService: Error fetching master compliance workers:', error);
+      
+      // Log detailed error information
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      
+      // Return empty workers data instead of throwing
+      console.log('🔄 MasterComplianceService: Returning empty workers data due to error');
+      return {
+        workers: [],
+        totalCount: 0,
+        filteredCount: 0,
+        pagination: {
+          page,
+          pageSize,
+          totalPages: 0
+        }
+      };
     }
   }
 
