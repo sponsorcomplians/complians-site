@@ -119,6 +119,7 @@ export async function POST(request: NextRequest) {
     console.log('Existing user found:', existingUser);
 
     if (existingUser) {
+      console.log('Email check:', normalizedEmail, 'exists:', !!existingUser);
       // Log failed signup attempt
       try {
         await logAuditEvent(
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: 'Email already exists' },
         { status: 409 }
       );
     }
@@ -147,41 +148,88 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Check if tenant (company) already exists
+    console.log('Checking if company exists:', company);
     let { data: existingTenant } = await supabase
       .from('tenants')
       .select('id, name, max_workers, subscription_plan')
       .eq('name', company)
       .single();
+    console.log('Company check:', company, 'exists:', !!existingTenant);
 
     let tenantId: string;
     let isFirstUser = false;
 
     if (existingTenant) {
+      console.log('Company name already exists, using existing tenant');
       // Use existing tenant
       tenantId = existingTenant.id;
       console.log(`Using existing tenant: ${existingTenant.name} (ID: ${tenantId})`);
     } else {
+      console.log('Company name does not exist, creating new tenant');
       // Create new tenant - bypass RLS for signup
       console.log('Attempting to create new tenant:', company);
       
-      // Temporarily disable RLS for tenant creation
-      const { data: newTenant, error: tenantError } = await supabase
-        .rpc('create_tenant_during_signup', {
-          tenant_name: company,
-          tenant_industry: 'General',
-          tenant_max_workers: 100,
-          tenant_subscription_plan: 'Basic'
-        });
+      try {
+        // Temporarily disable RLS for tenant creation
+        const { data: newTenant, error: tenantError } = await supabase
+          .rpc('create_tenant_during_signup', {
+            tenant_name: company,
+            tenant_industry: 'General',
+            tenant_max_workers: 100,
+            tenant_subscription_plan: 'Basic'
+          });
 
-      if (tenantError) {
-        console.error('Tenant creation failed:', {
-          error: tenantError,
-          message: tenantError.message,
-          details: tenantError.details,
-          hint: tenantError.hint,
-          code: tenantError.code,
-          company: company,
-          email: email
+        if (tenantError) {
+          console.error('TENANT CREATION ERROR:', {
+            message: tenantError.message,
+            code: tenantError.code,
+            details: tenantError.details,
+            hint: tenantError.hint,
+            stack: new Error().stack
+          });
+          
+          // Log failed signup attempt
+          try {
+            await logAuditEvent(
+              'signup_failed',
+              {
+                email: normalizedEmail,
+                reason: 'Failed to create tenant',
+                tenant_error: tenantError.message,
+                tenant_error_details: tenantError.details,
+                tenant_error_code: tenantError.code,
+                tenant_error_hint: tenantError.hint
+              },
+              'user',
+              normalizedEmail,
+              undefined,
+              undefined,
+              headersList
+            );
+          } catch (auditError) {
+            console.warn('Failed to log signup failure:', auditError);
+          }
+
+          return NextResponse.json(
+            { 
+              error: `Failed to create tenant: ${tenantError.message}`,
+              code: tenantError.code,
+              details: tenantError.details
+            },
+            { status: 500 }
+          );
+        }
+
+        tenantId = newTenant.id;
+        isFirstUser = true;
+        console.log(`Created new tenant: ${newTenant.name} (ID: ${tenantId})`);
+        
+      } catch (error) {
+        console.error('TENANT CREATION EXCEPTION:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          code: error instanceof Error ? (error as any).code : undefined,
+          meta: error instanceof Error ? (error as any).meta : undefined,
+          stack: error instanceof Error ? error.stack : undefined
         });
         
         // Log failed signup attempt
@@ -189,15 +237,13 @@ export async function POST(request: NextRequest) {
           await logAuditEvent(
             'signup_failed',
             {
-              email,
-              reason: 'Failed to create tenant',
-              tenant_error: tenantError.message,
-              tenant_error_details: tenantError.details,
-              tenant_error_code: tenantError.code,
-              tenant_error_hint: tenantError.hint
+              email: normalizedEmail,
+              reason: 'Tenant creation exception',
+              error: error instanceof Error ? error.message : 'Unknown error',
+              error_code: error instanceof Error ? (error as any).code : undefined
             },
             'user',
-            email,
+            normalizedEmail,
             undefined,
             undefined,
             headersList
@@ -208,48 +254,91 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(
           { 
-            error: 'Failed to create tenant', 
-            details: tenantError instanceof Error ? tenantError.message : String(tenantError)
+            error: `Failed to create tenant: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            code: error instanceof Error ? (error as any).code : undefined
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Determine user role - first user in a tenant becomes Admin, others become Viewer
+    const defaultRole = isFirstUser ? 'Admin' : 'Viewer';
+    console.log('Creating user with role:', defaultRole, 'for tenant:', tenantId);
+
+    // Create user with tenant_id
+    console.log('Creating new user with tenant ID:', tenantId);
+    
+    let user: any;
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: uuidv4(),
+          email: normalizedEmail,
+          password: hashedPassword,
+          full_name: fullName,
+          company,
+          phone: phone || null,
+          tenant_id: tenantId,
+          role: defaultRole,
+          is_email_verified: false
+        })
+        .select('id, email, full_name, company, tenant_id, role, is_email_verified, created_at')
+        .single();
+
+      if (userError) {
+        console.error('USER CREATION ERROR:', {
+          message: userError.message,
+          code: userError.code,
+          details: userError.details,
+          hint: userError.hint,
+          stack: new Error().stack
+        });
+        
+        // Log failed signup attempt
+        try {
+          await logAuditEvent(
+            'signup_failed',
+            {
+              email: normalizedEmail,
+              reason: 'Failed to create user',
+              user_error: userError.message,
+              user_error_details: userError.details,
+              user_error_code: userError.code,
+              user_error_hint: userError.hint,
+              tenant_id: tenantId,
+              role: defaultRole
+            },
+            'user',
+            normalizedEmail,
+            undefined,
+            undefined,
+            headersList
+          );
+        } catch (auditError) {
+          console.warn('Failed to log signup failure:', auditError);
+        }
+
+        return NextResponse.json(
+          { 
+            error: `Failed to create user: ${userError.message}`,
+            code: userError.code,
+            details: userError.details
           },
           { status: 500 }
         );
       }
 
-      tenantId = newTenant.id;
-      isFirstUser = true;
-      console.log(`Created new tenant: ${newTenant.name} (ID: ${tenantId})`);
-    }
-
-    // Determine user role - first user in a tenant becomes Admin, others become Viewer
-    const defaultRole = isFirstUser ? 'Admin' : 'Viewer';
-
-    // Create user with tenant_id
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .insert({
-        id: uuidv4(),
-        email: normalizedEmail,
-        password: hashedPassword,
-        full_name: fullName,
-        company,
-        phone: phone || null,
-        tenant_id: tenantId,
-        role: defaultRole,
-        is_email_verified: false
-      })
-      .select('id, email, full_name, company, tenant_id, role, is_email_verified, created_at')
-      .single();
-
-    if (userError) {
-      console.error('User creation failed:', {
-        error: userError,
-        message: userError.message,
-        details: userError.details,
-        hint: userError.hint,
-        code: userError.code,
-        email: email,
-        tenant_id: tenantId,
-        role: defaultRole
+      user = userData;
+      console.log(`Created new user: ${user.email} (ID: ${user.id})`);
+      
+    } catch (error) {
+      console.error('USER CREATION EXCEPTION:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: error instanceof Error ? (error as any).code : undefined,
+        meta: error instanceof Error ? (error as any).meta : undefined,
+        stack: error instanceof Error ? error.stack : undefined
       });
       
       // Log failed signup attempt
@@ -257,17 +346,13 @@ export async function POST(request: NextRequest) {
         await logAuditEvent(
           'signup_failed',
           {
-            email,
-            reason: 'Failed to create user',
-            user_error: userError.message,
-            user_error_details: userError.details,
-            user_error_code: userError.code,
-            user_error_hint: userError.hint,
-            tenant_id: tenantId,
-            role: defaultRole
+            email: normalizedEmail,
+            reason: 'User creation exception',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            error_code: error instanceof Error ? (error as any).code : undefined
           },
           'user',
-          email,
+          normalizedEmail,
           undefined,
           undefined,
           headersList
@@ -278,12 +363,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { 
-          error: 'Failed to create user',
-          details: userError instanceof Error ? userError.message : String(userError)
+          error: `Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          code: error instanceof Error ? (error as any).code : undefined
         },
         { status: 500 }
       );
     }
+
+    console.log(`User created successfully: ${user.email} (Tenant: ${tenantId}, Role: ${defaultRole})`);
 
     // Create user_roles record
     const { error: roleError } = await supabase
@@ -317,8 +404,6 @@ export async function POST(request: NextRequest) {
       // Continue anyway as we have the user in our custom table
     }
 
-    console.log(`User created successfully: ${user.email} (Tenant: ${tenantId}, Role: ${defaultRole})`);
-
     // Log successful signup
     try {
       await logAuditEvent(
@@ -349,6 +434,7 @@ export async function POST(request: NextRequest) {
       console.warn('Failed to log signup success:', auditError);
     }
 
+    console.log('Signup completed successfully, returning response');
     return NextResponse.json({
       success: true,
       user: {
