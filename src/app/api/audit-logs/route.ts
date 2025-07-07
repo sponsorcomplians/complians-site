@@ -5,6 +5,8 @@ import { getAuditLogs, getAuditSummary } from '@/lib/audit-service';
 import { hasPermission } from '@/lib/rbac-service';
 import { AuditLogFilters } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

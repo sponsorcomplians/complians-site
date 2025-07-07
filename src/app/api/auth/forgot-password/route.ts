@@ -1,8 +1,11 @@
 // src/app/api/auth/forgot-password/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
 import { sendPasswordResetEmail } from '@/lib/email';
+
+export const dynamic = 'force-dynamic';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

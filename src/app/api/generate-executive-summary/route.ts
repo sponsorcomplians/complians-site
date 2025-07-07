@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { masterComplianceService } from '@/lib/masterComplianceService';
 import { generateExecutiveSummaryPDF } from '@/lib/generateExecutiveSummaryPDF';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Executive Summary API: Generating comprehensive executive summary');

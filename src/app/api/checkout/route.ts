@@ -1,6 +1,8 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+
 export const dynamic = 'force-dynamic';
 
-import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from "@/lib/auth-config"
 import { stripe, formatAmountForStripe } from '@/lib/stripe'

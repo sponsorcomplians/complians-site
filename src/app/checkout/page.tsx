@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,7 +54,7 @@ const PRODUCTS = {
   }
 };
 
-export default function CheckoutPage() {
+function CheckoutForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -201,7 +201,10 @@ export default function CheckoutPage() {
           {/* Checkout Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Payment Summary</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Payment Details
+              </CardTitle>
               <CardDescription>
                 Secure payment powered by Stripe
               </CardDescription>
@@ -213,26 +216,40 @@ export default function CheckoutPage() {
                 </Alert>
               )}
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Product:</span>
-                  <span>{selectedProduct.name}</span>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-600">Product:</span>
+                  <span className="font-medium">{selectedProduct.name}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Price:</span>
-                  <span>£{selectedProduct.price}</span>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-600">Price:</span>
+                  <span className="font-medium">£{selectedProduct.price}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>VAT (20%):</span>
-                  <span>£{(selectedProduct.price * 0.2).toFixed(2)}</span>
-                </div>
-                <div className="border-t pt-2 flex justify-between font-semibold">
-                  <span>Total:</span>
-                  <span>£{(selectedProduct.price * 1.2).toFixed(2)}</span>
+                {selectedProduct.originalPrice && (
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-600">Savings:</span>
+                    <span className="font-medium text-green-600">
+                      -£{(selectedProduct.originalPrice - selectedProduct.price).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                <div className="border-t pt-2 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">Total:</span>
+                    <span className="text-lg font-bold text-blue-600">£{selectedProduct.price}</span>
+                  </div>
                 </div>
               </div>
 
-              <Button 
+              <div className="text-sm text-gray-600 space-y-2">
+                <p>• Secure payment processing</p>
+                <p>• Instant access after payment</p>
+                <p>• 30-day money-back guarantee</p>
+                <p>• 24/7 customer support</p>
+              </div>
+            </CardContent>
+            <CardContent>
+              <Button
                 onClick={handleCheckout}
                 disabled={loading}
                 className="w-full"
@@ -240,28 +257,36 @@ export default function CheckoutPage() {
               >
                 {loading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Pay £{(selectedProduct.price * 1.2).toFixed(2)}
-                    <ArrowRight className="h-4 w-4 ml-2" />
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Pay £{selectedProduct.price}
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
               </Button>
-
-              <p className="text-xs text-gray-500 text-center">
-                By completing your purchase, you agree to our{' '}
-                <a href="/terms" className="text-blue-600 hover:underline">Terms of Service</a>
-                {' '}and{' '}
-                <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
-              </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutForm />
+    </Suspense>
   );
 } 

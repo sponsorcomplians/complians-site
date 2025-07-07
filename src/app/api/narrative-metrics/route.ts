@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import { supabaseAdmin } from '@/lib/supabase';
 import { NarrativeAudit } from '@/types/narrative.types';
+
+export const dynamic = 'force-dynamic';
 
 // In production, this would save to a database
 const metricsStore: NarrativeAudit[] = [];

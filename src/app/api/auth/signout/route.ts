@@ -1,6 +1,8 @@
 // src/app/api/auth/signout/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   // Clear the session cookie
   const response = NextResponse.json({ success: true });

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTenantAIConfig, updateTenantAIConfig, getDefaultAISettings } from '@/lib/multi-tenant-service';
 import { TenantSettings } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const aiConfig = await getTenantAIConfig();

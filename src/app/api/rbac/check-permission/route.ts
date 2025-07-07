@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { hasPermission, RolePermissions } from '@/lib/rbac-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { permission } = await request.json();

@@ -1,6 +1,8 @@
 // src/app/api/check-env/route.ts
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   // Only return non-sensitive information
   const envStatus = {

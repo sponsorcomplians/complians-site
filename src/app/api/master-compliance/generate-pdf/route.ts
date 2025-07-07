@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { masterCompliancePDFGenerator } from '@/lib/generateMasterCompliancePDF';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Master Compliance PDF API: Generating comprehensive PDF report');

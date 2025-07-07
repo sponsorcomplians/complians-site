@@ -4,6 +4,9 @@ import { trackWorkerAddition } from '@/lib/tenant-metrics-service';
 import { canPerformAction } from '@/lib/stripe-billing-service';
 import { logAuditEvent } from '@/lib/audit-service';
 import { headers } from 'next/headers';
+import { supabaseAdmin } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {

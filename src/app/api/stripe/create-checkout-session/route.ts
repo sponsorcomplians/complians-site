@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth-config"
 import Stripe from 'stripe'
 import { getUserProfile } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 // Product catalog

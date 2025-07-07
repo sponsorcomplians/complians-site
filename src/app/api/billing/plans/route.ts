@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBillingPlans } from '@/lib/stripe-billing-service';
 import { hasPermission } from '@/lib/rbac-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Check if user has permission to view billing

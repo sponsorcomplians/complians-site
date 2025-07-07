@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { hasRole, UserRoleType } from '@/lib/rbac-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { minimumRole } = await request.json();

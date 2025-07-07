@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { masterComplianceService } from '@/lib/masterComplianceService';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Master Compliance Export API: Generating global summary PDF');

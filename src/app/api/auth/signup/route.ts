@@ -8,6 +8,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { logAuditEvent } from '@/lib/audit-service';
 import { headers } from 'next/headers';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit-service';
+import { supabaseAdmin } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 // Initialize Supabase client
 const supabase = createClient(

@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth-config';
 import { supabaseAdmin } from '@/lib/supabase';
 import { sendReminderEmail } from '@/lib/email';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

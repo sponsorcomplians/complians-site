@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTenantContext, getCurrentTenant, getTenantStats } from '@/lib/multi-tenant-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const tenantContext = await getTenantContext();

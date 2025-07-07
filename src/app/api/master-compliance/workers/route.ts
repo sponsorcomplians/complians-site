@@ -4,6 +4,10 @@ import { authOptions } from '@/lib/auth-config';
 import { masterComplianceService } from '@/lib/masterComplianceService';
 import { MasterComplianceFilters } from '@/types/master-compliance.types';
 import { getSupabaseClient } from '@/lib/supabase-client';
+import { headers } from 'next/headers';
+import { supabaseAdmin } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {

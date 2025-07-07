@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth-config';
 import { createCheckoutSession } from '@/lib/stripe-billing-service';
 import { hasPermission } from '@/lib/rbac-service';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
