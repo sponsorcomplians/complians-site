@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import AgentAssessmentExplainer from "../../components/AgentAssessmentExplainer"
 import PaymentGate from "../../components/PaymentGate"
+import QualificationComplianceDashboard from "../../components/QualificationComplianceDashboard"
 
 // Custom Card Components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
