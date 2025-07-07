@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,15 @@ interface MasterComplianceWorkersTableProps {
   onGenerateNarrative?: (workerName: string) => void;
   generatingNarrative?: string | null;
 }
+
+// Debug wrapper to catch React Error #310
+const SafeRender = ({ children, label }: { children: any; label: string }) => {
+  if (typeof children === 'object' && children !== null && !React.isValidElement(children) && !Array.isArray(children)) {
+    console.error(`Object rendered at ${label}:`, children);
+    return <span>{JSON.stringify(children)}</span>;
+  }
+  return children; 
+};
 
 export default function MasterComplianceWorkersTable({
   workers,
@@ -153,7 +162,7 @@ export default function MasterComplianceWorkersTable({
             <Users className="h-5 w-5" />
             Workers Overview
             <span className="text-sm font-normal text-gray-500 ml-2">
-              ({filteredCount} of {totalCount})
+              (<SafeRender label="filtered-count">{filteredCount}</SafeRender> of <SafeRender label="total-count">{totalCount}</SafeRender>)
             </span>
             <Tooltip>
               <TooltipTrigger>
@@ -291,10 +300,18 @@ export default function MasterComplianceWorkersTable({
                             )}
                           </Button>
                         </TableCell>
-                        <TableCell className="font-medium">{workerName}</TableCell>
-                        <TableCell>{jobTitle}</TableCell>
-                        <TableCell>{socCode}</TableCell>
-                        <TableCell>{cosReference}</TableCell>
+                        <TableCell className="font-medium">
+                          <SafeRender label={`worker-name-${worker.id}`}>{workerName}</SafeRender>
+                        </TableCell>
+                        <TableCell>
+                          <SafeRender label={`worker-job-title-${worker.id}`}>{jobTitle}</SafeRender>
+                        </TableCell>
+                        <TableCell>
+                          <SafeRender label={`worker-soc-code-${worker.id}`}>{socCode}</SafeRender>
+                        </TableCell>
+                        <TableCell>
+                          <SafeRender label={`worker-cos-reference-${worker.id}`}>{cosReference}</SafeRender>
+                        </TableCell>
                         <TableCell>
                           {getStatusBadge(worker.overallComplianceStatus, totalRedFlags > 0)}
                         </TableCell>
@@ -304,7 +321,7 @@ export default function MasterComplianceWorkersTable({
                         <TableCell>
                           {totalRedFlags > 0 ? (
                             <Badge className="bg-red-100 text-red-800 border-red-200">
-                              {totalRedFlags}
+                              <SafeRender label={`red-flags-count-${worker.id}`}>{totalRedFlags}</SafeRender>
                             </Badge>
                           ) : (
                             <span className="text-gray-400">-</span>
@@ -325,7 +342,9 @@ export default function MasterComplianceWorkersTable({
                                 setExpandedRows(newExpanded);
                               }}
                             >
-                              {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
+                              <SafeRender label={`show-details-${worker.id}`}>
+                                {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
+                              </SafeRender>
                             </Button>
                             {onGenerateNarrative && (
                               <Button
@@ -337,12 +356,12 @@ export default function MasterComplianceWorkersTable({
                                 {generatingNarrative === workerName ? (
                                   <>
                                     <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                                    Generating...
+                                    <SafeRender label={`generating-${worker.id}`}>Generating...</SafeRender>
                                   </>
                                 ) : (
                                   <>
                                     <FileText className="h-3 w-3 mr-1" />
-                                    Narrative
+                                    <SafeRender label={`narrative-${worker.id}`}>Narrative</SafeRender>
                                   </>
                                 )}
                               </Button>
@@ -413,7 +432,7 @@ export default function MasterComplianceWorkersTable({
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
               <div className="text-sm text-gray-600">
-                Page {pagination.page} of {pagination.totalPages}
+                Page <SafeRender label="current-page">{pagination.page}</SafeRender> of <SafeRender label="total-pages">{pagination.totalPages}</SafeRender>
               </div>
               <div className="flex space-x-2">
                 <Button
