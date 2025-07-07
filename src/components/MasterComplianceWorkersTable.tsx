@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +47,8 @@ interface MasterComplianceWorkersTableProps {
   className?: string;
   onGenerateNarrative?: (workerName: string) => void;
   generatingNarrative?: string | null;
+  expandedRows: Set<string>;
+  onToggleRow: (workerId: string) => void;
 }
 
 // Comprehensive safe render helper
@@ -75,19 +77,10 @@ export default function MasterComplianceWorkersTable({
   onPageChange,
   className = "",
   onGenerateNarrative,
-  generatingNarrative
+  generatingNarrative,
+  expandedRows,
+  onToggleRow
 }: MasterComplianceWorkersTableProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-
-  const toggleRow = (workerId: string) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(workerId)) {
-      newExpanded.delete(workerId);
-    } else {
-      newExpanded.add(workerId);
-    }
-    setExpandedRows(newExpanded);
-  };
 
   const getStatusBadge = (status: string, redFlag: boolean = false) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
@@ -299,7 +292,7 @@ export default function MasterComplianceWorkersTable({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => toggleRow(worker.id)}
+                            onClick={() => onToggleRow(worker.id)}
                             className="p-1 h-6 w-6"
                           >
                             {expandedRows.has(worker.id) ? (
@@ -341,15 +334,7 @@ export default function MasterComplianceWorkersTable({
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                const newExpanded = new Set(expandedRows);
-                                if (newExpanded.has(worker.id)) {
-                                  newExpanded.delete(worker.id);
-                                } else {
-                                  newExpanded.add(worker.id);
-                                }
-                                setExpandedRows(newExpanded);
-                              }}
+                              onClick={() => onToggleRow(worker.id)}
                             >
                               {safe(expandedRows.has(worker.id) ? 'Hide' : 'Show')} Details
                             </Button>

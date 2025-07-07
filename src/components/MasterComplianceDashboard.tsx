@@ -90,6 +90,7 @@ export default function MasterComplianceDashboard() {
   const [exporting, setExporting] = useTrackedState(false);
   const [generatingNarrative, setGeneratingNarrative] = useTrackedState(null);
   const [generatingPDF, setGeneratingPDF] = useTrackedState(false);
+  const [expandedRows, setExpandedRows] = useTrackedState(new Set<string>());
 
   // TEMPORARY DEBUG CODE - REMOVE AFTER FIXING
   useTrackedEffect(() => {
@@ -475,6 +476,16 @@ export default function MasterComplianceDashboard() {
     }
   };
 
+  const toggleRow = (workerId: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(workerId)) {
+      newExpanded.delete(workerId);
+    } else {
+      newExpanded.add(workerId);
+    }
+    setExpandedRows(newExpanded);
+  };
+
   if (loading && !metrics) {
     return (
       <div className="container mx-auto p-6">
@@ -762,6 +773,8 @@ export default function MasterComplianceDashboard() {
             onPageChange={handlePageChange}
             onGenerateNarrative={handleGenerateNarrative}
             generatingNarrative={generatingNarrative}
+            expandedRows={expandedRows}
+            onToggleRow={toggleRow}
           />
         </TabsContent>
 
