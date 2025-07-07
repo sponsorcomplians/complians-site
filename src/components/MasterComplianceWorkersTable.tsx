@@ -49,13 +49,22 @@ interface MasterComplianceWorkersTableProps {
   generatingNarrative?: string | null;
 }
 
-// Debug wrapper to catch React Error #310
-const SafeRender = ({ children, label }: { children: any; label: string }) => {
-  if (typeof children === 'object' && children !== null && !React.isValidElement(children) && !Array.isArray(children)) {
-    console.error(`Object rendered at ${label}:`, children);
-    return <span>{JSON.stringify(children)}</span>;
+// Comprehensive safe render helper
+const safe = (value: any): React.ReactNode => {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (React.isValidElement(value)) return value;
+  if (Array.isArray(value)) return value.map((v, i) => <React.Fragment key={i}>{safe(v)}</React.Fragment>);
+  if (value instanceof Date) return value.toLocaleDateString();
+  if (typeof value === 'object') {
+    // Check for common object properties
+    if (value.message) return value.message;
+    if (value.error) return value.error;
+    if (value.data) return safe(value.data);
+    if (value.toString && value.toString !== Object.prototype.toString) return value.toString();
+    return JSON.stringify(value);
   }
-  return children; 
+  return String(value);
 };
 
 export default function MasterComplianceWorkersTable({
@@ -162,7 +171,7 @@ export default function MasterComplianceWorkersTable({
             <Users className="h-5 w-5" />
             Workers Overview
             <span className="text-sm font-normal text-gray-500 ml-2">
-              (<SafeRender label="filtered-count">{filteredCount}</SafeRender> of <SafeRender label="total-count">{totalCount}</SafeRender>)
+              ({safe(filteredCount)} of {safe(totalCount)})
             </span>
             <Tooltip>
               <TooltipTrigger>
@@ -301,16 +310,16 @@ export default function MasterComplianceWorkersTable({
                           </Button>
                         </TableCell>
                         <TableCell className="font-medium">
-                          <SafeRender label={`worker-name-${worker.id}`}>{workerName}</SafeRender>
+                          {safe(workerName)}
                         </TableCell>
                         <TableCell>
-                          <SafeRender label={`worker-job-title-${worker.id}`}>{jobTitle}</SafeRender>
+                          {safe(jobTitle)}
                         </TableCell>
                         <TableCell>
-                          <SafeRender label={`worker-soc-code-${worker.id}`}>{socCode}</SafeRender>
+                          {safe(socCode)}
                         </TableCell>
                         <TableCell>
-                          <SafeRender label={`worker-cos-reference-${worker.id}`}>{cosReference}</SafeRender>
+                          {safe(cosReference)}
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(worker.overallComplianceStatus, totalRedFlags > 0)}
@@ -321,7 +330,7 @@ export default function MasterComplianceWorkersTable({
                         <TableCell>
                           {totalRedFlags > 0 ? (
                             <Badge className="bg-red-100 text-red-800 border-red-200">
-                              <SafeRender label={`red-flags-count-${worker.id}`}>{totalRedFlags}</SafeRender>
+                              {safe(totalRedFlags)}
                             </Badge>
                           ) : (
                             <span className="text-gray-400">-</span>
@@ -342,9 +351,7 @@ export default function MasterComplianceWorkersTable({
                                 setExpandedRows(newExpanded);
                               }}
                             >
-                              <SafeRender label={`show-details-${worker.id}`}>
-                                {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
-                              </SafeRender>
+                              {safe(expandedRows.has(worker.id) ? 'Hide' : 'Show')} Details
                             </Button>
                             {onGenerateNarrative && (
                               <Button
@@ -356,12 +363,12 @@ export default function MasterComplianceWorkersTable({
                                 {generatingNarrative === workerName ? (
                                   <>
                                     <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                                    <SafeRender label={`generating-${worker.id}`}>Generating...</SafeRender>
+                                    {safe('Generating...')}
                                   </>
                                 ) : (
                                   <>
                                     <FileText className="h-3 w-3 mr-1" />
-                                    <SafeRender label={`narrative-${worker.id}`}>Narrative</SafeRender>
+                                    {safe('Narrative')}
                                   </>
                                 )}
                               </Button>
@@ -432,7 +439,7 @@ export default function MasterComplianceWorkersTable({
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
               <div className="text-sm text-gray-600">
-                Page <SafeRender label="current-page">{pagination.page}</SafeRender> of <SafeRender label="total-pages">{pagination.totalPages}</SafeRender>
+                Page {safe(pagination.page)} of {safe(pagination.totalPages)}
               </div>
               <div className="flex space-x-2">
                 <Button
