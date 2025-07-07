@@ -24,18 +24,23 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const normalizedEmail = credentials.email.toLowerCase().trim();
+        console.log('Auth attempt:', normalizedEmail);
+
         try {
           // Find user by email
           const { data: user, error } = await supabase
             .from('users')
             .select('*')
-            .eq('email', credentials.email.toLowerCase())
+            .eq('email', normalizedEmail)
             .single();
+
+          console.log('User found:', user);
 
           if (error || !user) {
             // Log failed login attempt
             try {
-              await logLoginFailure(credentials.email, 'User not found');
+              await logLoginFailure(normalizedEmail, 'User not found');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -44,11 +49,12 @@ export const authOptions: NextAuthOptions = {
 
           // Verify password with bcrypt
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          console.log('Password valid:', isPasswordValid);
           
           if (!isPasswordValid) {
             // Log failed login attempt
             try {
-              await logLoginFailure(credentials.email, 'Invalid password');
+              await logLoginFailure(normalizedEmail, 'Invalid password');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -59,7 +65,7 @@ export const authOptions: NextAuthOptions = {
           if (!user.is_email_verified) {
             // Log failed login attempt
             try {
-              await logLoginFailure(credentials.email, 'Email not verified');
+              await logLoginFailure(normalizedEmail, 'Email not verified');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
@@ -68,7 +74,7 @@ export const authOptions: NextAuthOptions = {
 
           // Log successful login
           try {
-            await logLoginSuccess(credentials.email);
+            await logLoginSuccess(normalizedEmail);
           } catch (auditError) {
             console.warn('Failed to log login success:', auditError);
           }

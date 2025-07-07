@@ -106,12 +106,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+    console.log('Checking if user exists:', normalizedEmail);
+
     // Check if user already exists
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
-      .eq('email', email)
+      .eq('email', normalizedEmail)
       .single();
+    console.log('Existing user found:', existingUser);
 
     if (existingUser) {
       // Log failed signup attempt
@@ -119,11 +124,11 @@ export async function POST(request: NextRequest) {
         await logAuditEvent(
           'signup_failed',
           {
-            email,
+            email: normalizedEmail,
             reason: 'User already exists'
           },
           'user',
-          email,
+          normalizedEmail,
           undefined,
           undefined,
           headersList
@@ -223,7 +228,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .insert({
         id: uuidv4(),
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         full_name: fullName,
         company,
