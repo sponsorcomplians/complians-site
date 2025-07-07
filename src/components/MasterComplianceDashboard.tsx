@@ -92,7 +92,7 @@ export default function MasterComplianceDashboard() {
   const [generatingPDF, setGeneratingPDF] = useTrackedState(false);
   const [expandedRows, setExpandedRows] = useTrackedState(new Set<string>());
 
-  // TEMPORARY DEBUG CODE - REMOVE AFTER FIXING
+  // ALL useEffect hooks must be at the top too
   useTrackedEffect(() => {
     if (typeof window !== 'undefined') {
       const origError = console.error;
@@ -112,7 +112,6 @@ export default function MasterComplianceDashboard() {
     }
   }, []);
 
-  // Also log all state values
   useTrackedEffect(() => {
     console.log('Dashboard State:', {
       session: typeof session,
@@ -124,7 +123,6 @@ export default function MasterComplianceDashboard() {
     });
   }, []);
 
-  // Debug React Error #310
   useTrackedEffect(() => {
     const originalError = console.error;
     console.error = (...args) => {
@@ -134,6 +132,20 @@ export default function MasterComplianceDashboard() {
       originalError(...args);
     };
   }, []);
+
+  // Load metrics on component mount - MOVED TO TOP
+  useTrackedEffect(() => {
+    if (session) {
+      loadMetrics();
+    }
+  }, [filters, session]);
+
+  // Load workers when tab changes or page changes - MOVED TO TOP
+  useTrackedEffect(() => {
+    if (session && activeTab === 'workers') {
+      loadWorkers();
+    }
+  }, [activeTab, currentPage, filters, session]);
 
   // Show authentication prompt if not logged in
   if (status === 'loading') {
@@ -186,20 +198,6 @@ export default function MasterComplianceDashboard() {
       </div>
     );
   }
-
-  // Load metrics on component mount
-  useTrackedEffect(() => {
-    if (session) {
-      loadMetrics();
-    }
-  }, [filters, session]);
-
-  // Load workers when tab changes or page changes
-  useTrackedEffect(() => {
-    if (session && activeTab === 'workers') {
-      loadWorkers();
-    }
-  }, [activeTab, currentPage, filters, session]);
 
   const loadMetrics = async () => {
     try {
