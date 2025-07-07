@@ -247,35 +247,27 @@ export class MasterComplianceService {
 
       console.log(`✅ MasterComplianceService: Retrieved ${workers.length} workers and ${assessments.length} assessments`);
 
-      // Add performance logging for large datasets
-      if (workers.length > 100 || assessments.length > 100) {
-        console.log(`Performance: Processing ${workers.length} workers and ${assessments.length} assessments`);
-      }
+      // Convert any Date objects to strings to prevent React rendering issues
+      const convertedWorkers = this.convertDatesToStrings(workers);
+      const convertedAssessments = this.convertDatesToStrings(assessments);
 
-      // Calculate summary metrics
-      const summary = this.calculateSummaryMetrics(workers, assessments);
-      console.log('✅ MasterComplianceService: Summary metrics calculated');
+      console.log('🔍 MasterComplianceService: Converted workers data:', convertedWorkers);
+      console.log('🔍 MasterComplianceService: Converted assessments data:', convertedAssessments);
 
-      // Calculate agent summaries
-      const agentSummaries = this.calculateAgentSummaries(workers, assessments);
-      console.log('✅ MasterComplianceService: Agent summaries calculated');
+      // Calculate metrics from converted data
+      const summary = this.calculateSummaryMetrics(convertedWorkers || [], convertedAssessments || []);
+      const agentSummaries = this.calculateAgentSummaries(convertedWorkers || [], convertedAssessments || []);
+      const statusDistribution = this.calculateStatusDistribution(convertedWorkers || []);
+      const riskDistribution = this.calculateRiskDistribution(convertedWorkers || []);
+      const recentTrends = this.calculateRecentTrends(convertedWorkers || [], convertedAssessments || []);
 
-      // Calculate distributions
-      const statusDistribution = this.calculateStatusDistribution(workers);
-      const riskDistribution = this.calculateRiskDistribution(workers);
-      console.log('✅ MasterComplianceService: Distributions calculated');
-
-      // Get top performing agents (by compliance rate)
+      // Get top performing agents (top 3 by compliance rate)
       const topAgents = agentSummaries
         .filter(agent => agent.totalWorkers > 0)
         .sort((a, b) => b.complianceRate - a.complianceRate)
-        .slice(0, 5);
+        .slice(0, 3);
 
-      // Calculate recent trends (last 30 days) - optimized for performance
-      const recentTrends = this.calculateRecentTrends(workers, assessments);
-      console.log('✅ MasterComplianceService: Recent trends calculated');
-
-      const result = {
+      const metrics: MasterComplianceMetrics = {
         summary,
         agentSummaries,
         statusDistribution,
@@ -285,7 +277,7 @@ export class MasterComplianceService {
       };
 
       console.log('✅ MasterComplianceService: All metrics calculated successfully');
-      return result;
+      return metrics;
       
     } catch (error) {
       console.error('❌ MasterComplianceService: Error fetching master compliance metrics:', error);
@@ -441,8 +433,12 @@ export class MasterComplianceService {
 
       console.log(`✅ MasterComplianceService: Retrieved ${workers?.length || 0} workers`);
 
+      // Convert any Date objects to strings to prevent React rendering issues
+      const convertedWorkers = this.convertDatesToStrings(workers);
+      console.log('🔍 MasterComplianceService: Converted workers data:', convertedWorkers);
+
       // Transform workers to master compliance format
-      const masterWorkers = await this.transformToMasterComplianceWorkers(workers || []);
+      const masterWorkers = await this.transformToMasterComplianceWorkers(convertedWorkers || []);
 
       const result = {
         workers: masterWorkers,
@@ -592,6 +588,9 @@ export class MasterComplianceService {
   }
 
   private async transformToMasterComplianceWorkers(workers: any[]): Promise<MasterComplianceWorker[]> {
+    console.log('🔍 MasterComplianceService: Starting transformToMasterComplianceWorkers');
+    console.log('🔍 MasterComplianceService: Raw workers data:', workers);
+    
     // Group workers by name to aggregate across agents
     const workerGroups = new Map<string, any[]>();
     
@@ -608,6 +607,17 @@ export class MasterComplianceService {
     for (const [workerName, workerGroup] of workerGroups) {
       const firstWorker = workerGroup[0];
       
+      // Debug: Check for Date objects or other complex objects
+      console.log('🔍 MasterComplianceService: Processing worker:', workerName);
+      Object.entries(firstWorker).forEach(([key, value]) => {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          console.warn(`⚠️ MasterComplianceService: Worker ${workerName} contains object at ${key}:`, value);
+          if (value instanceof Date) {
+            console.warn(`⚠️ MasterComplianceService: Worker ${workerName} contains Date object at ${key}:`, value);
+          }
+        }
+      });
+      
       // Calculate overall compliance status (worst case scenario)
       const overallStatus = this.calculateOverallComplianceStatus(workerGroup);
       const overallRiskLevel = this.calculateOverallRiskLevel(workerGroup);
@@ -616,33 +626,53 @@ export class MasterComplianceService {
       // Build agent compliance object
       const agentCompliance: MasterComplianceWorker['agentCompliance'] = {};
       workerGroup.forEach(worker => {
+        const lastAssessmentDate = worker.last_assessment_date instanceof Date ?
+                                  worker.last_assessment_date.toISOString() :
+                                  typeof worker.last_assessment_date === 'string' ? worker.last_assessment_date :
+                                  undefined;
+        
         agentCompliance[worker.agent_type] = {
-          status: worker.compliance_status,
-          riskLevel: worker.risk_level,
-          redFlag: worker.red_flag,
-          lastAssessmentDate: worker.last_assessment_date
+          status: worker.compliance_status || 'COMPLIANT',
+          riskLevel: worker.risk_level || 'LOW',
+          redFlag: typeof worker.red_flag === 'boolean' ? worker.red_flag : false,
+          lastAssessmentDate
         };
       });
+
+      // Ensure all date fields are strings
+      const createdAt = firstWorker.created_at instanceof Date ? 
+                       firstWorker.created_at.toISOString() : 
+                       typeof firstWorker.created_at === 'string' ? firstWorker.created_at :
+                       new Date().toISOString();
+      const updatedAt = firstWorker.updated_at instanceof Date ? 
+                       firstWorker.updated_at.toISOString() : 
+                       typeof firstWorker.updated_at === 'string' ? firstWorker.updated_at :
+                       createdAt;
+      const assignmentDate = firstWorker.assignment_date instanceof Date ?
+                            firstWorker.assignment_date.toISOString() :
+                            typeof firstWorker.assignment_date === 'string' ? firstWorker.assignment_date :
+                            '';
 
       masterWorkers.push({
         id: firstWorker.id,
         name: workerName,
-        jobTitle: firstWorker.job_title,
-        socCode: firstWorker.soc_code,
-        cosReference: firstWorker.cos_reference,
-        assignmentDate: firstWorker.assignment_date,
+        jobTitle: firstWorker.job_title || '',
+        socCode: firstWorker.soc_code || '',
+        cosReference: firstWorker.cos_reference || '',
+        assignmentDate,
         overallComplianceStatus: overallStatus,
         overallRiskLevel: overallRiskLevel,
         totalRedFlags,
         agentCompliance,
-        globalRiskScore: firstWorker.global_risk_score ?? 0,
+        globalRiskScore: typeof firstWorker.global_risk_score === 'number' ? firstWorker.global_risk_score : 0,
         remediationActions: [],
-        createdAt: firstWorker.created_at,
-        updatedAt: firstWorker.updated_at,
-        lastUpdated: firstWorker.updated_at || firstWorker.created_at,
+        createdAt,
+        updatedAt,
+        lastUpdated: updatedAt,
       });
     }
 
+    console.log('🔍 MasterComplianceService: Transformed workers:', masterWorkers);
     return masterWorkers;
   }
 
@@ -980,6 +1010,30 @@ export class MasterComplianceService {
     } catch (error) {
       console.error('Error creating alert:', error);
     }
+  }
+
+  private convertDatesToStrings(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    
+    if (obj instanceof Date) {
+      return obj.toISOString();
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.convertDatesToStrings(item));
+    }
+    
+    if (typeof obj === 'object') {
+      const converted: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        converted[key] = this.convertDatesToStrings(value);
+      }
+      return converted;
+    }
+    
+    return obj;
   }
 }
 

@@ -141,7 +141,30 @@ export default function MasterComplianceDashboard() {
       }
 
       const result = await response.json();
+      console.log('🔍 MasterComplianceDashboard: API response:', result);
+      
       if (result.success) {
+        console.log('🔍 MasterComplianceDashboard: Setting metrics:', result.data);
+        // Debug: Check for any objects that might cause rendering issues
+        if (result.data?.summary) {
+          console.log('🔍 MasterComplianceDashboard: Summary data:', result.data.summary);
+          // Check for Date objects or other complex objects
+          Object.entries(result.data.summary).forEach(([key, value]) => {
+            if (value && typeof value === 'object' && !Array.isArray(value)) {
+              console.warn(`⚠️ MasterComplianceDashboard: Summary contains object at ${key}:`, value);
+            }
+          });
+        }
+        if (result.data?.agentSummaries) {
+          console.log('🔍 MasterComplianceDashboard: Agent summaries:', result.data.agentSummaries);
+          result.data.agentSummaries.forEach((agent: any, index: number) => {
+            Object.entries(agent).forEach(([key, value]) => {
+              if (value && typeof value === 'object' && !Array.isArray(value)) {
+                console.warn(`⚠️ MasterComplianceDashboard: Agent ${index} contains object at ${key}:`, value);
+              }
+            });
+          });
+        }
         setMetrics(result.data);
       } else {
         throw new Error(result.error || 'Failed to fetch metrics');
@@ -182,7 +205,22 @@ export default function MasterComplianceDashboard() {
       }
 
       const result = await response.json();
+      console.log('🔍 MasterComplianceDashboard: Workers API response:', result);
+      
       if (result.success) {
+        console.log('🔍 MasterComplianceDashboard: Setting workers:', result.data.workers);
+        // Debug: Check for any objects that might cause rendering issues
+        if (result.data?.workers) {
+          result.data.workers.forEach((worker: any, index: number) => {
+            console.log(`🔍 MasterComplianceDashboard: Worker ${index}:`, worker);
+            // Check for Date objects or other complex objects
+            Object.entries(worker).forEach(([key, value]) => {
+              if (value && typeof value === 'object' && !Array.isArray(value)) {
+                console.warn(`⚠️ MasterComplianceDashboard: Worker ${index} contains object at ${key}:`, value);
+              }
+            });
+          });
+        }
         setWorkers(result.data.workers);
         setPagination(result.data.pagination);
       } else {
@@ -495,34 +533,42 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {metrics.topAgents.map((agent, index) => (
-                  <Card key={agent.agentType} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-gray-900">{agent.agentName}</h4>
-                        <Link href={`/${agent.agentSlug}`}>
-                          <Button variant="ghost" size="sm" className="h-6 text-xs">
-                            View
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Compliance Rate:</span>
-                          <span className="font-medium">{agent.complianceRate}%</span>
+                {metrics.topAgents.map((agent, index) => {
+                  // Defensive rendering: ensure all values are properly typed
+                  const agentName = typeof agent.agentName === 'string' ? agent.agentName : 'Unknown Agent';
+                  const complianceRate = typeof agent.complianceRate === 'number' ? agent.complianceRate : 0;
+                  const totalWorkers = typeof agent.totalWorkers === 'number' ? agent.totalWorkers : 0;
+                  const redFlags = typeof agent.redFlags === 'number' ? agent.redFlags : 0;
+                  
+                  return (
+                    <Card key={agent.agentType} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-gray-900">{agentName}</h4>
+                          <Link href={`/${agent.agentSlug}`}>
+                            <Button variant="ghost" size="sm" className="h-6 text-xs">
+                              View
+                            </Button>
+                          </Link>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Total Workers:</span>
-                          <span className="font-medium">{agent.totalWorkers}</span>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Compliance Rate:</span>
+                            <span className="font-medium">{complianceRate}%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Total Workers:</span>
+                            <span className="font-medium">{totalWorkers}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Red Flags:</span>
+                            <span className="font-medium">{redFlags}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Red Flags:</span>
-                          <span className="font-medium">{agent.redFlags}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -539,46 +585,56 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {metrics.agentSummaries.map((agent) => (
-                  <Card key={agent.agentType} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-gray-900">{agent.agentName}</h4>
-                        {getStatusBadge(agent.complianceRate >= 80 ? 'COMPLIANT' : agent.complianceRate >= 60 ? 'BREACH' : 'SERIOUS_BREACH')}
-                      </div>
-                      <div className="space-y-2 mb-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Compliance Rate:</span>
-                          <span className="font-medium">{agent.complianceRate}%</span>
+                {metrics.agentSummaries.map((agent) => {
+                  // Defensive rendering: ensure all values are properly typed
+                  const agentName = typeof agent.agentName === 'string' ? agent.agentName : 'Unknown Agent';
+                  const complianceRate = typeof agent.complianceRate === 'number' ? agent.complianceRate : 0;
+                  const totalWorkers = typeof agent.totalWorkers === 'number' ? agent.totalWorkers : 0;
+                  const breachWorkers = typeof agent.breachWorkers === 'number' ? agent.breachWorkers : 0;
+                  const seriousBreachWorkers = typeof agent.seriousBreachWorkers === 'number' ? agent.seriousBreachWorkers : 0;
+                  const redFlags = typeof agent.redFlags === 'number' ? agent.redFlags : 0;
+                  
+                  return (
+                    <Card key={agent.agentType} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-medium text-gray-900">{agentName}</h4>
+                          {getStatusBadge(complianceRate >= 80 ? 'COMPLIANT' : complianceRate >= 60 ? 'BREACH' : 'SERIOUS_BREACH')}
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Total Workers:</span>
-                          <span className="font-medium">{agent.totalWorkers}</span>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Compliance Rate:</span>
+                            <span className="font-medium">{complianceRate}%</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Total Workers:</span>
+                            <span className="font-medium">{totalWorkers}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Breaches:</span>
+                            <span className="font-medium">{breachWorkers + seriousBreachWorkers}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Red Flags:</span>
+                            <span className="font-medium">{redFlags}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Breaches:</span>
-                          <span className="font-medium">{agent.breachWorkers + agent.seriousBreachWorkers}</span>
+                        <div className="flex space-x-2">
+                          <Link href={`/${agent.agentSlug}`} className="flex-1">
+                            <Button variant="outline" size="sm" className="w-full">
+                              View Dashboard
+                            </Button>
+                          </Link>
+                          <Link href={`/reports?agent=${agent.agentType}`}>
+                            <Button variant="ghost" size="sm">
+                              Reports
+                            </Button>
+                          </Link>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Red Flags:</span>
-                          <span className="font-medium">{agent.redFlags}</span>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Link href={`/${agent.agentSlug}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full">
-                            View Dashboard
-                          </Button>
-                        </Link>
-                        <Link href={`/reports?agent=${agent.agentType}`}>
-                          <Button variant="ghost" size="sm">
-                            Reports
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -608,32 +664,37 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {metrics.recentTrends.slice(-7).map((trend, index) => (
-                  <div key={trend.date} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm font-medium text-gray-700">
-                        {new Date(trend.date).toLocaleDateString('en-GB', { 
-                          day: 'numeric', 
-                          month: 'short' 
-                        })}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">Compliance Rate:</span>
-                        <span className={`font-medium ${
-                          trend.complianceRate >= 80 ? 'text-green-600' : 
-                          trend.complianceRate >= 60 ? 'text-yellow-600' : 'text-red-600'
-                        }`}>
-                          {trend.complianceRate}%
+                {metrics.recentTrends.slice(-7).map((trend, index) => {
+                  // Defensive rendering: ensure date is a string
+                  const trendDate = typeof trend.date === 'string' ? trend.date : 'Unknown Date';
+                  
+                  return (
+                    <div key={trendDate} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm font-medium text-gray-700">
+                          {new Date(trendDate).toLocaleDateString('en-GB', { 
+                            day: 'numeric', 
+                            month: 'short' 
+                          })}
                         </span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-600">Compliance Rate:</span>
+                          <span className={`font-medium ${
+                            (trend.complianceRate || 0) >= 80 ? 'text-green-600' : 
+                            (trend.complianceRate || 0) >= 60 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {trend.complianceRate || 0}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <span>Workers: {trend.totalWorkers || 0}</span>
+                        <span>Breaches: {trend.breaches || 0}</span>
+                        <span>Serious: {trend.seriousBreaches || 0}</span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span>Workers: {trend.totalWorkers}</span>
-                      <span>Breaches: {trend.breaches}</span>
-                      <span>Serious: {trend.seriousBreaches}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

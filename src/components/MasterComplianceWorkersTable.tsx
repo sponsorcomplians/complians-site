@@ -266,129 +266,145 @@ export default function MasterComplianceWorkersTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {workers.map((worker) => (
-                  <>
-                    <TableRow key={worker.id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleRow(worker.id)}
-                          className="p-1 h-6 w-6"
-                        >
-                          {expandedRows.has(worker.id) ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </TableCell>
-                      <TableCell className="font-medium">{worker.name}</TableCell>
-                      <TableCell>{worker.jobTitle}</TableCell>
-                      <TableCell>{worker.socCode}</TableCell>
-                      <TableCell>{worker.cosReference}</TableCell>
-                      <TableCell>
-                        {getStatusBadge(worker.overallComplianceStatus, worker.totalRedFlags > 0)}
-                      </TableCell>
-                      <TableCell>
-                        {getRiskLevelBadge(worker.overallRiskLevel)}
-                      </TableCell>
-                      <TableCell>
-                        {worker.totalRedFlags > 0 ? (
-                          <Badge className="bg-red-100 text-red-800 border-red-200">
-                            {worker.totalRedFlags}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
+                {workers.map((worker) => {
+                  // Defensive rendering: ensure all worker data is properly typed
+                  const workerName = typeof worker.name === 'string' ? worker.name : 'Unknown Worker';
+                  const jobTitle = typeof worker.jobTitle === 'string' ? worker.jobTitle : 'Unknown Role';
+                  const socCode = typeof worker.socCode === 'string' ? worker.socCode : 'Unknown SOC';
+                  const cosReference = typeof worker.cosReference === 'string' ? worker.cosReference : 'Unknown CoS';
+                  const totalRedFlags = typeof worker.totalRedFlags === 'number' ? worker.totalRedFlags : 0;
+                  
+                  return (
+                    <>
+                      <TableRow key={worker.id} className="hover:bg-gray-50">
+                        <TableCell>
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
-                            onClick={() => {
-                              const newExpanded = new Set(expandedRows);
-                              if (newExpanded.has(worker.id)) {
-                                newExpanded.delete(worker.id);
-                              } else {
-                                newExpanded.add(worker.id);
-                              }
-                              setExpandedRows(newExpanded);
-                            }}
+                            onClick={() => toggleRow(worker.id)}
+                            className="p-1 h-6 w-6"
                           >
-                            {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
+                            {expandedRows.has(worker.id) ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
                           </Button>
-                          {onGenerateNarrative && (
+                        </TableCell>
+                        <TableCell className="font-medium">{workerName}</TableCell>
+                        <TableCell>{jobTitle}</TableCell>
+                        <TableCell>{socCode}</TableCell>
+                        <TableCell>{cosReference}</TableCell>
+                        <TableCell>
+                          {getStatusBadge(worker.overallComplianceStatus, totalRedFlags > 0)}
+                        </TableCell>
+                        <TableCell>
+                          {getRiskLevelBadge(worker.overallRiskLevel)}
+                        </TableCell>
+                        <TableCell>
+                          {totalRedFlags > 0 ? (
+                            <Badge className="bg-red-100 text-red-800 border-red-200">
+                              {totalRedFlags}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => onGenerateNarrative(worker.name)}
-                              disabled={generatingNarrative === worker.name}
+                              onClick={() => {
+                                const newExpanded = new Set(expandedRows);
+                                if (newExpanded.has(worker.id)) {
+                                  newExpanded.delete(worker.id);
+                                } else {
+                                  newExpanded.add(worker.id);
+                                }
+                                setExpandedRows(newExpanded);
+                              }}
                             >
-                              {generatingNarrative === worker.name ? (
-                                <>
-                                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                                  Generating...
-                                </>
-                              ) : (
-                                <>
-                                  <FileText className="h-3 w-3 mr-1" />
-                                  Narrative
-                                </>
-                              )}
+                              {expandedRows.has(worker.id) ? 'Hide' : 'Show'} Details
                             </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                    
-                    {/* Expanded row with agent details */}
-                    {expandedRows.has(worker.id) && (
-                      <TableRow>
-                        <TableCell colSpan={9} className="bg-gray-50 p-4">
-                          <div className="space-y-3">
-                            <h4 className="font-medium text-gray-900">Agent Compliance Details</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                              {Object.entries(worker.agentCompliance).map(([agentType, compliance]) => (
-                                <div key={agentType} className="bg-white p-3 rounded-lg border">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-gray-700">
-                                      {agentType.replace('ai-', '').replace('-compliance', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                    </span>
-                                    <Link href={`/${agentType}`}>
-                                      <Button variant="ghost" size="sm" className="h-6 text-xs">
-                                        View
-                                      </Button>
-                                    </Link>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-gray-500">Status:</span>
-                                      {getStatusBadge(compliance.status, compliance.redFlag)}
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-gray-500">Risk:</span>
-                                      {getRiskLevelBadge(compliance.riskLevel)}
-                                    </div>
-                                    {compliance.redFlag && (
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs text-gray-500">Red Flag:</span>
-                                        <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
-                                          Yes
-                                        </Badge>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                            {onGenerateNarrative && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => onGenerateNarrative(workerName)}
+                                disabled={generatingNarrative === workerName}
+                              >
+                                {generatingNarrative === workerName ? (
+                                  <>
+                                    <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                                    Generating...
+                                  </>
+                                ) : (
+                                  <>
+                                    <FileText className="h-3 w-3 mr-1" />
+                                    Narrative
+                                  </>
+                                )}
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
-                    )}
-                  </>
-                ))}
+                      
+                      {/* Expanded row with agent details */}
+                      {expandedRows.has(worker.id) && (
+                        <TableRow>
+                          <TableCell colSpan={9} className="bg-gray-50 p-4">
+                            <div className="space-y-3">
+                              <h4 className="font-medium text-gray-900">Agent Compliance Details</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {Object.entries(worker.agentCompliance).map(([agentType, compliance]) => {
+                                  // Defensive rendering for compliance data
+                                  const status = typeof compliance.status === 'string' ? compliance.status : 'UNKNOWN';
+                                  const riskLevel = typeof compliance.riskLevel === 'string' ? compliance.riskLevel : 'UNKNOWN';
+                                  const redFlag = typeof compliance.redFlag === 'boolean' ? compliance.redFlag : false;
+                                  
+                                  return (
+                                    <div key={agentType} className="bg-white p-3 rounded-lg border">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-gray-700">
+                                          {agentType.replace('ai-', '').replace('-compliance', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                        </span>
+                                        <Link href={`/${agentType}`}>
+                                          <Button variant="ghost" size="sm" className="h-6 text-xs">
+                                            View
+                                          </Button>
+                                        </Link>
+                                      </div>
+                                      <div className="space-y-1">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-xs text-gray-500">Status:</span>
+                                          {getStatusBadge(status, redFlag)}
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-xs text-gray-500">Risk:</span>
+                                          {getRiskLevelBadge(riskLevel)}
+                                        </div>
+                                        {redFlag && (
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-xs text-gray-500">Red Flag:</span>
+                                            <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
+                                              Yes
+                                            </Badge>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
