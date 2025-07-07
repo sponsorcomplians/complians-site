@@ -76,7 +76,7 @@ export default function MasterComplianceDashboard() {
   // ALL HOOKS MUST BE AT THE TOP - NO CONDITIONAL RETURNS BEFORE THIS
   const { data: session, status } = useTrackedSession();
   const [activeTab, setActiveTab] = useTrackedState('overview');
-  const [metrics, setMetrics] = useTrackedState(null);
+  const [metrics, setMetrics] = useTrackedState(null as MasterComplianceMetrics | null);
   const [workers, setWorkers] = useTrackedState([]);
   const [loading, setLoading] = useTrackedState(true);
   const [error, setError] = useTrackedState(null);
@@ -539,7 +539,7 @@ export default function MasterComplianceDashboard() {
     { name: 'High Risk', value: metrics.riskDistribution.high, color: '#EF4444' }
   ];
 
-  const topAgentsData = metrics.topAgents.map(agent => ({
+  const topAgentsData = metrics.topAgents.map((agent: any) => ({
     name: agent.agentName,
     value: agent.complianceRate,
     color: agent.complianceRate >= 80 ? '#10B981' : agent.complianceRate >= 60 ? '#F59E0B' : '#EF4444'
@@ -638,7 +638,7 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {metrics.topAgents.map((agent, index) => {
+                {metrics.topAgents.map((agent: any, index: number) => {
                   // Defensive rendering: ensure all values are properly typed
                   const agentName = typeof agent.agentName === 'string' ? agent.agentName : 'Unknown Agent';
                   const complianceRate = typeof agent.complianceRate === 'number' ? agent.complianceRate : 0;
@@ -698,7 +698,7 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {metrics.agentSummaries.map((agent) => {
+                {metrics.agentSummaries.map((agent: any) => {
                   // Defensive rendering: ensure all values are properly typed
                   const agentName = typeof agent.agentName === 'string' ? agent.agentName : 'Unknown Agent';
                   const complianceRate = typeof agent.complianceRate === 'number' ? agent.complianceRate : 0;
@@ -789,7 +789,7 @@ export default function MasterComplianceDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {metrics.recentTrends.slice(-7).map((trend, index) => {
+                {metrics.recentTrends.slice(-7).map((trend: any, index: number) => {
                   // Defensive rendering: ensure date is a string
                   const trendDate = typeof trend.date === 'string' ? trend.date : 'Unknown Date';
                   
