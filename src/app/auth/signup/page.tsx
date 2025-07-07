@@ -106,6 +106,7 @@ function SignUpForm() {
           company: company.trim(),
           phone: phone.trim(),
           password,
+          redirect: redirectUrl || undefined,
         }),
       });
 

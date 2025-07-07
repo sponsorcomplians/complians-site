@@ -14,6 +14,7 @@ function VerifyEmailContent() {
   const router = useRouter();
   const token = searchParams.get('token');
   const email = searchParams.get('email');
+  const redirect = searchParams.get('redirect');
   
   const [status, setStatus] = useState<'verifying' | 'success' | 'error' | 'pending'>('pending');
   const [message, setMessage] = useState('');
@@ -45,9 +46,13 @@ function VerifyEmailContent() {
       if (response.ok) {
         setStatus('success');
         setMessage('Your email has been verified successfully!');
-        // Redirect to signin after 3 seconds
+        // Redirect to signin after 3 seconds, preserving redirect parameter
         setTimeout(() => {
-          router.push('/auth/signin');
+          if (redirect) {
+            router.push(`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`);
+          } else {
+            router.push('/auth/signin');
+          }
         }, 3000);
       } else {
         setStatus('error');
@@ -67,7 +72,10 @@ function VerifyEmailContent() {
       const response = await fetch('/api/auth/resend-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email,
+          redirect: redirect || undefined 
+        }),
       });
 
       const data = await response.json();

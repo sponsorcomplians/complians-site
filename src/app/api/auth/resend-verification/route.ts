@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, redirect } = await request.json();
 
     if (!email) {
       return NextResponse.json(
@@ -67,9 +67,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send verification email
+    // Send verification email with redirect parameter if provided
     try {
-      await sendVerificationEmail(user.email, user.full_name, verificationToken);
+      await sendVerificationEmail(user.email, user.full_name, verificationToken, redirect);
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError);
       return NextResponse.json(

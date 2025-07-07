@@ -4,8 +4,11 @@
 const APP_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@sponsorcomplians.co.uk';
 
-export async function sendVerificationEmail(email: string, name: string, token: string) {
-  const verificationUrl = `${APP_URL}/auth/verify-email?token=${token}`;
+export async function sendVerificationEmail(email: string, name: string, token: string, redirect?: string) {
+  let verificationUrl = `${APP_URL}/auth/verify-email?token=${token}`;
+  if (redirect) {
+    verificationUrl += `&redirect=${encodeURIComponent(redirect)}`;
+  }
   
   const subject = 'Verify your email - SponsorComplians';
   const html = `

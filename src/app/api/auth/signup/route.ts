@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const headersList = await headers();
   
   try {
-    const { email, password, fullName, company, phone } = await request.json();
+    const { email, password, fullName, company, phone, redirect } = await request.json();
 
     // Rate limiting check
     const clientIP = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 
@@ -266,6 +266,11 @@ export async function POST(request: NextRequest) {
     const defaultRole = isFirstUser ? 'Admin' : 'Viewer';
     console.log('Creating user with role:', defaultRole, 'for tenant:', tenantId);
 
+    // Generate verification token
+    const verificationToken = randomBytes(32).toString('hex');
+    const verificationExpires = new Date();
+    verificationExpires.setHours(verificationExpires.getHours() + 24);
+
     // Create user with tenant_id
     console.log('Creating new user with tenant ID:', tenantId);
     
@@ -282,7 +287,9 @@ export async function POST(request: NextRequest) {
           phone: phone || null,
           tenant_id: tenantId,
           role: defaultRole,
-          is_email_verified: false
+          is_email_verified: false,
+          email_verification_token: verificationToken,
+          email_verification_expires: verificationExpires.toISOString()
         })
         .select('id, email, full_name, company, tenant_id, role, is_email_verified, created_at')
         .single();
@@ -402,6 +409,15 @@ export async function POST(request: NextRequest) {
     if (authError) {
       console.error('Error creating auth user:', authError);
       // Continue anyway as we have the user in our custom table
+    }
+
+    // Send verification email with redirect parameter if provided
+    try {
+      await sendVerificationEmail(user.email, user.full_name, verificationToken, redirect);
+      console.log('Verification email sent successfully to:', user.email);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue anyway as user can request verification email later
     }
 
     // Log successful signup
