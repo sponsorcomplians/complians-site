@@ -76,9 +76,22 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating tenant:', error);
+      console.error('Tenant creation failed:', {
+        error: error,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        tenant_name: name,
+        industry: industry,
+        max_workers: max_workers,
+        subscription_plan: subscription_plan
+      });
       return NextResponse.json(
-        { error: 'Failed to create tenant' },
+        { 
+          error: 'Failed to create tenant',
+          details: error instanceof Error ? error.message : String(error)
+        },
         { status: 500 }
       );
     }
@@ -89,9 +102,17 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error creating tenant:', error);
+    console.error('Tenant creation error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error occurred during tenant creation'
+      },
       { status: 500 }
     );
   }

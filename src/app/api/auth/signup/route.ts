@@ -169,12 +169,14 @@ export async function POST(request: NextRequest) {
         });
 
       if (tenantError) {
-        console.error('Error creating tenant:', tenantError);
-        console.error('Tenant error details:', {
+        console.error('Tenant creation failed:', {
+          error: tenantError,
           message: tenantError.message,
           details: tenantError.details,
           hint: tenantError.hint,
-          code: tenantError.code
+          code: tenantError.code,
+          company: company,
+          email: email
         });
         
         // Log failed signup attempt
@@ -186,7 +188,8 @@ export async function POST(request: NextRequest) {
               reason: 'Failed to create tenant',
               tenant_error: tenantError.message,
               tenant_error_details: tenantError.details,
-              tenant_error_code: tenantError.code
+              tenant_error_code: tenantError.code,
+              tenant_error_hint: tenantError.hint
             },
             'user',
             email,
@@ -199,7 +202,10 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(
-          { error: 'Failed to create tenant', details: tenantError.message },
+          { 
+            error: 'Failed to create tenant', 
+            details: tenantError instanceof Error ? tenantError.message : String(tenantError)
+          },
           { status: 500 }
         );
       }
@@ -230,7 +236,16 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (userError) {
-      console.error('Error creating user:', userError);
+      console.error('User creation failed:', {
+        error: userError,
+        message: userError.message,
+        details: userError.details,
+        hint: userError.hint,
+        code: userError.code,
+        email: email,
+        tenant_id: tenantId,
+        role: defaultRole
+      });
       
       // Log failed signup attempt
       try {
@@ -239,7 +254,12 @@ export async function POST(request: NextRequest) {
           {
             email,
             reason: 'Failed to create user',
-            user_error: userError.message
+            user_error: userError.message,
+            user_error_details: userError.details,
+            user_error_code: userError.code,
+            user_error_hint: userError.hint,
+            tenant_id: tenantId,
+            role: defaultRole
           },
           'user',
           email,
@@ -252,7 +272,10 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { error: 'Failed to create user' },
+        { 
+          error: 'Failed to create user',
+          details: userError instanceof Error ? userError.message : String(userError)
+        },
         { status: 500 }
       );
     }
@@ -341,7 +364,13 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error('Signup error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      email: 'unknown',
+      timestamp: new Date().toISOString()
+    });
     
     // Log failed signup attempt
     try {
@@ -350,7 +379,8 @@ export async function POST(request: NextRequest) {
         {
           email: 'unknown',
           reason: 'Internal server error',
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
+          error_stack: error instanceof Error ? error.stack : undefined
         },
         'user',
         'unknown',
@@ -363,7 +393,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error occurred during signup'
+      },
       { status: 500 }
     );
   }
