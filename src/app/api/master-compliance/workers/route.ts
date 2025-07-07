@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-config';
 import { masterComplianceService } from '@/lib/masterComplianceService';
 import { MasterComplianceFilters } from '@/types/master-compliance.types';
 import { getSupabaseClient } from '@/lib/supabase-client';
@@ -6,6 +8,23 @@ import { getSupabaseClient } from '@/lib/supabase-client';
 export async function GET(request: NextRequest) {
   try {
     console.log('🔍 Master Compliance Workers API: Starting request');
+    
+    // Check authentication using NextAuth
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      console.log('❌ Master Compliance Workers API: No valid session found');
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Authentication required',
+          message: 'Please sign in to access the Master Compliance Dashboard'
+        },
+        { status: 401 }
+      );
+    }
+    
+    console.log('✅ Master Compliance Workers API: User authenticated:', session.user.email);
     
     const { searchParams } = new URL(request.url);
     
@@ -39,38 +58,11 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    console.log('🔍 Master Compliance Workers API: Filters parsed:', filters, 'page:', page, 'pageSize:', pageSize);
-    
-    // Check authentication first
-    const supabase = getSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError) {
-      console.error('❌ Master Compliance Workers API: Authentication error:', authError);
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'Authentication failed',
-          details: authError.message
-        },
-        { status: 401 }
-      );
-    }
-    
-    if (!user) {
-      console.error('❌ Master Compliance Workers API: No authenticated user');
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'User not authenticated'
-        },
-        { status: 401 }
-      );
-    }
-    
-    console.log('✅ Master Compliance Workers API: User authenticated:', user.id);
+    console.log('🔍 Master Compliance Workers API: Filters parsed:', filters);
+    console.log('🔍 Master Compliance Workers API: Pagination - page:', page, 'pageSize:', pageSize);
     
     // Check if required tables exist
+    const supabase = getSupabaseClient();
     const { data: tablesCheck, error: tablesError } = await supabase
       .from('compliance_workers')
       .select('id')
@@ -82,12 +74,13 @@ export async function GET(request: NextRequest) {
       // Return empty workers data instead of failing
       const emptyWorkersData = {
         workers: [],
-        totalCount: 0,
-        filteredCount: 0,
         pagination: {
-          page,
-          pageSize,
-          totalPages: 0
+          currentPage: page,
+          pageSize: pageSize,
+          totalPages: 0,
+          totalWorkers: 0,
+          hasNextPage: false,
+          hasPreviousPage: false
         }
       };
       
@@ -101,15 +94,17 @@ export async function GET(request: NextRequest) {
     
     console.log('✅ Master Compliance Workers API: Tables exist, fetching workers');
     
+    // Try to get workers from the service
     const workersData = await masterComplianceService.getMasterComplianceWorkers(filters, page, pageSize);
     
-    console.log('✅ Master Compliance Workers API: Success! Returning', workersData.workers.length, 'workers');
+    console.log('✅ Master Compliance Workers API: Success! Returning workers data');
     
     return NextResponse.json({
       success: true,
       data: workersData,
       timestamp: new Date().toISOString()
     });
+    
   } catch (error) {
     console.error('❌ Master Compliance Workers API Error:', error);
     
@@ -120,6 +115,7 @@ export async function GET(request: NextRequest) {
       console.error('Error stack:', error.stack);
     }
     
+    // Return a more detailed error response
     return NextResponse.json(
       { 
         success: false,
