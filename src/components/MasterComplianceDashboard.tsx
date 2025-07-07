@@ -53,6 +53,24 @@ const safe = (value: any): React.ReactNode => {
 };
 
 export default function MasterComplianceDashboard() {
+  // ALL HOOKS MUST BE AT THE TOP - NO CONDITIONAL RETURNS BEFORE THIS
+  const { data: session, status } = useSession();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [metrics, setMetrics] = useState<MasterComplianceMetrics | null>(null);
+  const [workers, setWorkers] = useState<MasterComplianceWorker[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<MasterComplianceFilters>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 20,
+    totalPages: 1
+  });
+  const [exporting, setExporting] = useState(false);
+  const [generatingNarrative, setGeneratingNarrative] = useState<string | null>(null);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
+
   // TEMPORARY DEBUG CODE - REMOVE AFTER FIXING
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -84,23 +102,6 @@ export default function MasterComplianceDashboard() {
       filters: typeof filters
     });
   });
-
-  const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [metrics, setMetrics] = useState<MasterComplianceMetrics | null>(null);
-  const [workers, setWorkers] = useState<MasterComplianceWorker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<MasterComplianceFilters>({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 20,
-    totalPages: 1
-  });
-  const [exporting, setExporting] = useState(false);
-  const [generatingNarrative, setGeneratingNarrative] = useState<string | null>(null);
-  const [generatingPDF, setGeneratingPDF] = useState(false);
 
   // Debug React Error #310
   useEffect(() => {
