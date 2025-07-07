@@ -119,3 +119,83 @@ export async function sendWelcomeEmail(email: string, name: string) {
   // TODO: Implement with your email service
   console.log('Sending welcome email:', { to: email, subject, html });
 }
+
+export async function sendPaymentConfirmationEmail(email: string, name: string, productName: string) {
+  const subject = 'Welcome! Your Sponsor Compliance Access is Now Active';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #333;">Welcome, ${name}!</h1>
+      <p style="color: #666; font-size: 16px;">
+        Thank you for your purchase! Your access to <strong>${productName}</strong> is now active and ready to use.
+      </p>
+      <h2 style="color: #333; font-size: 20px;">What's Next?</h2>
+      <ul style="color: #666; font-size: 16px;">
+        <li>Start your first compliance assessment</li>
+        <li>Upload worker documents for analysis</li>
+        <li>Review AI-generated compliance reports</li>
+        <li>Access your personalized dashboard</li>
+      </ul>
+      <div style="margin: 30px 0;">
+        <a href="${APP_URL}/master-compliance-dashboard" 
+           style="background-color: #10b981; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+          Start Assessment
+        </a>
+      </div>
+      <p style="color: #666; font-size: 16px;">
+        Your compliance journey starts now! Our AI agents are ready to help you maintain full compliance with UK sponsor duties.
+      </p>
+      <p style="color: #666; font-size: 16px;">
+        If you need any assistance, our support team is here to help at <a href="mailto:support@sponsorcomplians.co.uk" style="color: #3b82f6;">support@sponsorcomplians.co.uk</a>
+      </p>
+      <p style="color: #999; font-size: 12px; margin-top: 30px;">
+        Best regards,<br>
+        The SponsorComplians Team
+      </p>
+    </div>
+  `;
+
+  // TODO: Implement with your email service
+  console.log('Sending payment confirmation email:', { to: email, subject, html });
+}
+
+export async function sendReminderEmail(email: string, name: string, productName: string) {
+  const subject = 'Reminder: Start Your Compliance Assessment';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #333;">Hi ${name},</h1>
+      <p style="color: #666; font-size: 16px;">
+        We noticed you haven't started using your <strong>${productName}</strong> access yet. 
+        Don't miss out on the benefits of AI-powered compliance management!
+      </p>
+      <h2 style="color: #333; font-size: 20px;">Why Start Now?</h2>
+      <ul style="color: #666; font-size: 16px;">
+        <li>Automated compliance checking saves hours of manual work</li>
+        <li>AI-powered red flag detection prevents serious breaches</li>
+        <li>Professional reports for Home Office compliance</li>
+        <li>Real-time monitoring and alerts</li>
+      </ul>
+      <div style="margin: 30px 0;">
+        <a href="${APP_URL}/master-compliance-dashboard" 
+           style="background-color: #3b82f6; color: white; padding: 12px 24px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+          Start Your Assessment
+        </a>
+      </div>
+      <p style="color: #666; font-size: 16px;">
+        It only takes a few minutes to upload your first worker documents and get started. 
+        Our AI will do the heavy lifting for you!
+      </p>
+      <p style="color: #666; font-size: 16px;">
+        Need help getting started? <a href="${APP_URL}/contact" style="color: #3b82f6;">Contact our support team</a> for personalized assistance.
+      </p>
+      <p style="color: #999; font-size: 12px; margin-top: 30px;">
+        Best regards,<br>
+        The SponsorComplians Team
+      </p>
+    </div>
+  `;
+
+  // TODO: Implement with your email service
+  console.log('Sending reminder email:', { to: email, subject, html });
+}

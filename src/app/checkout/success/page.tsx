@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { CheckCircle, ArrowRight, Package } from 'lucide-react'
+import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -24,12 +25,16 @@ export default function CheckoutSuccess() {
     setLoading(false)
   }, [])
 
+  const handleStartAssessment = () => {
+    router.push('/master-compliance-dashboard')
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#263976] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Processing your purchase...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Processing your purchase...</p>
         </div>
       </div>
     )
@@ -37,71 +42,63 @@ export default function CheckoutSuccess() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          {/* Success Icon */}
-          <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-6">
-            <CheckCircle className="h-16 w-16 text-green-600" />
+      <Card className="max-w-md w-full">
+        <CardHeader className="text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-
-          {/* Success Message */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Payment Successful!
-          </h1>
-          
-          <p className="text-lg text-gray-600 mb-8">
-            Thank you for your purchase. Your payment has been processed successfully and you now have access to your product.
-          </p>
-
-          {/* Session ID */}
-          {sessionId && (
-            <div className="bg-gray-100 rounded-lg p-4 mb-8">
-              <p className="text-sm text-gray-600">
-                <strong>Order ID:</strong> {sessionId.slice(0, 20)}...
-              </p>
+          <CardTitle className="text-2xl">Payment Successful!</CardTitle>
+          <CardDescription>
+            Thank you for your purchase. Your access is now active.
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              You'll receive a confirmation email shortly with your login details and next steps.
+            </p>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-blue-900 mb-2">What's Next?</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Upload your first worker documents</li>
+                <li>• Start your compliance assessment</li>
+                <li>• Review AI-generated reports</li>
+                <li>• Access your personalized dashboard</li>
+              </ul>
             </div>
-          )}
+          </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-4">
-            <Link
-              href="/dashboard"
-              className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#263976] hover:bg-[#1a2557] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#263976]"
+          <div className="space-y-3">
+            <Button 
+              onClick={handleStartAssessment}
+              className="w-full"
+              size="lg"
             >
-              <Package className="h-5 w-5 mr-2" />
+              Start Assessment
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => router.push('/dashboard')}
+              className="w-full"
+            >
               Go to Dashboard
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Link>
-
-            <Link
-              href="/ai-agents"
-              className="w-full flex items-center justify-center px-6 py-3 border border-[#263976] text-base font-medium rounded-md text-[#263976] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#263976]"
-            >
-              Browse More Products
-            </Link>
+            </Button>
           </div>
 
-          {/* Additional Info */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">What's Next?</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Access your product from the dashboard</li>
-              <li>• Download any available resources</li>
-              <li>• Check your email for receipt and instructions</li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Need help? Contact our{' '}
-              <Link href="/contact" className="text-[#00c3ff] hover:text-[#0099cc]">
-                support team
-              </Link>
+          <div className="text-center text-sm text-gray-500">
+            <p>
+              Need help? Contact our support team at{' '}
+              <a href="mailto:support@sponsorcomplians.co.uk" className="text-blue-600 hover:underline">
+                support@sponsorcomplians.co.uk
+              </a>
             </p>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

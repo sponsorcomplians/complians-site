@@ -1,8 +1,8 @@
 // src/app/auth/signup/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,17 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Get redirect URL from query parameters
+    const redirect = searchParams.get('redirect');
+    if (redirect) {
+      setRedirectUrl(redirect);
+    }
+  }, [searchParams]);
 
   const validateForm = () => {
     if (!fullName.trim()) {
@@ -111,7 +121,13 @@ export default function SignUpPage() {
       // Success! Show verification message
       setSuccess('Account created successfully! Please check your email to verify your account.');
       setTimeout(() => {
-        router.push('/auth/verify-email?email=' + encodeURIComponent(email));
+        if (redirectUrl) {
+          // If there's a redirect URL, go to verification page with redirect
+          router.push(`/auth/verify-email?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectUrl)}`);
+        } else {
+          // Default redirect to verification page
+          router.push('/auth/verify-email?email=' + encodeURIComponent(email));
+        }
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign up');
