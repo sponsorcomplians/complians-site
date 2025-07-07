@@ -257,3 +257,4 @@ This is a private project. For support or modifications, please contact the deve
  
 # Trigger deployment
 # Deployment trigger - Mon Jul  7 11:18:26 BST 2025
+# Trigger Vercel deployment
