@@ -48,18 +48,17 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Verify password with bcrypt
-          const passwordField = user.password || user.password_hash;
-          if (!passwordField) {
-            console.log('❌ No password field found for user');
+          if (!user.password_hash) {
+            console.log('❌ No password_hash field found for user');
             try {
-              await logLoginFailure(normalizedEmail, 'No password field found');
+              await logLoginFailure(normalizedEmail, 'No password_hash field found');
             } catch (auditError) {
               console.warn('Failed to log login failure:', auditError);
             }
             return null;
           }
           
-          const isPasswordValid = await bcrypt.compare(credentials.password, passwordField);
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password_hash);
           console.log('Password valid:', isPasswordValid);
           
           if (!isPasswordValid) {

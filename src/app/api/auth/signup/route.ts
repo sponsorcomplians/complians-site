@@ -281,7 +281,7 @@ export async function POST(request: NextRequest) {
         .insert({
           id: uuidv4(),
           email: normalizedEmail,
-          password: hashedPassword,
+          password_hash: hashedPassword,
           full_name: fullName,
           company,
           phone: phone || null,
