@@ -133,10 +133,11 @@ export default function MasterComplianceDashboard() {
       }));
 
       if (!response.ok) {
+        const errorData = await response.json();
         if (response.status === 401) {
           throw new Error('Authentication required. Please sign in again.');
         }
-        throw new Error('Failed to fetch metrics');
+        throw new Error(errorData.error || 'Failed to fetch metrics');
       }
 
       const result = await response.json();
@@ -147,7 +148,8 @@ export default function MasterComplianceDashboard() {
       }
     } catch (err) {
       console.error('Error loading metrics:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -172,10 +174,11 @@ export default function MasterComplianceDashboard() {
       }));
 
       if (!response.ok) {
+        const errorData = await response.json();
         if (response.status === 401) {
           throw new Error('Authentication required. Please sign in again.');
         }
-        throw new Error('Failed to fetch workers');
+        throw new Error(errorData.error || 'Failed to fetch workers');
       }
 
       const result = await response.json();
@@ -187,7 +190,8 @@ export default function MasterComplianceDashboard() {
       }
     } catch (err) {
       console.error('Error loading workers:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

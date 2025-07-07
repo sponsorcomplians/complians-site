@@ -17,8 +17,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { 
           success: false,
-          error: 'Authentication required',
-          message: 'Please sign in to access the Master Compliance Dashboard'
+          error: 'Unauthorized'
         },
         { status: 401 }
       );
