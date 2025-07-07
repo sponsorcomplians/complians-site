@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { workerProfileApi } from '@/lib/supabase'
+import { useSession } from 'next-auth/react'
 
 export default function NewWorkerPage() {
+  const { data: session } = useSession()
   const [isClient, setIsClient] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -37,6 +39,11 @@ export default function NewWorkerPage() {
       return
     }
 
+    if (!session?.user?.tenant_id) {
+      setMessage('❌ Error: No tenant context found. Please log in again.')
+      return
+    }
+
     try {
       setIsLoading(true)
       setMessage('')
@@ -55,7 +62,7 @@ export default function NewWorkerPage() {
         position: formData.position
       }
       
-      const result = await workerProfileApi.create(workerData)
+      const result = await workerProfileApi.create(workerData, session.user.tenant_id)
       console.log('Worker created successfully:', result)
       
       // Reset form

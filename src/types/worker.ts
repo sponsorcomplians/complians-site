@@ -2,6 +2,7 @@
 
 export interface Worker {
   id: string;
+  tenant_id: string;
   full_name: string;
   email?: string;
   phone?: string;
@@ -14,6 +15,7 @@ export interface Worker {
 
 export interface WorkerDocument {
   id: string;
+  tenant_id: string;
   worker_id: string;
   document_code: string;
   document_url?: string;
@@ -23,6 +25,7 @@ export interface WorkerDocument {
 
 export interface WorkerTraining {
   id: string;
+  tenant_id: string;
   worker_id: string;
   module_code: string;
   completed: boolean;
@@ -32,6 +35,7 @@ export interface WorkerTraining {
 
 export interface WorkerNote {
   id: string;
+  tenant_id: string;
   worker_id: string;
   note_type: string;
   note_content: string;

@@ -21,39 +21,42 @@ export interface Worker {
   emergency_contact?: string;
   emergency_phone?: string;
   avatar_url?: string;
+  tenant_id: string;
   created_at?: string;
   updated_at?: string;
 }
 
 export const workersService = {
-  // Get all workers
-  async getWorkers() {
+  // Get all workers for a tenant
+  async getWorkers(tenant_id: string) {
     const { data, error } = await supabase
       .from('workers')
       .select('*')
+      .eq('tenant_id', tenant_id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data;
   },
 
-  // Get single worker
-  async getWorker(id: string) {
+  // Get single worker for a tenant
+  async getWorker(id: string, tenant_id: string) {
     const { data, error } = await supabase
       .from('workers')
       .select('*')
       .eq('id', id)
+      .eq('tenant_id', tenant_id)
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  // Create worker
-  async createWorker(worker: Omit<Worker, 'id' | 'created_at' | 'updated_at'>) {
+  // Create worker for a tenant
+  async createWorker(worker: Omit<Worker, 'id' | 'created_at' | 'updated_at'>, tenant_id: string) {
     const { data, error } = await supabase
       .from('workers')
-      .insert([worker])
+      .insert([{ ...worker, tenant_id }])
       .select()
       .single();
 
@@ -61,12 +64,13 @@ export const workersService = {
     return data;
   },
 
-  // Update worker
-  async updateWorker(id: string, updates: Partial<Worker>) {
+  // Update worker for a tenant
+  async updateWorker(id: string, updates: Partial<Worker>, tenant_id: string) {
     const { data, error } = await supabase
       .from('workers')
       .update(updates)
       .eq('id', id)
+      .eq('tenant_id', tenant_id)
       .select()
       .single();
 
@@ -74,28 +78,30 @@ export const workersService = {
     return data;
   },
 
-  // Delete worker
-  async deleteWorker(id: string) {
+  // Delete worker for a tenant
+  async deleteWorker(id: string, tenant_id: string) {
     const { error } = await supabase
       .from('workers')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('tenant_id', tenant_id);
 
     if (error) throw error;
   },
 
-  // Bulk import workers
-  async bulkImportWorkers(workers: Omit<Worker, 'id' | 'created_at' | 'updated_at'>[]) {
+  // Bulk import workers for a tenant
+  async bulkImportWorkers(workers: Omit<Worker, 'id' | 'created_at' | 'updated_at'>[], tenant_id: string) {
+    const workersWithTenant = workers.map(w => ({ ...w, tenant_id }));
     const { data, error } = await supabase
       .from('workers')
-      .insert(workers)
+      .insert(workersWithTenant)
       .select();
 
     if (error) throw error;
     return data;
   },
 
-  // Upload avatar
+  // Upload avatar (no tenant_id needed here)
   async uploadAvatar(file: File, workerId: string) {
     const fileExt = file.name.split('.').pop();
     const fileName = `${workerId}-${Date.now()}.${fileExt}`;

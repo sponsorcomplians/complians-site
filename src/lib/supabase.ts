@@ -29,22 +29,24 @@ export const supabaseAdmin = createClient(
 
 // Worker profile API helper
 export const workerProfileApi = {
-  async getProfile(workerId: string) {
+  async getProfile(workerId: string, tenant_id: string) {
     const { data, error } = await supabaseAdmin
       .from('worker_profiles')
       .select('*')
       .eq('id', workerId)
+      .eq('tenant_id', tenant_id)
       .single()
     
     if (error) throw error
     return data
   },
   
-  async updateProfile(workerId: string, updates: any) {
+  async updateProfile(workerId: string, updates: any, tenant_id: string) {
     const { data, error } = await supabaseAdmin
       .from('worker_profiles')
       .update(updates)
       .eq('id', workerId)
+      .eq('tenant_id', tenant_id)
       .select()
       .single()
     
@@ -52,10 +54,10 @@ export const workerProfileApi = {
     return data
   },
 
-  async create(profile: any) {
+  async create(profile: any, tenant_id: string) {
     const { data, error } = await supabaseAdmin
       .from('worker_profiles')
-      .insert(profile)
+      .insert({ ...profile, tenant_id })
       .select()
       .single()
     
@@ -63,16 +65,17 @@ export const workerProfileApi = {
     return data
   },
 
-  async createProfile(profile: any) {
+  async createProfile(profile: any, tenant_id: string) {
     // Alias for backwards compatibility
-    return this.create(profile)
+    return this.create(profile, tenant_id)
   },
 
-  async deleteProfile(workerId: string) {
+  async deleteProfile(workerId: string, tenant_id: string) {
     const { error } = await supabaseAdmin
       .from('worker_profiles')
       .delete()
       .eq('id', workerId)
+      .eq('tenant_id', tenant_id)
     
     if (error) throw error
     return true

@@ -127,7 +127,7 @@ const Tabs = ({
   onValueChange: (value: string) => void;
   className?: string;
 }) => (
-  <div className={className} data-value={value} data-onvaluechange={onValueChange}>
+  <div className={className} data-value={value}>
     {children}
   </div>
 )

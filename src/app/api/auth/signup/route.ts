@@ -153,21 +153,26 @@ export async function POST(request: NextRequest) {
       tenantId = existingTenant.id;
       console.log(`Using existing tenant: ${existingTenant.name} (ID: ${tenantId})`);
     } else {
-      // Create new tenant
+      // Create new tenant - bypass RLS for signup
+      console.log('Attempting to create new tenant:', company);
+      
+      // Temporarily disable RLS for tenant creation
       const { data: newTenant, error: tenantError } = await supabase
-        .from('tenants')
-        .insert({
-          name: company,
-          industry: 'General',
-          max_workers: 100,
-          subscription_plan: 'Basic',
-          subscription_status: 'active'
-        })
-        .select('id, name, max_workers, subscription_plan')
-        .single();
+        .rpc('create_tenant_during_signup', {
+          tenant_name: company,
+          tenant_industry: 'General',
+          tenant_max_workers: 100,
+          tenant_subscription_plan: 'Basic'
+        });
 
       if (tenantError) {
         console.error('Error creating tenant:', tenantError);
+        console.error('Tenant error details:', {
+          message: tenantError.message,
+          details: tenantError.details,
+          hint: tenantError.hint,
+          code: tenantError.code
+        });
         
         // Log failed signup attempt
         try {
@@ -176,7 +181,9 @@ export async function POST(request: NextRequest) {
             {
               email,
               reason: 'Failed to create tenant',
-              tenant_error: tenantError.message
+              tenant_error: tenantError.message,
+              tenant_error_details: tenantError.details,
+              tenant_error_code: tenantError.code
             },
             'user',
             email,
@@ -189,7 +196,7 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(
-          { error: 'Failed to create tenant' },
+          { error: 'Failed to create tenant', details: tenantError.message },
           { status: 500 }
         );
       }

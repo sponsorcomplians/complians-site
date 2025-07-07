@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     
     // Test the EXACT same code your workers form uses
     console.log('Calling workerProfileApi.create()...')
-    const result = await workerProfileApi.create(data)
+    const result = await workerProfileApi.create(data, 'test-tenant-id')
     
     console.log('✅ Worker created successfully:', result)
     

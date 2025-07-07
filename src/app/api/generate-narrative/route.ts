@@ -43,12 +43,12 @@ export async function POST(request: NextRequest) {
     
     // Ensure all fields have default values to prevent undefined errors
     const {
-      workerName = 'Unknown Worker',
-      jobTitle = 'Unknown Role',
-      socCode = 'Unknown SOC',
-      assignmentDate = 'Unknown Date',
-      cosDuties = 'No CoS duties provided',
-      jobDescriptionDuties = 'No job description duties provided',
+      workerName = '',
+      jobTitle = '',
+      socCode = '',
+      assignmentDate = '',
+      cosDuties = '',
+      jobDescriptionDuties = '',
       cvSummary = 'No CV summary provided',
       referenceSummary = 'No reference summary provided',
       employmentEvidenceSummary = 'No employment evidence provided',
@@ -57,18 +57,26 @@ export async function POST(request: NextRequest) {
       experienceConcerns = 'No experience concerns identified',
       isCompliant = false,
       customPrompt = null, // New field for tenant-specific prompts
-    } = body;
+    } = body || {};
 
-    console.log('🔍 [API] Extracted workerName:', workerName);
-    console.log('🔍 [API] Extracted jobTitle:', jobTitle);
+    // Provide default values for required fields if they're undefined
+    const safeWorkerName = workerName || 'Unknown Worker';
+    const safeJobTitle = jobTitle || 'Unknown Role';
+    const safeSocCode = socCode || 'Unknown SOC';
+    const safeAssignmentDate = assignmentDate || 'Unknown Date';
+    const safeCosDuties = cosDuties || 'No CoS duties provided';
+    const safeJobDescriptionDuties = jobDescriptionDuties || 'No job description duties provided';
+
+    console.log('🔍 [API] Extracted workerName:', safeWorkerName);
+    console.log('🔍 [API] Extracted jobTitle:', safeJobTitle);
     console.log('🔍 [API] Custom prompt provided:', !!customPrompt);
 
     // Validate required fields with better error messages
-    if (!workerName || workerName.trim() === '' || workerName === 'Unknown Worker') {
-      console.error('❌ [API] Worker name validation failed:', { workerName, body });
+    if (!safeWorkerName || safeWorkerName.trim() === '' || safeWorkerName === 'Unknown Worker') {
+      console.error('❌ [API] Worker name validation failed:', { safeWorkerName, body });
       return NextResponse.json({ 
         error: 'Worker name is required and cannot be empty',
-        receivedData: { workerName, bodyKeys: Object.keys(body) }
+        receivedData: { workerName: safeWorkerName, bodyKeys: Object.keys(body) }
       }, { status: 400 });
     }
 
@@ -79,12 +87,12 @@ You will generate a formal compliance assessment letter in British English, usin
 Use only the data provided below — do not invent or summarise. Do not include placeholders or static templates.
 
 Data:
-- Worker Name: ${workerName}
-- Job Title: ${jobTitle}
-- SOC Code: ${socCode}
-- CoS Assignment Date: ${assignmentDate}
-- CoS Duties: ${cosDuties}
-- Job Description Duties: ${jobDescriptionDuties}
+- Worker Name: ${safeWorkerName}
+- Job Title: ${safeJobTitle}
+- SOC Code: ${safeSocCode}
+- CoS Assignment Date: ${safeAssignmentDate}
+- CoS Duties: ${safeCosDuties}
+- Job Description Duties: ${safeJobDescriptionDuties}
 - CV Summary: ${cvSummary}
 - Reference Summary: ${referenceSummary}
 - Employment Evidence: ${employmentEvidenceSummary}
@@ -108,7 +116,7 @@ Instructions:
 Return only the final letter text in your response.
     `;
 
-    console.log('🤖 [API] Calling OpenAI with workerName:', workerName);
+    console.log('🤖 [API] Calling OpenAI with workerName:', safeWorkerName);
     console.log('🤖 [API] Using custom prompt:', !!customPrompt);
     
     const completion = await openai.chat.completions.create({
@@ -142,15 +150,15 @@ Return only the final letter text in your response.
       await logAuditEvent(
         'narrative_generated',
         {
-          worker_name: workerName,
-          job_title: jobTitle,
-          soc_code: socCode,
+          worker_name: safeWorkerName,
+          job_title: safeJobTitle,
+          soc_code: safeSocCode,
           narrative_length: output.length,
           is_compliant: isCompliant,
           custom_prompt_used: !!customPrompt
         },
         'worker',
-        workerName,
+        safeWorkerName,
         undefined,
         { narrative_length: output.length },
         headersList
@@ -161,7 +169,7 @@ Return only the final letter text in your response.
       // Don't fail the request if audit logging fails
     }
 
-    console.log('✅ [API] AI Raw Output generated successfully for worker:', workerName);
+    console.log('✅ [API] AI Raw Output generated successfully for worker:', safeWorkerName);
     console.log('✅ [API] Custom prompt used:', !!customPrompt);
 
     return NextResponse.json({ narrative: output });
