@@ -1,8 +1,15 @@
 // src/lib/email.ts
 // This is a placeholder email service. Replace with your actual email provider (SendGrid, AWS SES, etc.)
 
+import sgMail from '@sendgrid/mail';
+
 const APP_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@sponsorcomplians.co.uk';
+
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 export async function sendVerificationEmail(email: string, name: string, token: string, redirect?: string) {
   let verificationUrl = `${APP_URL}/auth/verify-email?token=${token}`;
@@ -36,19 +43,30 @@ export async function sendVerificationEmail(email: string, name: string, token: 
     </div>
   `;
 
-  // TODO: Implement with your email service
-  console.log('Sending verification email:', { to: email, subject, html });
-  
-  // Example with SendGrid (uncomment and configure):
-  // const sgMail = require('@sendgrid/mail');
-  // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  // const msg = {
-  //   to: email,
-  //   from: FROM_EMAIL,
-  //   subject: subject,
-  //   html: html,
-  // };
-  // await sgMail.send(msg);
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      // Send with SendGrid
+      const msg = {
+        to: email,
+        from: FROM_EMAIL,
+        subject: subject,
+        html: html,
+      };
+      await sgMail.send(msg);
+      console.log('✅ Verification email sent via SendGrid to:', email);
+    } else {
+      // Fallback to console log for development
+      console.log('📧 Sending verification email (development mode):', { 
+        to: email, 
+        subject, 
+        verificationUrl,
+        html: html.substring(0, 200) + '...' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to send verification email:', error);
+    throw error;
+  }
 }
 
 export async function sendPasswordResetEmail(email: string, name: string, token: string) {
@@ -83,8 +101,30 @@ export async function sendPasswordResetEmail(email: string, name: string, token:
     </div>
   `;
 
-  // TODO: Implement with your email service
-  console.log('Sending password reset email:', { to: email, subject, html });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      // Send with SendGrid
+      const msg = {
+        to: email,
+        from: FROM_EMAIL,
+        subject: subject,
+        html: html,
+      };
+      await sgMail.send(msg);
+      console.log('✅ Password reset email sent via SendGrid to:', email);
+    } else {
+      // Fallback to console log for development
+      console.log('📧 Sending password reset email (development mode):', { 
+        to: email, 
+        subject, 
+        resetUrl,
+        html: html.substring(0, 200) + '...' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to send password reset email:', error);
+    throw error;
+  }
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
@@ -119,8 +159,29 @@ export async function sendWelcomeEmail(email: string, name: string) {
     </div>
   `;
 
-  // TODO: Implement with your email service
-  console.log('Sending welcome email:', { to: email, subject, html });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      // Send with SendGrid
+      const msg = {
+        to: email,
+        from: FROM_EMAIL,
+        subject: subject,
+        html: html,
+      };
+      await sgMail.send(msg);
+      console.log('✅ Welcome email sent via SendGrid to:', email);
+    } else {
+      // Fallback to console log for development
+      console.log('📧 Sending welcome email (development mode):', { 
+        to: email, 
+        subject,
+        html: html.substring(0, 200) + '...' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to send welcome email:', error);
+    throw error;
+  }
 }
 
 export async function sendPaymentConfirmationEmail(email: string, name: string, productName: string) {
@@ -158,8 +219,29 @@ export async function sendPaymentConfirmationEmail(email: string, name: string, 
     </div>
   `;
 
-  // TODO: Implement with your email service
-  console.log('Sending payment confirmation email:', { to: email, subject, html });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      // Send with SendGrid
+      const msg = {
+        to: email,
+        from: FROM_EMAIL,
+        subject: subject,
+        html: html,
+      };
+      await sgMail.send(msg);
+      console.log('✅ Payment confirmation email sent via SendGrid to:', email);
+    } else {
+      // Fallback to console log for development
+      console.log('📧 Sending payment confirmation email (development mode):', { 
+        to: email, 
+        subject,
+        html: html.substring(0, 200) + '...' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to send payment confirmation email:', error);
+    throw error;
+  }
 }
 
 export async function sendReminderEmail(email: string, name: string, productName: string) {
@@ -199,6 +281,27 @@ export async function sendReminderEmail(email: string, name: string, productName
     </div>
   `;
 
-  // TODO: Implement with your email service
-  console.log('Sending reminder email:', { to: email, subject, html });
+  try {
+    if (process.env.SENDGRID_API_KEY) {
+      // Send with SendGrid
+      const msg = {
+        to: email,
+        from: FROM_EMAIL,
+        subject: subject,
+        html: html,
+      };
+      await sgMail.send(msg);
+      console.log('✅ Reminder email sent via SendGrid to:', email);
+    } else {
+      // Fallback to console log for development
+      console.log('📧 Sending reminder email (development mode):', { 
+        to: email, 
+        subject,
+        html: html.substring(0, 200) + '...' 
+      });
+    }
+  } catch (error) {
+    console.error('❌ Failed to send reminder email:', error);
+    throw error;
+  }
 }

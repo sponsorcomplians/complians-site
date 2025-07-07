@@ -28,8 +28,15 @@ function VerifyEmailContent() {
       setStatus('pending');
       setMessage('Please check your email for a verification link.');
     } else {
-      setStatus('error');
-      setMessage('No verification token or email provided');
+      // If no email or token, try to get email from URL params or show generic message
+      const urlEmail = searchParams.get('email');
+      if (urlEmail) {
+        setStatus('pending');
+        setMessage('Please check your email for a verification link.');
+      } else {
+        setStatus('error');
+        setMessage('No verification token or email provided. Please check your email for the verification link.');
+      }
     }
   }, [token, email]);
 
