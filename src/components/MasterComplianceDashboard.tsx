@@ -53,6 +53,38 @@ const safe = (value: any): React.ReactNode => {
 };
 
 export default function MasterComplianceDashboard() {
+  // TEMPORARY DEBUG CODE - REMOVE AFTER FIXING
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const origError = console.error;
+      console.error = (...args) => {
+        if (args[0]?.toString?.().includes('Objects are not valid')) {
+          console.log('🔴 REACT ERROR #310 DETECTED');
+          console.log('Check these common issues:');
+          console.log('- error objects: use error.message');
+          console.log('- API responses: use response.data');
+          console.log('- user objects: use user.name or user.email');
+          console.trace('Component stack trace:');
+        }
+        origError.apply(console, args);
+      };
+      
+      return () => { console.error = origError; };
+    }
+  }, []);
+
+  // Also log all state values
+  useEffect(() => {
+    console.log('Dashboard State:', {
+      session: typeof session,
+      error: typeof error,
+      loading: typeof loading,
+      metrics: typeof metrics,
+      workers: typeof workers,
+      filters: typeof filters
+    });
+  });
+
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
   const [metrics, setMetrics] = useState<MasterComplianceMetrics | null>(null);
