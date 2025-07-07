@@ -53,26 +53,46 @@ const safe = (value: any): React.ReactNode => {
 };
 
 export default function MasterComplianceDashboard() {
+  // At the VERY TOP of the component, before ANY other code
+  console.log('=== COMPONENT RENDER START ===');
+  let hookCount = 0;
+
+  // Wrap every hook call
+  const useTrackedState = (initial: any) => {
+    console.log(`Hook #${++hookCount}: useState`);
+    return useState(initial);
+  };
+
+  const useTrackedEffect = (fn: any, deps: any) => {
+    console.log(`Hook #${++hookCount}: useEffect`);
+    return useEffect(fn, deps);
+  };
+
+  const useTrackedSession = () => {
+    console.log(`Hook #${++hookCount}: useSession`);
+    return useSession();
+  };
+
   // ALL HOOKS MUST BE AT THE TOP - NO CONDITIONAL RETURNS BEFORE THIS
-  const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [metrics, setMetrics] = useState<MasterComplianceMetrics | null>(null);
-  const [workers, setWorkers] = useState<MasterComplianceWorker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<MasterComplianceFilters>({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
+  const { data: session, status } = useTrackedSession();
+  const [activeTab, setActiveTab] = useTrackedState('overview');
+  const [metrics, setMetrics] = useTrackedState(null);
+  const [workers, setWorkers] = useTrackedState([]);
+  const [loading, setLoading] = useTrackedState(true);
+  const [error, setError] = useTrackedState(null);
+  const [filters, setFilters] = useTrackedState({});
+  const [currentPage, setCurrentPage] = useTrackedState(1);
+  const [pagination, setPagination] = useTrackedState({
     page: 1,
     pageSize: 20,
     totalPages: 1
   });
-  const [exporting, setExporting] = useState(false);
-  const [generatingNarrative, setGeneratingNarrative] = useState<string | null>(null);
-  const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [exporting, setExporting] = useTrackedState(false);
+  const [generatingNarrative, setGeneratingNarrative] = useTrackedState(null);
+  const [generatingPDF, setGeneratingPDF] = useTrackedState(false);
 
   // TEMPORARY DEBUG CODE - REMOVE AFTER FIXING
-  useEffect(() => {
+  useTrackedEffect(() => {
     if (typeof window !== 'undefined') {
       const origError = console.error;
       console.error = (...args) => {
@@ -92,7 +112,7 @@ export default function MasterComplianceDashboard() {
   }, []);
 
   // Also log all state values
-  useEffect(() => {
+  useTrackedEffect(() => {
     console.log('Dashboard State:', {
       session: typeof session,
       error: typeof error,
@@ -101,10 +121,10 @@ export default function MasterComplianceDashboard() {
       workers: typeof workers,
       filters: typeof filters
     });
-  });
+  }, []);
 
   // Debug React Error #310
-  useEffect(() => {
+  useTrackedEffect(() => {
     const originalError = console.error;
     console.error = (...args) => {
       if (args[0]?.includes?.('Objects are not valid')) {
@@ -167,14 +187,14 @@ export default function MasterComplianceDashboard() {
   }
 
   // Load metrics on component mount
-  useEffect(() => {
+  useTrackedEffect(() => {
     if (session) {
       loadMetrics();
     }
   }, [filters, session]);
 
   // Load workers when tab changes or page changes
-  useEffect(() => {
+  useTrackedEffect(() => {
     if (session && activeTab === 'workers') {
       loadWorkers();
     }
