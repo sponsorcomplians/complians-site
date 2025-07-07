@@ -682,7 +682,7 @@ export default function MasterComplianceDashboard() {
                           <h4 className="font-medium text-gray-900">
                             {safe(agentName)}
                           </h4>
-                          {getStatusBadge(complianceRate >= 80 ? 'COMPLIANT' : complianceRate >= 60 ? 'BREACH' : 'SERIOUS_BREACH')}
+                          {getStatusBadge((complianceRate || 0) >= 80 ? 'COMPLIANT' : (complianceRate || 0) >= 60 ? 'BREACH' : 'SERIOUS_BREACH')}
                         </div>
                         <div className="space-y-2 mb-3">
                           <div className="flex justify-between text-sm">

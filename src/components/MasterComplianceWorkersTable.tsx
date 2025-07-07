@@ -126,7 +126,7 @@ export default function MasterComplianceWorkersTable({
       default:
         return (
           <Badge className={`${baseClasses} bg-gray-100 text-gray-800 border-gray-200`}>
-            {status}
+            {safe(status)}
           </Badge>
         );
     }
@@ -157,7 +157,7 @@ export default function MasterComplianceWorkersTable({
       default:
         return (
           <Badge className={`${baseClasses} bg-gray-100 text-gray-800 border-gray-200`}>
-            {riskLevel}
+            {safe(riskLevel)}
           </Badge>
         );
     }
