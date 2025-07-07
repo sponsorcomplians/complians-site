@@ -82,19 +82,33 @@ export async function getCurrentUserRole(): Promise<UserRoleType | null> {
       return null;
     }
 
-    const { data: userRole, error } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .eq('tenant_id', session.user.tenant_id)
-      .single();
+    // Use the new database function that handles fallback logic
+    const { data, error } = await supabase
+      .rpc('get_user_role_with_fallback', {
+        user_uuid: session.user.id,
+        tenant_uuid: session.user.tenant_id
+      });
 
-    if (error || !userRole) {
-      // Return default role from session or 'Viewer'
-      return (session.user.role as UserRoleType) || 'Viewer';
+    if (error) {
+      console.error('Error getting user role from database function:', error);
+      
+      // Fallback to direct query
+      const { data: userRole, error: fallbackError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .eq('tenant_id', session.user.tenant_id)
+        .single();
+
+      if (fallbackError || !userRole) {
+        // Return default role from session or 'Viewer'
+        return (session.user.role as UserRoleType) || 'Viewer';
+      }
+
+      return userRole.role as UserRoleType;
     }
 
-    return userRole.role as UserRoleType;
+    return (data as UserRoleType) || 'Viewer';
   } catch (error) {
     console.error('Error getting user role:', error);
     return null;
@@ -189,35 +203,24 @@ export async function assignUserRole(userId: string, role: UserRoleType): Promis
       throw new Error('Insufficient permissions to manage users');
     }
 
-    // Check if target user is in the same tenant
-    const { data: targetUser, error: userError } = await supabase
-      .from('users')
-      .select('tenant_id')
-      .eq('id', userId)
-      .single();
-
-    if (userError || !targetUser) {
-      throw new Error('User not found');
-    }
-
-    if (targetUser.tenant_id !== session.user.tenant_id) {
-      throw new Error('Cannot assign role to user in different tenant');
-    }
-
-    // Insert or update user role
-    const { error } = await supabase
-      .from('user_roles')
-      .upsert({
-        user_id: userId,
-        tenant_id: session.user.tenant_id,
-        role: role
-      }, {
-        onConflict: 'user_id,tenant_id'
+    // Use the new database function for role management
+    const { data, error } = await supabase
+      .rpc('manage_user_role', {
+        target_user_uuid: userId,
+        new_role: role,
+        current_user_uuid: session.user.id
       });
 
     if (error) {
-      throw error;
+      console.error('Error calling manage_user_role function:', error);
+      throw new Error(`Failed to assign role: ${error.message}`);
     }
+
+    if (!data?.success) {
+      throw new Error(data?.error || 'Failed to assign role');
+    }
+
+    console.log('Role assigned successfully:', data);
   } catch (error) {
     console.error('Error assigning user role:', error);
     throw error;

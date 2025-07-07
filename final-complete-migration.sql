@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL,
   tenant_id UUID NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('Admin', 'Manager', 'User', 'Viewer')),
+  role TEXT NOT NULL CHECK (role IN ('Admin', 'Manager', 'Auditor', 'Viewer')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, tenant_id)
@@ -86,7 +86,7 @@ BEGIN
   END IF;
   
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'role') THEN
-    ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'User';
+    ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'Viewer';
   END IF;
   
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'email_verification_token') THEN
