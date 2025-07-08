@@ -42,8 +42,6 @@ export default function PaymentGate({
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (status === 'loading') return;
-
       if (!session?.user) {
         setHasAccess(false);
         setLoading(false);
@@ -86,9 +84,9 @@ export default function PaymentGate({
     };
 
     checkAccess();
-  }, [session, status, productId, requirePayment]);
+  }, [session, productId, requirePayment]);
 
-  if (loading || status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
