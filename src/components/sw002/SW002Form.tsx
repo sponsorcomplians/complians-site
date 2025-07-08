@@ -494,6 +494,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="fullName">Full Name *</Label>
                   <Input
                     id="fullName"
+                    name="fullName"
                     value={formData.personalInfo.fullName}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -506,6 +507,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="dateOfBirth">Date of Birth *</Label>
                   <Input
                     id="dateOfBirth"
+                    name="dateOfBirth"
                     type="date"
                     value={formData.personalInfo.dateOfBirth}
                     onChange={(e) => setFormData(prev => ({
@@ -518,6 +520,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="nationality">Nationality *</Label>
                   <Input
                     id="nationality"
+                    name="nationality"
                     value={formData.personalInfo.nationality}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -530,6 +533,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="passportNumber">Passport Number *</Label>
                   <Input
                     id="passportNumber"
+                    name="passportNumber"
                     value={formData.personalInfo.passportNumber}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -542,6 +546,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="brpNumber">BRP Number (if applicable)</Label>
                   <Input
                     id="brpNumber"
+                    name="brpNumber"
                     value={formData.personalInfo.brpNumber}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -554,6 +559,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="email">Email Address *</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     value={formData.personalInfo.email}
                     onChange={(e) => setFormData(prev => ({
@@ -567,6 +573,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="phone">Phone Number *</Label>
                   <Input
                     id="phone"
+                    name="phone"
                     type="tel"
                     value={formData.personalInfo.phone}
                     onChange={(e) => setFormData(prev => ({
@@ -609,6 +616,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="cosNumber">CoS Number *</Label>
                   <Input
                     id="cosNumber"
+                    name="cosNumber"
                     value={formData.cosSummary.cosNumber}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -621,6 +629,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="jobTitle">Job Title *</Label>
                   <Input
                     id="jobTitle"
+                    name="jobTitle"
                     value={formData.cosSummary.jobTitle}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -633,6 +642,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="cosIssueDate">CoS Issue Date *</Label>
                   <Input
                     id="cosIssueDate"
+                    name="cosIssueDate"
                     type="date"
                     value={formData.cosSummary.cosIssueDate}
                     onChange={(e) => setFormData(prev => ({
@@ -645,6 +655,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="cosExpiryDate">CoS Expiry Date *</Label>
                   <Input
                     id="cosExpiryDate"
+                    name="cosExpiryDate"
                     type="date"
                     value={formData.cosSummary.cosExpiryDate}
                     onChange={(e) => setFormData(prev => ({
@@ -657,6 +668,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="salary">Salary *</Label>
                   <Input
                     id="salary"
+                    name="salary"
                     value={formData.cosSummary.salary}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -669,6 +681,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="workLocation">Work Location *</Label>
                   <Input
                     id="workLocation"
+                    name="workLocation"
                     value={formData.cosSummary.workLocation}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -681,6 +694,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="sponsorName">Sponsor Name *</Label>
                   <Input
                     id="sponsorName"
+                    name="sponsorName"
                     value={formData.cosSummary.sponsorName}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -693,6 +707,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="sponsorLicenseNumber">Sponsor License Number *</Label>
                   <Input
                     id="sponsorLicenseNumber"
+                    name="sponsorLicenseNumber"
                     value={formData.cosSummary.sponsorLicenseNumber}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -735,6 +750,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                       <Label htmlFor="advertStartDate">Advertising Start Date *</Label>
                       <Input
                         id="advertStartDate"
+                        name="advertStartDate"
                         type="date"
                         value={formData.advertising.advertStartDate}
                         onChange={(e) => setFormData(prev => ({
@@ -747,6 +763,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                       <Label htmlFor="advertEndDate">Advertising End Date *</Label>
                       <Input
                         id="advertEndDate"
+                        name="advertEndDate"
                         type="date"
                         value={formData.advertising.advertEndDate}
                         onChange={(e) => setFormData(prev => ({
@@ -776,6 +793,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                       <Label htmlFor="applicationsReceived">Number of Applications Received</Label>
                       <Input
                         id="applicationsReceived"
+                        name="applicationsReceived"
                         type="number"
                         value={formData.advertising.applicationsReceived}
                         onChange={(e) => setFormData(prev => ({
@@ -789,6 +807,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                       <Label htmlFor="interviewsConducted">Number of Interviews Conducted</Label>
                       <Input
                         id="interviewsConducted"
+                        name="interviewsConducted"
                         type="number"
                         value={formData.advertising.interviewsConducted}
                         onChange={(e) => setFormData(prev => ({
@@ -858,6 +877,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="signerName">Name of Signatory *</Label>
                   <Input
                     id="signerName"
+                    name="signerName"
                     value={formData.signature.signerName}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -870,6 +890,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                   <Label htmlFor="signerTitle">Job Title *</Label>
                   <Input
                     id="signerTitle"
+                    name="signerTitle"
                     value={formData.signature.signerTitle}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -884,6 +905,7 @@ export default function SW002Form({ workerId }: SW002FormProps) {
                 <Label htmlFor="signatureDate">Date of Signature *</Label>
                 <Input
                   id="signatureDate"
+                  name="signatureDate"
                   type="date"
                   value={formData.signature.signatureDate}
                   onChange={(e) => setFormData(prev => ({
