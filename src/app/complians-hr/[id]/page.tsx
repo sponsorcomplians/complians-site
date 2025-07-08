@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import PaymentGate from "@/components/PaymentGate";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import SW002Form from "@/components/sw002/SW002Form";
 
 const COMPLIANS_HR_PRODUCT_ID = "complians-hr";
 
@@ -82,10 +83,7 @@ export default function CompliansHRWorkerPage() {
                 <div className="text-gray-700 font-medium">Status: {worker.status}</div>
               </div>
               <div className="mt-8">
-                {/* Correction form module will go here */}
-                <div className="p-6 bg-gray-50 rounded border border-dashed border-gray-300 text-gray-500 text-center">
-                  Correction form coming soon...
-                </div>
+                <SW002Form workerId={workerId} />
               </div>
             </CardContent>
           </Card>
