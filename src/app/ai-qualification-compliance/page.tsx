@@ -1,71 +1,29 @@
 "use client";
 
-import { Suspense } from 'react'
-import { useState, useRef, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { 
-  BarChart3, 
-  Users, 
-  FileText, 
-  MessageSquare, 
-  Upload,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Bot,
-  FileCheck,
-  Clock,
-  TrendingUp,
-  Download,
-  Eye,
-  Send,
-  Mail,
-  Printer,
-  Plus,
-  PieChart,
-  HelpCircle,
-  GraduationCap
-} from 'lucide-react'
-import AgentAssessmentExplainer from "../../components/AgentAssessmentExplainer"
-import PaymentGate from "../../components/PaymentGate"
-import QualificationComplianceDashboard from "../../components/QualificationComplianceDashboard"
-
-// Custom Card Components
-const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>
-    {children}
-  </div>
-)
-
-const CardHeader = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`px-6 py-4 border-b border-gray-200 ${className}`}>
-    {children}
-  </div>
-)
-
-const CardContent = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-6 ${className}`}>
-    {children}
-  </div>
-)
+import { GraduationCap } from 'lucide-react';
+import AgentAssessmentExplainer from '../../components/AgentAssessmentExplainer';
+import QualificationComplianceDashboard from '../../components/QualificationComplianceDashboard';
 
 export default function AIQualificationCompliancePage() {
   return (
-    <PaymentGate 
-      productId="ai-qualification-compliance"
-      productName="AI Qualification Compliance Agent"
-    >
-      <AIQualificationComplianceContent />
-    </PaymentGate>
-  )
-}
-
-function AIQualificationComplianceContent() {
-  return (
-    <>
-      <AgentAssessmentExplainer />
+    <div className="container mx-auto p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[#263976] mb-2 flex items-center gap-3">
+          <GraduationCap className="h-8 w-8 text-[#00c3ff]" />
+          AI Qualification Compliance System
+        </h1>
+        <p className="text-gray-600">
+          AI-powered qualification compliance analysis for UK sponsors with document verification and legal-style reporting
+        </p>
+      </div>
+      {/* Explainer and Documents Side-by-Side */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AgentAssessmentExplainer />
+      </div>
+      {/* Main Dashboard */}
       <QualificationComplianceDashboard />
-    </>
+    </div>
   );
 }
 
