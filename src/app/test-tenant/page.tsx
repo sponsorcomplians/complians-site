@@ -104,18 +104,18 @@ export default function TestTenantPage() {
             <CardContent>
               <div className="space-y-2">
                 <div>
-                  <span className="font-medium">Email:</span> {session.user?.email}
+                  <span className="font-medium">Email:</span> {session?.user?.email ?? 'N/A'}
                 </div>
                 <div>
-                  <span className="font-medium">Name:</span> {session.user?.name}
+                  <span className="font-medium">Name:</span> {session?.user?.name ?? 'N/A'}
                 </div>
                 <div>
-                  <span className="font-medium">Company:</span> {session.user?.company}
+                  <span className="font-medium">Company:</span> {session?.user?.company ?? 'N/A'}
                 </div>
                 <div>
                   <span className="font-medium">Tenant ID:</span> 
                   <code className="ml-1 text-xs bg-gray-100 px-1 rounded">
-                    {session.user?.tenant_id}
+                    {session?.user?.tenant_id ?? 'N/A'}
                   </code>
                 </div>
               </div>
