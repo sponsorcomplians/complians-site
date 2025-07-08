@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -53,54 +52,19 @@ const safe = (value: any): React.ReactNode => {
 };
 
 // TODO: RE-ENABLE AUTH
-// Commented out status checks for dev bypass
-// if (status === 'loading') {
-//   return (
-//     <div className="container mx-auto p-6">
-//       <div className="flex items-center justify-center h-64">
-//         <div className="text-center">
-//           <RefreshCw className="h-8 w-8 animate-spin text-brand-light mx-auto mb-4" />
-//           <p className="text-gray-600">
-//             {safe('Checking authentication...')}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-// if (status === 'unauthenticated' || !session) {
-//   return (
-//     <div className="container mx-auto p-6">
-//       <div className="max-w-md mx-auto">
-//         <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-//           <div className="mb-6">
-//             <Shield className="h-16 w-16 text-brand-light mx-auto mb-4" />
-//             <h1 className="text-2xl font-bold text-brand-dark mb-2">
-//               Authentication Required
-//             </h1>
-//             <p className="text-gray-600">
-//               Please sign in to access the Master Compliance Dashboard
-//             </p>
-//           </div>
-//           <div className="space-y-3">
-//             <Link href="/auth/signin">
-//               <Button className="w-full" size="lg">
-//                 <LogIn className="h-4 w-4 mr-2" />
-//                 Sign In
-//               </Button>
-//             </Link>
-//             <p className="text-sm text-gray-500">
-//               Don't have an account?{' '}
-//               <Link href="/auth/signup" className="text-brand-light hover:text-brand-dark">
-//                 Sign up here
-//               </Link>
-//             </p>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+// Temporarily bypass all session and auth checks for development
+const session = {
+  user: {
+    email: 'dev@example.com',
+    name: 'Dev User',
+    company: 'Dev Company',
+    tenant_id: 'dev-tenant-id',
+    role: 'Admin',
+    id: 'dev-user-id',
+  },
+  is_email_verified: true,
+};
+const status = 'authenticated';
 
 export default function MasterComplianceDashboard() {
   // At the VERY TOP of the component, before ANY other code
@@ -118,24 +82,6 @@ export default function MasterComplianceDashboard() {
     return useEffect(fn, deps);
   };
 
-  const useTrackedSession = () => {
-    console.log(`Hook #${++hookCount}: useSession`);
-    return useSession();
-  };
-
-  // ALL HOOKS MUST BE AT THE TOP - NO CONDITIONAL RETURNS BEFORE THIS
-  // const { data: session, status } = useTrackedSession();
-  const session = {
-    user: {
-      email: 'dev@example.com',
-      name: 'Dev User',
-      company: 'Dev Company',
-      tenant_id: 'dev-tenant-id',
-      role: 'Admin',
-    },
-    is_email_verified: true,
-  };
-  const status = 'authenticated';
   const [activeTab, setActiveTab] = useTrackedState('overview');
   const [metrics, setMetrics] = useTrackedState(null as MasterComplianceMetrics | null);
   const [workers, setWorkers] = useTrackedState([]);

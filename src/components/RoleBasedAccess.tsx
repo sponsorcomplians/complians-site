@@ -1,8 +1,21 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { UserRoleType, RolePermissions } from '@/lib/rbac-service';
+// TODO: RE-ENABLE AUTH
+// Temporarily bypass all session and auth checks for development
+const session = {
+  user: {
+    email: 'dev@example.com',
+    name: 'Dev User',
+    company: 'Dev Company',
+    tenant_id: 'dev-tenant-id',
+    role: 'Admin',
+    id: 'dev-user-id',
+  },
+  is_email_verified: true,
+};
+const status = 'authenticated';
 
 interface RoleBasedAccessProps {
   children: ReactNode;
@@ -31,14 +44,11 @@ export function RoleBasedAccess({
   fallback = null,
   showFallback = false 
 }: RoleBasedAccessProps) {
-  const { data: session, status } = useSession();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (status === 'loading') return;
-      
       if (!session?.user) {
         setHasAccess(false);
         setIsLoading(false);
@@ -88,7 +98,7 @@ export function RoleBasedAccess({
     };
 
     checkAccess();
-  }, [session, status, requiredPermission, requiredRole]);
+  }, [session, requiredPermission, requiredRole]);
 
   if (isLoading) {
     return null; // Don't show anything while loading

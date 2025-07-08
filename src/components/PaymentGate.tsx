@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Lock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,10 +21,24 @@ export default function PaymentGate({
   fallback,
   requirePayment = true 
 }: PaymentGateProps) {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // TODO: RE-ENABLE AUTH
+  // Temporarily bypass all session and auth checks for development
+  const session = {
+    user: {
+      email: 'dev@example.com',
+      name: 'Dev User',
+      company: 'Dev Company',
+      tenant_id: 'dev-tenant-id',
+      role: 'Admin',
+      id: 'dev-user-id',
+    },
+    is_email_verified: true,
+  };
+  const status = 'authenticated';
 
   useEffect(() => {
     const checkAccess = async () => {

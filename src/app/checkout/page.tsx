@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,10 +53,24 @@ const PRODUCTS = {
   }
 };
 
+// TODO: RE-ENABLE AUTH
+// Temporarily bypass all session and auth checks for development
+const session = {
+  user: {
+    email: 'dev@example.com',
+    name: 'Dev User',
+    company: 'Dev Company',
+    tenant_id: 'dev-tenant-id',
+    role: 'Admin',
+    id: 'dev-user-id',
+  },
+  is_email_verified: true,
+};
+const status = 'authenticated';
+
 function CheckoutForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -68,13 +81,6 @@ function CheckoutForm() {
       setSelectedProduct(PRODUCTS[productId as keyof typeof PRODUCTS]);
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    // Redirect to signin if not authenticated
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin?redirect=' + encodeURIComponent('/checkout' + window.location.search));
-    }
-  }, [status, router]);
 
   const handleCheckout = async () => {
     if (!selectedProduct || !session?.user) return;
@@ -109,17 +115,6 @@ function CheckoutForm() {
       setLoading(false);
     }
   };
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading checkout...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!session?.user) {
     return null; // Will redirect to signin

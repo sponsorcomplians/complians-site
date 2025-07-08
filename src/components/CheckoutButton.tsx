@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { ShoppingCart, Loader2 } from 'lucide-react'
 
@@ -18,15 +17,27 @@ export default function CheckoutButton({
   price, 
   className = '' 
 }: CheckoutButtonProps) {
-  const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // TODO: RE-ENABLE AUTH
+  // Temporarily bypass all session and auth checks for development
+  const session = {
+    user: {
+      email: 'dev@example.com',
+      name: 'Dev User',
+      company: 'Dev Company',
+      tenant_id: 'dev-tenant-id',
+      role: 'Admin',
+      id: 'dev-user-id',
+    },
+    is_email_verified: true,
+  };
+  const status = 'authenticated';
+
   const handleCheckout = async () => {
     // Check if user is authenticated
-    if (status === 'loading') return
-    
     if (!session) {
       // TEMPORARILY DISABLED FOR DEV
       // router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
@@ -70,7 +81,7 @@ export default function CheckoutButton({
     <div className="space-y-2">
       <button
         onClick={handleCheckout}
-        disabled={loading || status === 'loading'}
+        disabled={loading}
         className={className || defaultClassName}
       >
         {loading ? (
@@ -90,7 +101,7 @@ export default function CheckoutButton({
         <p className="text-sm text-red-600 text-center">{error}</p>
       )}
 
-      {!session && status !== 'loading' && (
+      {!session && (
         <p className="text-sm text-gray-600 text-center">
           You'll be asked to sign in before checkout
         </p>
