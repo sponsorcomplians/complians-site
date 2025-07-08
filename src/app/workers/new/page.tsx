@@ -59,7 +59,7 @@ export default function NewWorkerPage() {
         position: formData.position
       }
       
-      const result = await workerProfileApi.create(workerData, session.user.tenant_id)
+      const result = await workerProfileApi.create(workerData, session?.user?.tenant_id ?? 'N/A')
       console.log('Worker created successfully:', result)
       
       // Reset form
