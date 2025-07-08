@@ -1,5 +1,5 @@
 // src/app/products/[slug]/page.tsx
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { userHasPurchasedProduct } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
@@ -31,6 +31,10 @@ export default async function ProductPage({
   const hasAccess = session?.user?.id 
     ? await userHasPurchasedProduct(session.user.id, product.id)
     : false;
+
+  if (!session && process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+    redirect('/auth/signin');
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

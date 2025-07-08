@@ -15,6 +15,8 @@ const supabase = createClient(
 // GET - Fetch all assessments for a worker
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.DISABLE_AUTH === 'true') return NextResponse.json({ user: { email: 'dev@test.com', role: 'admin' } });
+
     const { searchParams } = new URL(request.url);
     const workerId = searchParams.get('workerId');
     const assessmentType = searchParams.get('type'); // 'skills', 'experience', 'cv'
@@ -58,6 +60,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new assessment
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.DISABLE_AUTH === 'true') return NextResponse.json({ user: { email: 'dev@test.com', role: 'admin' } });
+
     const body = await request.json();
     const {
       worker_id,
@@ -113,6 +117,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update assessment
 export async function PUT(request: NextRequest) {
   try {
+    if (process.env.DISABLE_AUTH === 'true') return NextResponse.json({ user: { email: 'dev@test.com', role: 'admin' } });
+
     const body = await request.json();
     const {
       id,
@@ -164,6 +170,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete assessment
 export async function DELETE(request: NextRequest) {
   try {
+    if (process.env.DISABLE_AUTH === 'true') return NextResponse.json({ user: { email: 'dev@test.com', role: 'admin' } });
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

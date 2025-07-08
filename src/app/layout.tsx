@@ -31,6 +31,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true') {
+    console.warn('⚠️ AUTH DISABLED - DEVELOPMENT ONLY ⚠️');
+  }
+
   return (
     <html lang="en">
       <body>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -116,8 +116,8 @@ function CheckoutForm() {
     }
   };
 
-  if (!session?.user) {
-    return null; // Will redirect to signin
+  if (!session && process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+    redirect('/auth/signin');
   }
 
   if (!selectedProduct) {
