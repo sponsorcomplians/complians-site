@@ -60,6 +60,13 @@ export default function PaymentGate({
         return;
       }
 
+      // Bypass payment check when auth is disabled
+      if (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true') {
+        setHasAccess(true);
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch(`/api/user/purchases/product-access`);
         

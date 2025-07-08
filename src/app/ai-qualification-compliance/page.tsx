@@ -61,6 +61,11 @@ export default function AIQualificationCompliancePage() {
 }
 
 function AIQualificationComplianceContent() {
-  return <QualificationComplianceDashboard />;
+  return (
+    <>
+      <AgentAssessmentExplainer />
+      <QualificationComplianceDashboard />
+    </>
+  );
 }
 

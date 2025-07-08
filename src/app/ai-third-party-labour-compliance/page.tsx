@@ -3,10 +3,16 @@
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
+import AgentAssessmentExplainer from '@/components/AgentAssessmentExplainer'
 import ThirdPartyLabourComplianceDashboard from '@/components/ThirdPartyLabourComplianceDashboard'
 
 function ThirdPartyLabourComplianceContent() {
-  return <ThirdPartyLabourComplianceDashboard />
+  return (
+    <>
+      <AgentAssessmentExplainer />
+      <ThirdPartyLabourComplianceDashboard />
+    </>
+  )
 }
 
 export default function AIThirdPartyLabourCompliancePage() {
