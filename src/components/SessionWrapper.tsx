@@ -8,6 +8,8 @@ interface SessionWrapperProps {
   fallback?: ReactNode;
 }
 
+// TODO: RE-ENABLE AUTH
+// Temporarily bypass SessionWrapper for development. Always render children directly.
 export default function SessionWrapper({ children, fallback }: SessionWrapperProps) {
   const { status } = useSession();
 

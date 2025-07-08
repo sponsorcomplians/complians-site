@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'sonner';
 
@@ -22,7 +21,6 @@ interface Worker {
 
 export default function WorkersPage() {
   const [mounted, setMounted] = useState(false);
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +31,20 @@ export default function WorkersPage() {
     setMounted(true);
   }, []);
 
-  // if (!session) router.push('/'); // TEMPORARILY DISABLED FOR DEV
+  // TODO: RE-ENABLE AUTH
+  // Temporarily bypass all session and auth checks for development
+  // Always allow workers page to render, provide dummy session if needed
+  const session = {
+    user: {
+      email: 'dev@example.com',
+      name: 'Dev User',
+      company: 'Dev Company',
+      tenant_id: 'dev-tenant-id',
+      role: 'Admin',
+    },
+    is_email_verified: true,
+  };
+  const status = 'authenticated';
 
   useEffect(() => {
     if (session) fetchWorkers();
