@@ -1,6 +1,15 @@
 import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
+// === TEMPORARY BYPASS FOR DEVELOPMENT ===
+// This will allow access to all pages without authentication.
+// Remove or comment this block to restore auth protection.
+export default function middleware(req: NextRequest) {
+  return NextResponse.next();
+}
+
+// --- Original middleware below (commented out) ---
+/*
 export default withAuth(
   function middleware(req) {
     const pathname = req.nextUrl.pathname
@@ -66,6 +75,7 @@ export default withAuth(
     },
   }
 )
+*/
 
 export const config = {
   matcher: [
