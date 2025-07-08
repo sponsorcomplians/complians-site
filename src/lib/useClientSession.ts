@@ -1,8 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-
 // TODO: RE-ENABLE AUTH
 // Temporarily bypass useClientSession for development. Always return a dummy session object.
 export default function useClientSession() {
