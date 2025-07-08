@@ -159,6 +159,10 @@ export default function Header() {
             <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
               Contact
             </Link>
+
+            <Link href="/complians-hr" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Complians HR
+            </Link>
           </nav>
 
           {/* User Menu / Auth */}
@@ -382,6 +386,10 @@ export default function Header() {
                   </Link>
                 </div>
               )}
+
+              <Link href="/complians-hr" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                Complians HR
+              </Link>
             </nav>
           </div>
         )}

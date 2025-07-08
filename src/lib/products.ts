@@ -51,3 +51,11 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   return data || []
 }
 
+// Add Complians HR Correction Pack to the product list if not present in DB
+export const COMPLIANS_HR_PRODUCT = {
+  id: 'complians-hr',
+  name: 'Complians HR Correction Pack',
+  price: 9900, // £99.00 in pence
+  is_active: true,
+};
+

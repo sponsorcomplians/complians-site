@@ -12,6 +12,7 @@ export default function Navigation() {
     { href: '/dashboard', label: 'Dashboard', icon: AlertCircle },
     { href: '/workers', label: 'Workers', icon: Users },
     { href: '/documents', label: 'Documents', icon: FileText },
+    { href: '/complians-hr', label: 'Complians HR', icon: FileText },
     { href: '/settings', label: 'Settings', icon: Settings },
   ];
 

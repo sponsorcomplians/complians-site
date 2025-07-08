@@ -69,6 +69,11 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
+              <li>
+                <Link href="/complians-hr" className="text-gray-300 hover:text-[#00c3ff] transition-colors">
+                  Complians HR
+                </Link>
+              </li>
             </ul>
           </div>
 
