@@ -1,5 +1,3 @@
-'use client';
-
 // TODO: RE-ENABLE AUTH
 // Temporarily bypass useClientSession for development. Always return a dummy session object.
 export default function useClientSession() {
@@ -14,26 +12,3 @@ export default function useClientSession() {
     is_email_verified: true,
   };
 }
-
-export function useClientSession() {
-  const [mounted, setMounted] = useState(false);
-  const session = useSession();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Return null during SSR and before mounting
-  if (!mounted) {
-    return {
-      data: null,
-      status: 'loading' as const,
-      mounted: false,
-    };
-  }
-
-  return {
-    ...session,
-    mounted: true,
-  };
-} 
