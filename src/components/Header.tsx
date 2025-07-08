@@ -258,7 +258,7 @@ export default function Header() {
                   Sign In
                 </Link> */}
                 <Link
-                  href="/auth/signup"
+                  href="/ai-agents"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   Get Started
@@ -377,7 +377,7 @@ export default function Header() {
                   {/* <Link href="/auth/signin" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                     Sign In
                   </Link> */}
-                  <Link href="/auth/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                  <Link href="/ai-agents" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                     Get Started
                   </Link>
                 </div>

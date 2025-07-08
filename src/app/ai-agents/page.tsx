@@ -675,9 +675,8 @@ export default function AIAgentsProductsPage() {
 
   const handleGetStarted = (agent: AIAgent) => {
     if (agent.status === 'available') {
-      // Redirect to signup with the agent page as redirect target
-      const redirectUrl = encodeURIComponent(agent.href);
-      window.location.href = `/auth/signup?redirect=${redirectUrl}`;
+      // Navigate directly to the agent page
+      window.location.href = agent.href;
     } else {
       // Handle coming soon - maybe show interest form
       alert(`${agent.name} is coming soon! We'll notify you when it's available.`)

@@ -515,7 +515,7 @@ export default function HomePage() {
                       disabled={!agent.available}
                     >
                       <Link
-                        href={agent.available ? `/auth/signup?redirect=${encodeURIComponent(`/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment`)}` : "#"}
+                        href={agent.available ? `/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment` : "#"}
                       >
                         {agent.available ? "Get Started" : "Coming Soon"}
                       </Link>
@@ -689,7 +689,7 @@ export default function HomePage() {
                       disabled={!agent.available}
                     >
                       <Link
-                        href={agent.available ? `/auth/signup?redirect=${encodeURIComponent(`/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment`)}` : "#"}
+                        href={agent.available ? `/ai-${agent.id}${agent.id.endsWith("-compliance") ? "" : "-compliance"}?tab=assessment` : "#"}
                       >
                         {agent.available ? "Get Started" : "Coming Soon"}
                       </Link>

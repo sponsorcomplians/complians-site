@@ -210,7 +210,7 @@ export default function ProductsPage() {
           Start your free trial today. No credit card required.
         </p>
         <div className="space-x-4">
-          <Link href="/auth/signup">
+          <Link href="/ai-agents">
             <Button size="lg">Start Free Trial</Button>
           </Link>
           <Link href="/contact">
