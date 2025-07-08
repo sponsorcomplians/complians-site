@@ -69,24 +69,17 @@ export default function CompliansHRWorkerPage() {
         ) : !worker ? (
           <div>Worker not found.</div>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Complians HR Correction Pack for {worker.firstName} {worker.lastName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="text-gray-700 font-medium">Email: {worker.email}</div>
-                <div className="text-gray-700 font-medium">Role: {worker.role}</div>
-                <div className="text-gray-700 font-medium">Department: {worker.department || 'N/A'}</div>
-                <div className="text-gray-700 font-medium">Status: {worker.status}</div>
-              </div>
-              <div className="mt-8">
-                <SW002Form workerId={workerId} />
-              </div>
-            </CardContent>
-          </Card>
+          <div>
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-[#00AEEF] mb-2">
+                SW002 Skilled Worker Coversheet
+              </h1>
+              <h2 className="text-xl font-bold text-[#00AEEF]">
+                {worker.firstName} {worker.lastName}
+              </h2>
+            </div>
+            <SW002Form workerId={workerId} />
+          </div>
         )}
       </div>
     </PaymentGate>
