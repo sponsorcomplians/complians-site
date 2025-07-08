@@ -5,6 +5,8 @@ import PaymentGate from "@/components/PaymentGate";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import SW002Form from "@/components/sw002/SW002Form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const COMPLIANS_HR_PRODUCT_ID = "complians-hr";
 
@@ -70,15 +72,19 @@ export default function CompliansHRWorkerPage() {
           <div>Worker not found.</div>
         ) : (
           <div>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-[#00AEEF] mb-2">
-                SW002 Skilled Worker Coversheet
-              </h1>
-              <h2 className="text-xl font-bold text-[#00AEEF]">
-                {worker.firstName} {worker.lastName}
-              </h2>
-            </div>
             <SW002Form workerId={workerId} />
+            <div className="mt-6">
+              <Label htmlFor="migrantName" className="text-lg font-semibold text-[#00AEEF]">
+                Name of the Migrant
+              </Label>
+              <Input
+                id="migrantName"
+                name="migrantName"
+                value={`${worker.firstName} ${worker.lastName}`}
+                className="mt-2 text-lg font-medium"
+                readOnly
+              />
+            </div>
           </div>
         )}
       </div>
