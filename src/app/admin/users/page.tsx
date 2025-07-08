@@ -34,10 +34,7 @@ export default function UserManagementPage() {
   useEffect(() => {
     if (status === 'loading') return;
     
-    if (!session) {
-      router.push('/auth/signin');
-      return;
-    }
+    // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
 
     fetchUsers();
   }, [session, status, router]);

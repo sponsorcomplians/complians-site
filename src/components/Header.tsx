@@ -227,22 +227,24 @@ export default function Header() {
                         </Link>
                       </AdminOnly>
                       
-                      <button
+                      {/* TEMPORARILY DISABLED FOR DEV */}
+                      {/* <button
                         onClick={() => signOut()}
                         className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
                         Sign Out
-                      </button>
+                      </button> */}
                     </div>
                   )}
                 </div>
               </>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link href="/auth/signin" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                {/* TEMPORARILY DISABLED FOR DEV */}
+                {/* <Link href="/auth/signin" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   Sign In
-                </Link>
+                </Link> */}
                 <Link
                   href="/auth/signup"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -325,12 +327,13 @@ export default function Header() {
                       </Link>
                     </AdminOnly>
                     
-                    <button
+                    {/* TEMPORARILY DISABLED FOR DEV */}
+                    {/* <button
                       onClick={() => signOut()}
                       className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       Sign Out
-                    </button>
+                    </button> */}
                   </div>
                   
                   {/* Mobile user info */}
@@ -358,9 +361,10 @@ export default function Header() {
                 </>
               ) : (
                 <div className="border-t border-gray-200 pt-2 mt-2">
-                  <Link href="/auth/signin" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                  {/* TEMPORARILY DISABLED FOR DEV */}
+                  {/* <Link href="/auth/signin" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                     Sign In
-                  </Link>
+                  </Link> */}
                   <Link href="/auth/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                     Get Started
                   </Link>

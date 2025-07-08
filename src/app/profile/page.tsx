@@ -35,10 +35,7 @@ export default function ProfilePage() {
     confirmPassword: '',
   });
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    if (!session) router.push('/auth/signin');
-  }, [session, status, router]);
+  // if (!session) router.push('/auth/signin'); // TEMPORARILY DISABLED FOR DEV
 
   useEffect(() => {
     if (session) fetchProfile();

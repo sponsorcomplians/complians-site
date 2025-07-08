@@ -33,10 +33,7 @@ export default function WorkersPage() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    if (!session) router.push('/');
-  }, [session, status, router]);
+  // if (!session) router.push('/'); // TEMPORARILY DISABLED FOR DEV
 
   useEffect(() => {
     if (session) fetchWorkers();

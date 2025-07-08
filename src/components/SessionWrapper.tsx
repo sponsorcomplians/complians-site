@@ -22,5 +22,7 @@ export default function SessionWrapper({ children, fallback }: SessionWrapperPro
     );
   }
 
+  // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
+
   return <>{children}</>;
 } 

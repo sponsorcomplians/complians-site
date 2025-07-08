@@ -28,7 +28,8 @@ export default function CheckoutButton({
     if (status === 'loading') return
     
     if (!session) {
-      router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
+      // TEMPORARILY DISABLED FOR DEV
+      // router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
       return
     }
 

@@ -142,16 +142,7 @@ export default function TenantAISettingsPage() {
     );
   }
 
-  if (!session) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Tenant AI Settings</h1>
-          <p className="text-gray-600">Please sign in to manage AI configuration.</p>
-        </div>
-      </div>
-    );
-  }
+  // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
 
   return (
     <div className="container mx-auto p-6">

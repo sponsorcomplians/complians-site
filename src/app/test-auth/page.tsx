@@ -21,6 +21,8 @@ export default function TestAuthPage() {
     );
   }
 
+  // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
+
   return (
     <div>
       <h1>Auth Test</h1>
