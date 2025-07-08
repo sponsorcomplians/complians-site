@@ -316,17 +316,12 @@ function SignUpForm() {
   );
 }
 
+// TODO: Re-enable sign-up page after authentication is fixed
 export default function SignUpPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    }>
-      <SignUpForm />
-    </Suspense>
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <h1>Sign-up temporarily disabled for development</h1>
+      <p>Please try again later.</p>
+    </div>
   );
 }
