@@ -1,10 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { workerProfileApi } from '@/lib/supabase'
-import { useSession } from 'next-auth/react'
 
 export default function NewWorkerPage() {
-  const { data: session } = useSession()
   const [isClient, setIsClient] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -39,7 +37,18 @@ export default function NewWorkerPage() {
       return
     }
 
-    // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
+    // TODO: RE-ENABLE AUTH
+    // Temporarily bypass all session and auth checks for development
+    const session = {
+      user: {
+        email: 'dev@example.com',
+        name: 'Dev User',
+        company: 'Dev Company',
+        tenant_id: 'dev-tenant-id',
+        role: 'Admin',
+      },
+      is_email_verified: true,
+    };
 
     try {
       setIsLoading(true)

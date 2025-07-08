@@ -2,26 +2,27 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 
 export default function TestAuthPage() {
   const [mounted, setMounted] = useState(false);
-  const { data: session, status } = useSession();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted || status === 'loading') {
-    return (
-      <div>
-        <h1>Auth Test</h1>
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
-  // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
+  // TODO: RE-ENABLE AUTH
+  // Temporarily bypass all session and auth checks for development
+  const session = {
+    user: {
+      email: 'dev@example.com',
+      name: 'Dev User',
+      company: 'Dev Company',
+      tenant_id: 'dev-tenant-id',
+      role: 'Admin',
+    },
+    is_email_verified: true,
+  };
+  const status = 'authenticated';
 
   return (
     <div>

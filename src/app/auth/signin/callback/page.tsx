@@ -4,33 +4,23 @@ export const dynamic = 'force-dynamic';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+
+// TODO: RE-ENABLE AUTH
+// Temporarily bypass all session and auth checks for development
+const session = {
+  user: {
+    email: 'dev@example.com',
+    name: 'Dev User',
+    company: 'Dev Company',
+    tenant_id: 'dev-tenant-id',
+    role: 'Admin',
+  },
+  is_email_verified: true,
+};
+const status = 'authenticated';
 
 export default function CallbackPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      // Redirect to dashboard or home after successful authentication
-      router.push('/dashboard');
-    } else if (status === 'unauthenticated') {
-      // Redirect to signin if not authenticated
-      router.push('/auth/signin');
-    }
-  }, [status, router]);
-
-  // Handle loading state
-  if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">Processing...</h2>
-          <p className="text-gray-600">Please wait while we complete your sign in.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,6 @@ interface TenantUser {
 }
 
 export default function UserManagementPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [users, setUsers] = useState<TenantUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +28,20 @@ export default function UserManagementPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const roleHierarchy = getRoleHierarchy();
+
+  // TODO: RE-ENABLE AUTH
+  // Temporarily bypass all session and auth checks for development
+  const session = {
+    user: {
+      email: 'dev@example.com',
+      name: 'Dev User',
+      company: 'Dev Company',
+      tenant_id: 'dev-tenant-id',
+      role: 'Admin',
+    },
+    is_email_verified: true,
+  };
+  const status = 'authenticated';
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -127,17 +139,6 @@ export default function UserManagementPage() {
       default: return <UserX className="w-4 h-4" />;
     }
   };
-
-  if (status === 'loading' || loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <AdminOnly fallback={
