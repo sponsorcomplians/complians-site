@@ -33,6 +33,7 @@ export default function UserManagementPage() {
   // Temporarily bypass all session and auth checks for development
   const session = {
     user: {
+      id: 'dev-user-id',
       email: 'dev@example.com',
       name: 'Dev User',
       company: 'Dev Company',
@@ -44,10 +45,8 @@ export default function UserManagementPage() {
   const status = 'authenticated';
 
   useEffect(() => {
-    if (status === 'loading') return;
-    
+    // Removed: if (status === 'loading') return;
     // if (!session) { /* block or redirect logic */ } // TEMPORARILY DISABLED FOR DEV
-
     fetchUsers();
   }, [session, status, router]);
 
