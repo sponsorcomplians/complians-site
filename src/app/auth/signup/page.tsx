@@ -317,11 +317,12 @@ function SignUpForm() {
 }
 
 // TODO: Re-enable sign-up page after authentication is fixed
-export default function SignUpPage() {
-  return (
-    <div style={{ padding: 40, textAlign: 'center' }}>
-      <h1>Sign-up temporarily disabled for development</h1>
-      <p>Please try again later.</p>
-    </div>
-  );
-}
+// export default function SignUpPage() {
+//   return (
+//     <div style={{ padding: 40, textAlign: 'center' }}>
+//       <h1>Sign-up temporarily disabled for development</h1>
+//       <p>Please try again later.</p>
+//     </div>
+//   );
+// }
+export default SignUpForm;
