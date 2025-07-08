@@ -109,7 +109,7 @@ export default function WorkersPage() {
     );
   });
 
-  if (!mounted || status === 'loading' || loading) {
+  if (!mounted || loading) {
     return (
       <div className="container mx-auto p-6 text-center text-muted-foreground">
         Loading...
