@@ -11,6 +11,10 @@ interface SessionWrapperProps {
 // TODO: RE-ENABLE AUTH
 // Temporarily bypass SessionWrapper for development. Always render children directly.
 export default function SessionWrapper({ children, fallback }: SessionWrapperProps) {
+  if (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true') {
+    return <>{children}</>;
+  }
+
   const { status } = useSession();
 
   if (status === 'loading') {

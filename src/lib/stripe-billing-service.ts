@@ -1,7 +1,5 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-import { getServerSession } from 'next-auth';
-import { authOptions } from './auth-config';
 import {
   BillingPlan,
   UsageBilling,

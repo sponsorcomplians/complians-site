@@ -15,6 +15,14 @@ export interface TenantContext {
  */
 export async function getTenantContext(): Promise<TenantContext | null> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      return {
+        tenant_id: 'dev-tenant-id',
+        user_id: 'dev-user-id',
+        company: 'Dev Company'
+      };
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id || !session?.user?.tenant_id || !session?.user?.company) {

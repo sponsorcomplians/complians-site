@@ -10,6 +10,9 @@ interface AuthProviderProps {
 // TODO: RE-ENABLE AUTH
 // Temporarily bypass AuthProvider for development. Always render children directly.
 export function AuthProvider({ children }: AuthProviderProps) {
-  return children;
+  if (process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true') {
+    return <>{children}</>;
+  }
+  return <SessionProvider>{children}</SessionProvider>;
 }
 

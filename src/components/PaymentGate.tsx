@@ -116,14 +116,22 @@ export default function PaymentGate({
           </CardHeader>
           <CardContent className="space-y-4">
             <Button 
-              onClick={() => router.push('/auth/signup')}
+              onClick={() => {
+                if (process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+                  router.push('/auth/signup');
+                }
+              }}
               className="w-full"
             >
               Sign Up
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => router.push('/auth/signin')}
+              onClick={() => {
+                if (process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+                  router.push('/auth/signin');
+                }
+              }}
               className="w-full"
             >
               Sign In

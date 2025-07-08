@@ -39,8 +39,9 @@ export default function CheckoutButton({
   const handleCheckout = async () => {
     // Check if user is authenticated
     if (!session) {
-      // TEMPORARILY DISABLED FOR DEV
-      // router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
+      if (process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+        router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href))
+      }
       return
     }
 

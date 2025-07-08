@@ -26,18 +26,27 @@ const supabase = createClient(
 
 // ✅ Get the current user session
 export async function getCurrentUser() {
+  if (process.env.DISABLE_AUTH === 'true') {
+    return { email: 'dev@test.com', id: 'dev-user-id' };
+  }
   const session = await getServerSession(authOptions);
   return session?.user;
 }
 
 // ✅ Check if a user is authenticated
 export async function isAuthenticated() {
+  if (process.env.DISABLE_AUTH === 'true') {
+    return true;
+  }
   const session = await getServerSession(authOptions);
   return !!session;
 }
 
 // ✅ Get session with type safety
 export async function getSession() {
+  if (process.env.DISABLE_AUTH === 'true') {
+    return { user: { email: 'dev@test.com', id: 'dev-user-id' } };
+  }
   return await getServerSession(authOptions);
 }
 

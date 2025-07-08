@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { getServerSession } from 'next-auth';
-import { authOptions } from './auth-config';
+import { authOptions } from '@/lib/auth-config';
+import { supabase } from '@/lib/supabase';
 import {
   TenantUsageMetrics,
   TenantMetricsSummary,
@@ -9,10 +10,22 @@ import {
   TopPerformingTenant
 } from '@/types/database';
 
-const supabase = createClient(
+const supabaseClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+// Helper function to get tenant ID with auth bypass
+async function getTenantId(): Promise<string> {
+  if (process.env.DISABLE_AUTH === 'true') {
+    return 'dev-tenant-id';
+  }
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.tenant_id) {
+    throw new Error('No tenant context');
+  }
+  return session.user.tenant_id;
+}
 
 /**
  * Increment a specific metric for the current tenant
@@ -24,15 +37,11 @@ export async function incrementTenantMetric(
   incrementValue: number = 1
 ): Promise<void> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .rpc('increment_tenant_metric', {
-        tenant_uuid: session.user.tenant_id,
+        tenant_uuid: tenantId,
         metric_column: metricColumn,
         increment_value: incrementValue
       });
@@ -51,15 +60,11 @@ export async function incrementTenantMetric(
  */
 export async function getTenantMetricsSummary(daysBack: number = 30): Promise<TenantMetricsSummary | null> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .rpc('get_tenant_metrics_summary', {
-        tenant_uuid: session.user.tenant_id,
+        tenant_uuid: tenantId,
         days_back: daysBack
       });
 
@@ -82,15 +87,11 @@ export async function getTenantDailyMetrics(
   endDate: string
 ): Promise<TenantUsageMetrics[]> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .rpc('get_tenant_metrics', {
-        tenant_uuid: session.user.tenant_id,
+        tenant_uuid: tenantId,
         start_date: startDate,
         end_date: endDate
       });
@@ -111,15 +112,11 @@ export async function getTenantDailyMetrics(
  */
 export async function getComplianceTrends(daysBack: number = 30): Promise<ComplianceTrends[]> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .rpc('get_compliance_trends', {
-        tenant_uuid: session.user.tenant_id,
+        tenant_uuid: tenantId,
         days_back: daysBack
       });
 
@@ -139,15 +136,11 @@ export async function getComplianceTrends(daysBack: number = 30): Promise<Compli
  */
 export async function getBreachBreakdown(daysBack: number = 30): Promise<BreachBreakdown[]> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .rpc('get_breach_breakdown', {
-        tenant_uuid: session.user.tenant_id,
+        tenant_uuid: tenantId,
         days_back: daysBack
       });
 
@@ -172,16 +165,12 @@ export async function getComplianceStatusCounts(): Promise<{
   total: number;
 }> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('compliance_workers')
       .select('compliance_status')
-      .eq('tenant_id', session.user.tenant_id);
+      .eq('tenant_id', tenantId);
 
     if (error) {
       throw error;
@@ -213,18 +202,14 @@ export async function getComplianceStatusCounts(): Promise<{
  */
 export async function getRecentActivityMetrics(daysBack: number = 7): Promise<TenantUsageMetrics[]> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
+    const tenantId = await getTenantId();
 
     const startDate = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('tenant_usage_metrics')
       .select('*')
-      .eq('tenant_id', session.user.tenant_id)
+      .eq('tenant_id', tenantId)
       .gte('date', startDate)
       .order('date', { ascending: false });
 
@@ -247,13 +232,18 @@ export async function getTopPerformingTenants(
   limit: number = 10
 ): Promise<TopPerformingTenant[]> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      // Return mock data for development
+      return [];
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       throw new Error('No session context');
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .rpc('get_top_performing_tenants', {
         days_back: daysBack,
         limit_count: limit
@@ -341,12 +331,6 @@ export async function getTenantAnalyticsData(daysBack: number = 30): Promise<{
   };
 }> {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.tenant_id) {
-      throw new Error('No tenant context');
-    }
-
     const startDate = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDate = new Date().toISOString().split('T')[0];
 

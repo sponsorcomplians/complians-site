@@ -225,8 +225,8 @@ export async function logAuditEvent(
     const userAgent = headersList?.get('user-agent') || 'unknown';
 
     const auditLog: Partial<AuditLog> = {
-      tenant_id: tenantId || session?.user?.tenant_id,
-      user_id: session?.user?.id || 'system',
+      tenant_id: tenantId || (process.env.DISABLE_AUTH === 'true' ? 'dev-tenant-id' : session?.user?.tenant_id),
+      user_id: process.env.DISABLE_AUTH === 'true' ? 'dev-user-id' : (session?.user?.id || 'system'),
       action,
       details: {
         ...details,

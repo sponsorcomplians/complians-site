@@ -55,10 +55,12 @@ function VerifyEmailContent() {
         setMessage('Your email has been verified successfully!');
         // Redirect to signin after 3 seconds, preserving redirect parameter
         setTimeout(() => {
-          if (redirect) {
-            router.push(`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`);
-          } else {
-            router.push('/auth/signin');
+          if (process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true') {
+            if (redirect) {
+              router.push(`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`);
+            } else {
+              router.push('/auth/signin');
+            }
           }
         }, 3000);
       } else {

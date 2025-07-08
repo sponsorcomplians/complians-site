@@ -76,6 +76,10 @@ export const ROLE_PERMISSIONS: Record<UserRoleType, RolePermissions> = {
  */
 export async function getCurrentUserRole(): Promise<UserRoleType | null> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      return 'Admin'; // Return admin role for development
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id || !session?.user?.tenant_id) {
@@ -160,6 +164,17 @@ export async function getTenantUsersWithRoles(): Promise<Array<{
   created_at: string;
 }>> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      // Return mock data for development
+      return [{
+        user_id: 'dev-user-id',
+        email: 'dev@test.com',
+        full_name: 'Dev User',
+        role: 'Admin',
+        created_at: new Date().toISOString()
+      }];
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.tenant_id) {
@@ -192,6 +207,12 @@ export async function getTenantUsersWithRoles(): Promise<Array<{
  */
 export async function assignUserRole(userId: string, role: UserRoleType): Promise<void> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      // Skip role assignment in development
+      console.log('Role assignment skipped in development mode');
+      return;
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id || !session?.user?.tenant_id) {
@@ -239,6 +260,20 @@ export async function removeUserRole(userId: string): Promise<void> {
  */
 export async function getUserPermissionsSummary(): Promise<UserPermissions | null> {
   try {
+    if (process.env.DISABLE_AUTH === 'true') {
+      // Return mock admin permissions for development
+      return {
+        role: 'Admin',
+        can_manage_users: true,
+        can_manage_workers: true,
+        can_manage_assessments: true,
+        can_create_reports: true,
+        can_view_audit_logs: true,
+        can_export_data: true,
+        can_manage_tenant_settings: true
+      };
+    }
+    
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id || !session?.user?.tenant_id) {
