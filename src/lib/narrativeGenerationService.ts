@@ -5,6 +5,7 @@ import { narrativeValidator } from './narrativeValidation';
 import { narrativeMetrics } from './narrativeMetrics';
 import { generateAINarrative } from './aiNarrativeService';
 import { getTenantAIConfig, generateAIPrompt, applyTenantAISettings } from './multi-tenant-service';
+import { skillsExperienceSystemPrompt } from './prompts/skillsExperiencePrompt';
 
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -201,9 +202,15 @@ export class NarrativeGenerationService {
    * Generate base prompt for AI generation
    */
   private static generateBasePrompt(input: NarrativeInput): string {
+    // Use the custom system prompt for Skills & Experience Compliance
+    if (
+      input.agentType === 'skills-experience' ||
+      input.agentType === 'ai-skills-experience-compliance'
+    ) {
+      return skillsExperienceSystemPrompt.trim();
+    }
     const { step1Pass, step2Pass, step3Pass, step4Pass, step5Pass } = input;
     const failures = [step1Pass, step2Pass, step3Pass, step4Pass, step5Pass].filter(pass => !pass).length;
-    
     return `
 Generate a comprehensive compliance assessment narrative for a sponsored worker under SOC code ${input.socCode} (${input.jobTitle}).
 

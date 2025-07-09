@@ -525,7 +525,8 @@ export default function SkillsExperienceComplianceDashboard() {
         step4Pass,
         step5Pass,
         isCompliant,
-        riskLevel
+        riskLevel,
+        agentType: 'skills-experience'
       });
       console.log('[SkillsExperienceComp] Narrative returned:', narrative);
     } catch (error) {

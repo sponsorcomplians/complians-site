@@ -42,6 +42,9 @@ export interface NarrativeInput {
   compliance_score?: number;
   risk_score?: number;
   compliance_status?: 'COMPLIANT' | 'BREACH' | 'SERIOUS_BREACH';
+
+  // Agent type for narrative routing
+  agentType?: string;
 }
 
 export interface NarrativeAudit {
