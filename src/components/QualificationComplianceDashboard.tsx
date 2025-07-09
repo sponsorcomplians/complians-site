@@ -24,7 +24,6 @@ import {
   GraduationCap,
   Calendar,
 } from "lucide-react";
-import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 
 // Types for our data structures
 interface QualificationWorker {
@@ -1037,10 +1036,6 @@ Best regards`;
         <p className="text-gray-600">
           AI-powered SOC code verification and qualification analysis for UK sponsors
         </p>
-      </div>
-      {/* Explainer Module */}
-      <div className="mb-8">
-        <AgentAssessmentExplainer />
       </div>
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

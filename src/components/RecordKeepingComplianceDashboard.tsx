@@ -25,7 +25,6 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react";
-import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
 
 // Types for our data structures
@@ -668,10 +667,6 @@ ${assessment?.professionalAssessment}`;
         <p className="text-gray-600">
           Ensure sponsor license records are complete, organized, and audit-ready
         </p>
-      </div>
-      {/* Explainer Module */}
-      <div className="mb-8">
-        <AgentAssessmentExplainer />
       </div>
       {/* Navigation Tabs */}
       <div className="flex justify-center mb-8">

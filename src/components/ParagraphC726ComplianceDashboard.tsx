@@ -24,7 +24,6 @@ import {
   GraduationCap,
   Calendar,
 } from "lucide-react";
-import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
 
 // Types for our data structures
@@ -661,10 +660,6 @@ ${assessment?.professionalAssessment}`;
           <h1 className="text-3xl font-bold text-brand-dark">AI Paragraph C7-26 Compliance Agent</h1>
         </div>
         <p className="text-gray-600 text-lg ml-10">Check compliance with Paragraph C7-26, flag breaches, and guide on sponsor duties.</p>
-      </div>
-      {/* Explainer Module */}
-      <div className="mb-8">
-        <AgentAssessmentExplainer />
       </div>
       {/* Navigation Tabs */}
       <div className="flex justify-center mb-8">
