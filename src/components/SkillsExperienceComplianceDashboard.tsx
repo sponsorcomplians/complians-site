@@ -588,19 +588,6 @@ Based on these findings, the Home Office would conclude that you have breached p
 This represents a serious breach of sponsor compliance obligations and may result in licence suspension or revocation under Annex C1 (reference w) and Annex C2 (reference a) of the sponsor guidance.
 
 Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isCompliant ? 'assessment indicates compliance with sponsor duties' : 'immediate remedial action is required, including a full internal audit of assigned CoS, review of experience evidence and job descriptions, and corrective reporting to the Home Office to mitigate enforcement risks'}.
-
----
-
-**Decision Tree Compliance Summary:**
-
-- **Step 1: Required Documents Provided:** ${step1Pass ? "✅ Yes" : "❌ No"}
-- **Step 2: Employment History Consistent:** ${step2Pass ? "✅ Yes" : "❌ No"}
-- **Step 3: Experience Matches CoS Duties:** ${step3Pass ? "✅ Yes" : "❌ No"}
-- **Step 4: References Credible & Independent:** ${step4Pass ? "✅ Yes" : "❌ No"}
-- **Step 5: Experience Recent & Continuous:** ${step5Pass ? "✅ Yes" : "❌ No"}
-
-**Overall Risk Level:** ${riskLevel}
-**Final Compliance Status:** ${isCompliant ? "COMPLIANT" : "SERIOUS BREACH"}
 `;
     }
 
