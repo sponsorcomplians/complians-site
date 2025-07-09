@@ -167,15 +167,15 @@ const PieChartComponent = ({ data }: { data: any[] }) => {
 };
 
 const BarChartComponent = ({ data }: { data: any[] }) => {
-  const maxValue = Math.max(...data.map(item => item.value));
-  
+  const maxValue = Math.max(...data.map(item => item.value), 1);
+  const maxBarHeight = 140; // px, fits well in the card
   return (
-    <div className="flex items-end justify-center space-x-2 h-40">
+    <div className="flex items-end justify-center space-x-2 h-40 max-h-40 overflow-hidden">
       {data.map((item, index) => (
         <div key={index} className="flex flex-col items-center">
           <div 
             className="w-12 bg-green-500 rounded-t"
-            style={{ height: `${(item.value / maxValue) * 120}px` }}
+            style={{ height: `${Math.max(8, (item.value / maxValue) * maxBarHeight)}px` }}
           ></div>
           <span className="text-xs mt-2 text-center">{item.name}</span>
           <span className="text-xs text-gray-500">{item.value}</span>

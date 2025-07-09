@@ -168,15 +168,15 @@ const PieChartComponent = ({ data }: { data: any[] }) => {
 };
 
 const BarChartComponent = ({ data }: { data: any[] }) => {
-  const maxValue = Math.max(...data.map(item => item.value));
-  
+  const maxValue = Math.max(...data.map(item => item.value), 1);
+  const maxBarHeight = 140; // px, fits well in the card
   return (
-    <div className="flex items-end justify-center space-x-2 h-40">
+    <div className="flex items-end justify-center space-x-2 h-40 max-h-40 overflow-hidden">
       {data.map((item, index) => (
         <div key={index} className="flex flex-col items-center">
           <div 
             className="w-12 bg-green-500 rounded-t"
-            style={{ height: `${(item.value / maxValue) * 120}px` }}
+            style={{ height: `${Math.max(8, (item.value / maxValue) * maxBarHeight)}px` }}
           ></div>
           <span className="text-xs mt-2 text-center">{item.name}</span>
           <span className="text-xs text-gray-500">{item.value}</span>
@@ -1043,19 +1043,7 @@ ${assessment?.professionalAssessment}`;
                 <BarChart3 className="h-5 w-5" />
                 Risk Level Breakdown
               </div>
-              {/* Bar chart placeholder */}
-              <div className="flex items-end justify-around h-48">
-                {barChartData.map((item, idx) => (
-                  <div key={idx} className="flex flex-col items-center">
-                    <div
-                      className="w-8 rounded-t bg-blue-400"
-                      style={{ height: `${item.value * 60}px` }}
-                    ></div>
-                    <span className="text-xs mt-2">{item.name}</span>
-                    <span className="text-xs text-gray-500">{item.value}</span>
-                  </div>
-                ))}
-              </div>
+              <BarChartComponent data={barChartData} />
             </div>
           </div>
 
