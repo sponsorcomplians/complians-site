@@ -190,9 +190,26 @@ export function detectDocumentType(fileName: string, text: string): string {
 
 // CV Extraction
 export function extractCVInfo(text: string): CVInfo {
-  const lines = text.split('\n');
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  let fullName = '';
+  // Try to find a line that looks like a name at the top
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i];
+    if (/^[A-Z][a-z]+( [A-Z][a-z]+)+$/.test(line) || /[A-Za-z]+[, ]+[A-Za-z]+/.test(line)) {
+      fullName = line;
+      break;
+    }
+    if (/^(Name|Full Name)[:\s]/i.test(line)) {
+      fullName = line.replace(/^(Name|Full Name)[:\s]*/i, '');
+      break;
+    }
+  }
+  // Fallback: use the first non-empty line
+  if (!fullName && lines.length > 0) {
+    fullName = lines[0];
+  }
   const info: CVInfo = {
-    fullName: '',
+    fullName,
     email: '',
     phone: '',
     address: '',
@@ -205,7 +222,7 @@ export function extractCVInfo(text: string): CVInfo {
 
   // Extract basic info
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i];
     
     // Email
     const emailMatch = line.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
