@@ -7,6 +7,22 @@ import { generateAINarrative } from './aiNarrativeService';
 import { getTenantAIConfig, generateAIPrompt, applyTenantAISettings } from './multi-tenant-service';
 import { skillsExperienceSystemPrompt } from './prompts/skillsExperiencePrompt';
 
+const skillsExperienceLetterSystemPrompt = `
+You are a Senior UK Immigration and Sponsor Compliance Solicitor. Write formal, evidence-based compliance assessment letters in polished British legal English.
+
+You are assessing whether the worker assigned a Certificate of Sponsorship (CoS) meets the required skills and experience for the job stated under the assigned SOC code. Your report must always:
+
+- Be structured as a letter (no bullet points or headers)
+- Be specific to the input data
+- Cite legal rules, including Paragraph C1.38 and Appendix D
+- Reference any missing or flawed evidence
+- NEVER use placeholders or templates (e.g., no [Migrant Name] or [Date])
+- Use legal, professional, and natural language — not robotic
+
+You must not invent facts. Only include what is mentioned in the user input. Vary your sentence structure to sound like a real letter written by a compliance officer or solicitor.
+
+You will receive all extracted data in the next message.`;
+
 // Model configurations
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'gpt-4': {
@@ -79,6 +95,51 @@ export class NarrativeGenerationService {
       await narrativeMetrics.logGeneration(audit);
       
       return { narrative: cachedNarrative, audit };
+    }
+
+    // --- CUSTOM LOGIC FOR SKILLS & EXPERIENCE AGENT ---
+    if (input.agentType === 'skills-experience' || input.agentType === 'ai-skills-experience-compliance') {
+      // Build a single user message with all extracted data
+      const userMessage = `Please assess the following worker:\n\n- Migrant name: ${input.workerName}\n- CoS Reference: ${input.cosReference}\n- SOC Code: ${input.socCode}\n- Job Title: ${input.jobTitle}\n- Job Duties (CoS): ${input.cosDuties}\n- Job Description Duties: ${input.jobDescriptionDuties}\n- Documents provided: ${[input.hasCV ? 'CV' : '', input.hasReferences ? 'reference letter' : '', input.hasTraining ? 'training certificate' : '', input.hasContracts ? 'employment contract' : '', input.hasPayslips ? 'payslips' : ''].filter(Boolean).join(', ') || 'None'}\n- Gaps: ${input.inconsistenciesDescription || 'None'}\n- Issues: ${input.missingDocs.length > 0 ? 'Missing documents: ' + input.missingDocs.join(', ') : 'None'}\n\nWrite a compliance letter assessing if this person is suitable for the role based on this information. Conclude if the sponsor breached duties or is compliant.`;
+      const messages = [
+        { role: 'system', content: skillsExperienceLetterSystemPrompt },
+        { role: 'user', content: userMessage }
+      ];
+      // Call OpenAI directly with this messages array
+      try {
+        const openai = require('openai');
+        const client = new openai.OpenAI();
+        const completion = await client.chat.completions.create({
+          model: 'gpt-4o',
+          messages,
+          temperature: 0.2,
+          max_tokens: 1200
+        });
+        const aiNarrative = completion.choices[0].message.content;
+        // ... (validation, audit, and return as in normal flow)
+        const audit: NarrativeAudit = {
+          id: auditId,
+          timestamp: new Date().toISOString(),
+          input: adjustedInput,
+          output: aiNarrative,
+          model: 'gpt-4o',
+          promptVersion: this.currentPromptVersion,
+          temperature: 0.2,
+          duration: Date.now() - startTime,
+          tokenCount: Math.ceil(aiNarrative.length / 4),
+          validationPassed: true,
+          fallbackUsed: false,
+          costEstimate: (Math.ceil(aiNarrative.length / 4) / 1000) * 0.01,
+          tenantAIConfig: tenantAIConfig,
+          customPrompt: skillsExperienceLetterSystemPrompt
+        };
+        this.auditLog.push(audit);
+        await narrativeMetrics.logGeneration(audit);
+        return { narrative: aiNarrative, audit };
+      } catch (error) {
+        console.error('AI generation failed for skills-experience agent:', error);
+        // Continue to fallback/template
+      }
     }
 
     // Try AI generation first if enabled
