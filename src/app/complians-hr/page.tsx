@@ -54,59 +54,68 @@ export default function CompliansHRLanding() {
 
   return (
     <PaymentGate productId={COMPLIANS_HR_PRODUCT_ID} productName="Complians HR Correction Pack">
-      <div className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-2">Complians HR Correction Packs</h1>
-        <p className="text-gray-600 mb-6">Proactive and reactive HR compliance correction for your workforce.</p>
-        {loading ? (
-          <div>Loading...</div>
-        ) : workers.length === 0 ? (
-          <div className="text-center mt-12">
-            <p className="mb-4 text-lg">No correction packs started yet.</p>
-            <Button asChild>
-              <Link href="/workers/new?redirect=/complians-hr">Start New Correction Pack</Link>
-            </Button>
+      <div className="container mx-auto p-6 bg-[#F9FAFB] min-h-screen font-sans animate-fade-in">
+        <h1 className="text-3xl font-bold text-[#00AEEF] mb-2">CompliANS HR Correction Packs</h1>
+        <p className="text-[#6B7280] mb-6 leading-relaxed text-lg">Proactive and reactive HR compliance correction for your workforce.</p>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="w-full sm:w-auto">
+            {/* Optional: Add search/filter here if needed */}
           </div>
-        ) : (
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Your Workers</h2>
-              <Button asChild>
-                <Link href="/workers/new?redirect=/complians-hr">Start New Correction Pack</Link>
-              </Button>
-            </div>
-            <div className="bg-white rounded shadow overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+          <button
+            className="bg-[#00AEEF] text-white px-6 py-3 rounded-full hover:bg-[#0096c7] transition-all duration-150 font-semibold shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#00AEEF] focus:ring-offset-2"
+            onClick={() => router.push('/workers/new?redirect=/complians-hr')}
+          >
+            Start New Correction Pack
+          </button>
+        </div>
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
+          <table className="min-w-full text-sm text-left">
+            <thead className="bg-[#F9FAFB]">
+              <tr>
+                <th className="px-6 py-4 font-medium text-[#6B7280]">Name</th>
+                <th className="px-6 py-4 font-medium text-[#6B7280]">Role</th>
+                <th className="px-6 py-4 font-medium text-[#6B7280]">Department</th>
+                <th className="px-6 py-4 font-medium text-[#6B7280]">Status</th>
+                <th className="px-6 py-4 font-medium text-[#6B7280]">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={5} className="text-center py-8 text-[#6B7280]">Loading...</td></tr>
+              ) : workers.length === 0 ? (
+                <tr><td colSpan={5} className="text-center py-8 text-[#6B7280]">No correction packs started yet.</td></tr>
+              ) : (
+                workers.map((worker, idx) => (
+                  <tr
+                    key={worker.id}
+                    className={`border-b transition hover:bg-[#F3F4F6] cursor-pointer ${idx % 2 === 1 ? 'bg-[#FAFAFB]' : ''}`}
+                    onClick={() => router.push(`/complians-hr/${worker.id}`)}
+                  >
+                    <td className="px-6 py-4 rounded-md">
+                      <div className="font-medium text-[#1F2937]">{worker.firstName} {worker.lastName}</div>
+                      <div className="text-sm text-[#6B7280]">{worker.email}</div>
+                    </td>
+                    <td className="px-6 py-4 rounded-md">{worker.role}</td>
+                    <td className="px-6 py-4 rounded-md">{worker.department || 'N/A'}</td>
+                    <td className="px-6 py-4 rounded-md">
+                      <span className={`bg-[#D1FAE5] text-[#065F46] rounded-full px-3 py-1 text-xs font-medium ${worker.status !== 'active' ? 'bg-gray-200 text-gray-500' : ''}`}>
+                        {worker.status.charAt(0).toUpperCase() + worker.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 rounded-md">
+                      <button
+                        className="bg-[#00AEEF] text-white px-4 py-2 rounded-full hover:bg-[#0096c7] transition-all duration-150 font-semibold shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#00AEEF] focus:ring-offset-2"
+                        onClick={e => { e.stopPropagation(); router.push(`/complians-hr/${worker.id}`); }}
+                      >
+                        Open Correction Pack
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {workers.map((worker) => (
-                    <tr key={worker.id}>
-                      <td className="px-6 py-4">
-                        <div className="font-medium">{worker.firstName} {worker.lastName}</div>
-                        <div className="text-sm text-gray-500">{worker.email}</div>
-                      </td>
-                      <td className="px-6 py-4">{worker.role}</td>
-                      <td className="px-6 py-4">{worker.department || 'N/A'}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${worker.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>{worker.status}</span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Button onClick={() => router.push(`/complians-hr/${worker.id}`)} size="sm">Open Correction Pack</Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </PaymentGate>
   );

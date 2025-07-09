@@ -73,18 +73,6 @@ export default function CompliansHRWorkerPage() {
         ) : (
           <div>
             <SW002Form workerId={workerId} />
-            <div className="mt-6">
-              <Label htmlFor="migrantName" className="text-lg font-semibold text-[#00AEEF]">
-                Name of the Migrant
-              </Label>
-              <Input
-                id="migrantName"
-                name="migrantName"
-                value={`${worker.firstName} ${worker.lastName}`}
-                className="mt-2 text-lg font-medium"
-                readOnly
-              />
-            </div>
           </div>
         )}
       </div>

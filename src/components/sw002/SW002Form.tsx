@@ -36,7 +36,6 @@ interface SW002FormProps {
 }
 
 interface FormData {
-  // Personal Information
   personalInfo: {
     fullName: string;
     dateOfBirth: string;
@@ -47,8 +46,6 @@ interface FormData {
     phone: string;
     address: string;
   };
-  
-  // CoS Summary
   cosSummary: {
     cosNumber: string;
     cosIssueDate: string;
@@ -59,8 +56,6 @@ interface FormData {
     sponsorName: string;
     sponsorLicenseNumber: string;
   };
-  
-  // Advertising & Genuine Vacancy Evidence
   advertising: {
     jobAdvertised: boolean;
     advertStartDate: string;
@@ -72,8 +67,6 @@ interface FormData {
     reasonForNonSelection: string;
     documentsUploaded: string[];
   };
-  
-  // Resident Labour Market Test (RLMT)
   rlmt: {
     rlmtExempt: boolean;
     exemptionReason: string;
@@ -85,8 +78,6 @@ interface FormData {
     rejectionReasons: string;
     documentsUploaded: string[];
   };
-  
-  // Right to Work & Immigration Status
   rightToWork: {
     rtwCheckCompleted: boolean;
     rtwCheckDate: string;
@@ -96,8 +87,6 @@ interface FormData {
     visaExpiryDate: string;
     documentsUploaded: string[];
   };
-  
-  // Criminal Record & Fitness Checks
   criminalChecks: {
     dbsCheckCompleted: boolean;
     dbsCheckDate: string;
@@ -107,8 +96,6 @@ interface FormData {
     additionalChecks: string;
     documentsUploaded: string[];
   };
-  
-  // Induction & Training
   induction: {
     inductionCompleted: boolean;
     inductionDate: string;
@@ -117,8 +104,6 @@ interface FormData {
     trainingCompleted: string[];
     documentsUploaded: string[];
   };
-  
-  // Occupational Health & Insurance
   occupationalHealth: {
     healthAssessmentCompleted: boolean;
     healthAssessmentDate: string;
@@ -129,8 +114,6 @@ interface FormData {
     insuranceExpiryDate: string;
     documentsUploaded: string[];
   };
-  
-  // Payment & Contract Terms
   paymentContract: {
     contractSigned: boolean;
     contractStartDate: string;
@@ -142,8 +125,6 @@ interface FormData {
     noticePeriod: string;
     documentsUploaded: string[];
   };
-  
-  // Ongoing Monitoring & Reviews
   monitoring: {
     firstReviewCompleted: boolean;
     firstReviewDate: string;
@@ -153,8 +134,6 @@ interface FormData {
     areasForImprovement: string;
     documentsUploaded: string[];
   };
-  
-  // Notes / Additional Compliance Commentary
   notes: {
     additionalComments: string;
     complianceIssues: string;
@@ -162,8 +141,6 @@ interface FormData {
     followUpRequired: boolean;
     followUpDate: string;
   };
-  
-  // Signature
   signature: {
     signerName: string;
     signerTitle: string;
@@ -303,15 +280,15 @@ export default function SW002Form({ workerId }: SW002FormProps) {
   const sections = [
     { id: 'personal', title: 'Personal Information', icon: User },
     { id: 'cos', title: 'CoS Summary', icon: FileText },
-    { id: 'advertising', title: 'Advertising & Genuine Vacancy', icon: Building },
-    { id: 'rlmt', title: 'Resident Labour Market Test', icon: Shield },
-    { id: 'rtw', title: 'Right to Work & Immigration', icon: User },
-    { id: 'criminal', title: 'Criminal Record & Fitness', icon: Shield },
-    { id: 'induction', title: 'Induction & Training', icon: Calendar },
-    { id: 'health', title: 'Occupational Health & Insurance', icon: Shield },
-    { id: 'payment', title: 'Payment & Contract Terms', icon: CreditCard },
-    { id: 'monitoring', title: 'Ongoing Monitoring & Reviews', icon: Calendar },
-    { id: 'notes', title: 'Notes & Additional Commentary', icon: FileText },
+    { id: 'area1', title: 'HR & Compliance Area 1', icon: Shield },
+    { id: 'area2', title: 'HR & Compliance Area 2', icon: Shield },
+    { id: 'area3', title: 'HR & Compliance Area 3', icon: Shield },
+    { id: 'area4', title: 'HR & Compliance Area 4', icon: Shield },
+    { id: 'reporting', title: 'Reporting Duties', icon: FileText },
+    { id: 'qualifications', title: 'Qualifications', icon: FileText },
+    { id: 'skills', title: 'Skills and Experience', icon: FileText },
+    { id: 'others', title: 'Others', icon: FileText },
+    { id: 'notes', title: 'Notes', icon: FileText },
   ];
 
   useEffect(() => {
@@ -387,7 +364,6 @@ export default function SW002Form({ workerId }: SW002FormProps) {
 
       if (error) throw error;
 
-      // Update form data with uploaded file
       setFormData(prev => ({
         ...prev,
         [section]: {
@@ -413,17 +389,15 @@ export default function SW002Form({ workerId }: SW002FormProps) {
   };
 
   const generatePDF = async () => {
-    // PDF generation logic will be implemented
     console.log('Generating PDF...');
   };
 
   const handleSignature = async () => {
-    // Digital signature logic will be implemented
     console.log('Handling signature...');
   };
 
   const progress = calculateProgress();
-
+  
   return (
     <div className="space-y-6">
       {/* Header with Progress */}
@@ -459,484 +433,438 @@ export default function SW002Form({ workerId }: SW002FormProps) {
         </CardHeader>
       </Card>
 
+      {/* Name of Sponsored Worker field */}
+      <div className="w-full">
+        <Label htmlFor="sponsoredWorkerName" className="text-lg font-semibold text-[#00AEEF]">
+          Name of Sponsored Worker
+        </Label>
+        <Input
+          id="sponsoredWorkerName"
+          name="sponsoredWorkerName"
+          value={formData.personalInfo.fullName}
+          className="mt-2 text-lg font-medium"
+          readOnly
+        />
+      </div>
+
       {/* Form Sections */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
-          {sections.slice(0, 6).map((section) => (
-            <TabsTrigger key={section.id} value={section.id} className="flex items-center gap-2">
-              <section.icon className="h-4 w-4" />
-              {section.title.split(' ')[0]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        
-        <TabsList className="grid w-full grid-cols-5 mb-6">
-          {sections.slice(6).map((section) => (
-            <TabsTrigger key={section.id} value={section.id} className="flex items-center gap-2">
-              <section.icon className="h-4 w-4" />
-              {section.title.split(' ')[0]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {/* Personal Information */}
-        <TabsContent value="personal">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
-                <User className="h-5 w-5" />
-                Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    name="fullName"
-                    value={formData.personalInfo.fullName}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, fullName: e.target.value }
-                    }))}
-                    placeholder="Enter full name as per passport"
-                  />
+      <Card className="w-full bg-white rounded-xl shadow p-4">
+        <div className="w-full flex flex-col items-center">
+          <div className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <div className="w-full">
+                <div className="grid grid-cols-6 w-full bg-[#002B45] rounded-t-xl overflow-hidden">
+                  {sections.slice(0, 6).map((section, idx) => (
+                    <TabsTrigger
+                      key={section.id}
+                      value={section.id}
+                      className={`flex items-center justify-center gap-2 px-2 py-4 text-base font-bold border-r border-white/20 transition-all h-14
+                        ${idx === 0 ? 'rounded-tl-xl' : ''}
+                        ${idx === 5 ? 'rounded-tr-xl' : ''}
+                        bg-[#002B45] text-white
+                        data-[state=active]:bg-white data-[state=active]:text-[#005B8C]
+                      `}
+                      style={{ minWidth: 0 }}
+                    >
+                      <section.icon className="h-5 w-5" />
+                      {section.title}
+                    </TabsTrigger>
+                  ))}
                 </div>
-                <div>
-                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                  <Input
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    type="date"
-                    value={formData.personalInfo.dateOfBirth}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, dateOfBirth: e.target.value }
-                    }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="nationality">Nationality *</Label>
-                  <Input
-                    id="nationality"
-                    name="nationality"
-                    value={formData.personalInfo.nationality}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, nationality: e.target.value }
-                    }))}
-                    placeholder="Enter nationality"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="passportNumber">Passport Number *</Label>
-                  <Input
-                    id="passportNumber"
-                    name="passportNumber"
-                    value={formData.personalInfo.passportNumber}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, passportNumber: e.target.value }
-                    }))}
-                    placeholder="Enter passport number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="brpNumber">BRP Number (if applicable)</Label>
-                  <Input
-                    id="brpNumber"
-                    name="brpNumber"
-                    value={formData.personalInfo.brpNumber}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, brpNumber: e.target.value }
-                    }))}
-                    placeholder="Enter BRP number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.personalInfo.email}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, email: e.target.value }
-                    }))}
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.personalInfo.phone}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, phone: e.target.value }
-                    }))}
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="address">Address *</Label>
-                  <Textarea
-                    id="address"
-                    value={formData.personalInfo.address}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, address: e.target.value }
-                    }))}
-                    placeholder="Enter full address"
-                    rows={3}
-                  />
+                <div className="grid grid-cols-5 w-full bg-[#002B45] rounded-b-xl overflow-hidden border-t-2 border-white/20">
+                  {sections.slice(6).map((section, idx) => (
+                    <TabsTrigger
+                      key={section.id}
+                      value={section.id}
+                      className={`flex items-center justify-center gap-2 px-2 py-4 text-base font-bold border-r border-white/20 transition-all h-14
+                        ${idx === 0 ? 'rounded-bl-xl' : ''}
+                        ${idx === 4 ? 'rounded-br-xl' : ''}
+                        bg-[#002B45] text-white
+                        data-[state=active]:bg-white data-[state=active]:text-[#005B8C]
+                      `}
+                      style={{ minWidth: 0 }}
+                    >
+                      <section.icon className="h-5 w-5" />
+                      {section.title}
+                    </TabsTrigger>
+                  ))}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        {/* CoS Summary */}
-        <TabsContent value="cos">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
-                <FileText className="h-5 w-5" />
-                Certificate of Sponsorship (CoS) Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="cosNumber">CoS Number *</Label>
-                  <Input
-                    id="cosNumber"
-                    name="cosNumber"
-                    value={formData.cosSummary.cosNumber}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, cosNumber: e.target.value }
-                    }))}
-                    placeholder="Enter CoS number"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="jobTitle">Job Title *</Label>
-                  <Input
-                    id="jobTitle"
-                    name="jobTitle"
-                    value={formData.cosSummary.jobTitle}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, jobTitle: e.target.value }
-                    }))}
-                    placeholder="Enter job title"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cosIssueDate">CoS Issue Date *</Label>
-                  <Input
-                    id="cosIssueDate"
-                    name="cosIssueDate"
-                    type="date"
-                    value={formData.cosSummary.cosIssueDate}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, cosIssueDate: e.target.value }
-                    }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cosExpiryDate">CoS Expiry Date *</Label>
-                  <Input
-                    id="cosExpiryDate"
-                    name="cosExpiryDate"
-                    type="date"
-                    value={formData.cosSummary.cosExpiryDate}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, cosExpiryDate: e.target.value }
-                    }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="salary">Salary *</Label>
-                  <Input
-                    id="salary"
-                    name="salary"
-                    value={formData.cosSummary.salary}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, salary: e.target.value }
-                    }))}
-                    placeholder="Enter annual salary"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="workLocation">Work Location *</Label>
-                  <Input
-                    id="workLocation"
-                    name="workLocation"
-                    value={formData.cosSummary.workLocation}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, workLocation: e.target.value }
-                    }))}
-                    placeholder="Enter work location"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sponsorName">Sponsor Name *</Label>
-                  <Input
-                    id="sponsorName"
-                    name="sponsorName"
-                    value={formData.cosSummary.sponsorName}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, sponsorName: e.target.value }
-                    }))}
-                    placeholder="Enter sponsor name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sponsorLicenseNumber">Sponsor License Number *</Label>
-                  <Input
-                    id="sponsorLicenseNumber"
-                    name="sponsorLicenseNumber"
-                    value={formData.cosSummary.sponsorLicenseNumber}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cosSummary: { ...prev.cosSummary, sponsorLicenseNumber: e.target.value }
-                    }))}
-                    placeholder="Enter sponsor license number"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Advertising & Genuine Vacancy Evidence */}
-        <TabsContent value="advertising">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
-                <Building className="h-5 w-5" />
-                Advertising & Genuine Vacancy Evidence
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="jobAdvertised"
-                  checked={formData.advertising.jobAdvertised}
-                  onCheckedChange={(checked) => setFormData(prev => ({
-                    ...prev,
-                    advertising: { ...prev.advertising, jobAdvertised: checked as boolean }
-                  }))}
-                />
-                <Label htmlFor="jobAdvertised">Job was advertised in accordance with RLMT requirements</Label>
+              {/* Informational Text Box - moved below tabs */}
+              <div className="border border-[#00AEEF] bg-[#F9FAFB] rounded-lg p-3 my-4 text-sm text-[#00AEEF] font-normal w-full">
+                <span className="">Sponsorship is a privilege not a right. Significant trust is placed in sponsors and they must ensure they comply with immigration law and wider UK law, and not behave in a manner that is not conducive to the wider public good.</span>
               </div>
 
-              {formData.advertising.jobAdvertised && (
-                <div className="space-y-4 pl-6 border-l-2 border-[#00AEEF]">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="advertStartDate">Advertising Start Date *</Label>
-                      <Input
-                        id="advertStartDate"
-                        name="advertStartDate"
-                        type="date"
-                        value={formData.advertising.advertStartDate}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          advertising: { ...prev.advertising, advertStartDate: e.target.value }
-                        }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="advertEndDate">Advertising End Date *</Label>
-                      <Input
-                        id="advertEndDate"
-                        name="advertEndDate"
-                        type="date"
-                        value={formData.advertising.advertEndDate}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          advertising: { ...prev.advertising, advertEndDate: e.target.value }
-                        }))}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="advertText">Advertisement Text *</Label>
-                    <Textarea
-                      id="advertText"
-                      value={formData.advertising.advertText}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        advertising: { ...prev.advertising, advertText: e.target.value }
-                      }))}
-                      placeholder="Paste the full advertisement text here"
-                      rows={4}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="applicationsReceived">Number of Applications Received</Label>
-                      <Input
-                        id="applicationsReceived"
-                        name="applicationsReceived"
-                        type="number"
-                        value={formData.advertising.applicationsReceived}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          advertising: { ...prev.advertising, applicationsReceived: parseInt(e.target.value) || 0 }
-                        }))}
-                        placeholder="Enter number"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="interviewsConducted">Number of Interviews Conducted</Label>
-                      <Input
-                        id="interviewsConducted"
-                        name="interviewsConducted"
-                        type="number"
-                        value={formData.advertising.interviewsConducted}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          advertising: { ...prev.advertising, interviewsConducted: parseInt(e.target.value) || 0 }
-                        }))}
-                        placeholder="Enter number"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="reasonForNonSelection">Reason for Non-Selection of UK Workers</Label>
-                    <Textarea
-                      id="reasonForNonSelection"
-                      value={formData.advertising.reasonForNonSelection}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        advertising: { ...prev.advertising, reasonForNonSelection: e.target.value }
-                      }))}
-                      placeholder="Explain why UK workers were not suitable for the role"
-                      rows={3}
-                    />
-                  </div>
-                  
-                  {/* Document Upload */}
-                  <div>
-                    <Label>Upload Advertising Evidence</Label>
-                    <div className="mt-2 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                      <div className="flex items-center justify-center">
-                        <Upload className="h-8 w-8 text-gray-400 mr-2" />
-                        <span className="text-gray-600">Click to upload or drag and drop</span>
+              <TabsContent value="personal">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <User className="h-5 w-5" />
+                      Personal Information
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="fullName">Full Name *</Label>
+                        <Input
+                          id="fullName"
+                          name="fullName"
+                          value={formData.personalInfo.fullName}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, fullName: e.target.value }
+                          }))}
+                          placeholder="Enter full name as per passport"
+                        />
                       </div>
-                      <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        className="hidden"
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          files.forEach(file => handleFileUpload('advertising', 'documents', file));
-                        }}
-                      />
+                      <div>
+                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          name="dateOfBirth"
+                          type="date"
+                          value={formData.personalInfo.dateOfBirth}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, dateOfBirth: e.target.value }
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="nationality">Nationality *</Label>
+                        <Input
+                          id="nationality"
+                          name="nationality"
+                          value={formData.personalInfo.nationality}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, nationality: e.target.value }
+                          }))}
+                          placeholder="Enter nationality"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="passportNumber">Passport Number *</Label>
+                        <Input
+                          id="passportNumber"
+                          name="passportNumber"
+                          value={formData.personalInfo.passportNumber}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, passportNumber: e.target.value }
+                          }))}
+                          placeholder="Enter passport number"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="brpNumber">BRP Number (if applicable)</Label>
+                        <Input
+                          id="brpNumber"
+                          name="brpNumber"
+                          value={formData.personalInfo.brpNumber}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, brpNumber: e.target.value }
+                          }))}
+                          placeholder="Enter BRP number"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email Address *</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.personalInfo.email}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, email: e.target.value }
+                          }))}
+                          placeholder="Enter email address"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone Number *</Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          value={formData.personalInfo.phone}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, phone: e.target.value }
+                          }))}
+                          placeholder="Enter phone number"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="address">Address *</Label>
+                        <Textarea
+                          id="address"
+                          value={formData.personalInfo.address}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            personalInfo: { ...prev.personalInfo, address: e.target.value }
+                          }))}
+                          placeholder="Enter full address"
+                          rows={3}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-        {/* Continue with other sections... */}
-        {/* For brevity, I'll show the signature section as the final example */}
-        
-        {/* Signature Section */}
-        <TabsContent value="signature">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
-                <Signature className="h-5 w-5" />
-                Digital Signature & Submission
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="signerName">Name of Signatory *</Label>
-                  <Input
-                    id="signerName"
-                    name="signerName"
-                    value={formData.signature.signerName}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      signature: { ...prev.signature, signerName: e.target.value }
-                    }))}
-                    placeholder="Enter full name"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signerTitle">Job Title *</Label>
-                  <Input
-                    id="signerTitle"
-                    name="signerTitle"
-                    value={formData.signature.signerTitle}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      signature: { ...prev.signature, signerTitle: e.target.value }
-                    }))}
-                    placeholder="Enter job title"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="signatureDate">Date of Signature *</Label>
-                <Input
-                  id="signatureDate"
-                  name="signatureDate"
-                  type="date"
-                  value={formData.signature.signatureDate}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    signature: { ...prev.signature, signatureDate: e.target.value }
-                  }))}
-                />
-              </div>
-              
-              <div>
-                <Label>Digital Signature *</Label>
-                <div className="mt-2 p-4 border-2 border-dashed border-gray-300 rounded-lg min-h-[100px] flex items-center justify-center">
-                  <Button onClick={handleSignature} variant="outline">
-                    <Signature className="h-4 w-4 mr-2" />
-                    Click to Sign
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="flex justify-end space-x-4">
-                <Button onClick={saveFormData} variant="outline">
-                  Save Draft
-                </Button>
-                <Button onClick={handleSignature} className="bg-[#00AEEF] hover:bg-[#0098d4]">
-                  Sign & Submit
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              <TabsContent value="cos">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      CoS Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="cosNumber">CoS Number *</Label>
+                        <Input
+                          id="cosNumber"
+                          name="cosNumber"
+                          value={formData.cosSummary.cosNumber}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, cosNumber: e.target.value }
+                          }))}
+                          placeholder="Enter CoS number"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="jobTitle">Job Title *</Label>
+                        <Input
+                          id="jobTitle"
+                          name="jobTitle"
+                          value={formData.cosSummary.jobTitle}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, jobTitle: e.target.value }
+                          }))}
+                          placeholder="Enter job title"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cosIssueDate">CoS Issue Date *</Label>
+                        <Input
+                          id="cosIssueDate"
+                          name="cosIssueDate"
+                          type="date"
+                          value={formData.cosSummary.cosIssueDate}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, cosIssueDate: e.target.value }
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cosExpiryDate">CoS Expiry Date *</Label>
+                        <Input
+                          id="cosExpiryDate"
+                          name="cosExpiryDate"
+                          type="date"
+                          value={formData.cosSummary.cosExpiryDate}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, cosExpiryDate: e.target.value }
+                          }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="salary">Salary *</Label>
+                        <Input
+                          id="salary"
+                          name="salary"
+                          value={formData.cosSummary.salary}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, salary: e.target.value }
+                          }))}
+                          placeholder="Enter annual salary"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="workLocation">Work Location *</Label>
+                        <Input
+                          id="workLocation"
+                          name="workLocation"
+                          value={formData.cosSummary.workLocation}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, workLocation: e.target.value }
+                          }))}
+                          placeholder="Enter work location"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="sponsorName">Sponsor Name *</Label>
+                        <Input
+                          id="sponsorName"
+                          name="sponsorName"
+                          value={formData.cosSummary.sponsorName}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, sponsorName: e.target.value }
+                          }))}
+                          placeholder="Enter sponsor name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="sponsorLicenseNumber">Sponsor License Number *</Label>
+                        <Input
+                          id="sponsorLicenseNumber"
+                          name="sponsorLicenseNumber"
+                          value={formData.cosSummary.sponsorLicenseNumber}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            cosSummary: { ...prev.cosSummary, sponsorLicenseNumber: e.target.value }
+                          }))}
+                          placeholder="Enter sponsor license number"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="area1">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <Shield className="h-5 w-5" />
+                      HR & Compliance Area 1
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for HR & Compliance Area 1 will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="area2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <Shield className="h-5 w-5" />
+                      HR & Compliance Area 2
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for HR & Compliance Area 2 will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="area3">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <Shield className="h-5 w-5" />
+                      HR & Compliance Area 3
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for HR & Compliance Area 3 will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="area4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <Shield className="h-5 w-5" />
+                      HR & Compliance Area 4
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for HR & Compliance Area 4 will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="reporting">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      Reporting Duties
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for Reporting Duties will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="qualifications">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      Qualifications
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for Qualifications will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="skills">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      Skills and Experience
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for Skills and Experience will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="others">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      Others
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for Others will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="notes">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#00AEEF]">
+                      <FileText className="h-5 w-5" />
+                      Notes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Content for Notes will be implemented here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

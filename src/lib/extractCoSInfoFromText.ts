@@ -15,17 +15,28 @@ export interface CoSInfo {
 export function extractCoSInfoFromText(text: string): CoSInfo {
   // Helper to extract a field by label (case-insensitive, flexible)
   function extract(label: string, text: string, fallback = ""): string {
-    // Accept variations like 'Given name(s):', 'Given names:', 'Given Name(s):'
+    // Accept variations like 'Given name(s):', 'Given names:', 'Given Name(s):', 'Family name:', 'Surname:'
     const regex = new RegExp(label + "[\s\(\)a-zA-Z]*:[\s]*([\S\s]*?)(?:\n|$)", "i");
     const match = text.match(regex);
     return match ? match[1].trim() : fallback;
   }
 
+  // Try all common variations for given and family name
+  const givenNames =
+    extract("Given name", text) ||
+    extract("Given name\(s\)", text) ||
+    extract("Given names", text) ||
+    extract("Given Names", text);
+  const familyName =
+    extract("Family name", text) ||
+    extract("Surname", text) ||
+    extract("Family Name", text);
+
   return {
     certificateNumber: extract("Certificate number", text),
     dateAssigned: extract("Date assigned", text),
-    familyName: extract("Family name", text),
-    givenNames: extract("Given name", text) || extract("Given name\(s\)", text) || extract("Given names", text),
+    familyName,
+    givenNames,
     workStartDate: extract("Work start date", text),
     workEndDate: extract("Work end date", text),
     weeklyHours: extract("Total weekly hours of work", text),
