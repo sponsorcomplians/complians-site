@@ -121,9 +121,16 @@ export async function POST(request: NextRequest) {
 
     console.log('🤖 [API] Calling NarrativeGenerationService with workerName:', safeWorkerName);
     console.log('🤖 [API] Using custom prompt:', !!customPrompt);
+    console.log('🤖 [API] Narrative input object:', JSON.stringify(narrativeInput, null, 2));
     
     // Use the NarrativeGenerationService
     const { narrative: output, audit } = await NarrativeGenerationService.generateNarrative(narrativeInput);
+
+    console.log('🤖 [API] Narrative generation completed');
+    console.log('🤖 [API] Output length:', output?.length);
+    console.log('🤖 [API] Output preview:', output?.substring(0, 200) + '...');
+    console.log('🤖 [API] Audit model used:', audit?.model);
+    console.log('🤖 [API] Fallback used:', audit?.fallbackUsed);
 
     // Strict validation to avoid placeholders
     if (!output || output.includes('[') || output.includes('Letterhead') || output.includes('Recipient')) {

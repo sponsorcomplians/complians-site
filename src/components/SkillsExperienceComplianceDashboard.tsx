@@ -601,47 +601,62 @@ export default function SkillsExperienceComplianceDashboard() {
       // Call the API route instead of direct service to avoid client-side execution issues
       console.log('[SkillsExperienceComp] Calling generate-narrative API with:', info);
       
+      const requestBody = {
+        workerName: info.workerName,
+        cosReference: info.cosReference,
+        assignmentDate: info.assignmentDate,
+        jobTitle: info.jobTitle,
+        socCode: info.socCode,
+        cosDuties: info.cosDuties,
+        jobDescriptionDuties: info.jobDescriptionDuties,
+        step1Pass,
+        step2Pass,
+        step3Pass,
+        step4Pass,
+        step5Pass,
+        hasJobDescription: info.hasJobDescription,
+        hasCV: info.hasCV,
+        hasReferences: info.hasReferences,
+        hasContracts: info.hasContracts,
+        hasPayslips: info.hasPayslips,
+        hasTraining: info.hasTraining,
+        employmentHistoryConsistent: info.employmentHistoryConsistent,
+        experienceMatchesDuties: info.experienceMatchesDuties,
+        referencesCredible: info.referencesCredible,
+        experienceRecentAndContinuous: info.experienceRecentAndContinuous,
+        inconsistenciesDescription: info.inconsistenciesDescription,
+        missingDocs: info.missingDocs,
+        isCompliant,
+        riskLevel,
+        agentType: 'skills-experience'
+      };
+      
+      console.log('[SkillsExperienceComp] Request body:', JSON.stringify(requestBody, null, 2));
+      
       const response = await fetch('/api/generate-narrative', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          workerName: info.workerName,
-          cosReference: info.cosReference,
-          assignmentDate: info.assignmentDate,
-          jobTitle: info.jobTitle,
-          socCode: info.socCode,
-          cosDuties: info.cosDuties,
-          jobDescriptionDuties: info.jobDescriptionDuties,
-          step1Pass,
-          step2Pass,
-          step3Pass,
-          step4Pass,
-          step5Pass,
-          hasJobDescription: info.hasJobDescription,
-          hasCV: info.hasCV,
-          hasReferences: info.hasReferences,
-          hasContracts: info.hasContracts,
-          hasPayslips: info.hasPayslips,
-          hasTraining: info.hasTraining,
-          employmentHistoryConsistent: info.employmentHistoryConsistent,
-          experienceMatchesDuties: info.experienceMatchesDuties,
-          referencesCredible: info.referencesCredible,
-          experienceRecentAndContinuous: info.experienceRecentAndContinuous,
-          inconsistenciesDescription: info.inconsistenciesDescription,
-          missingDocs: info.missingDocs,
-          isCompliant,
-          riskLevel,
-          agentType: 'skills-experience'
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      console.log('[SkillsExperienceComp] Response status:', response.status);
+      console.log('[SkillsExperienceComp] Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error(`API call failed: ${response.status}`);
+        const errorText = await response.text();
+        console.error('[SkillsExperienceComp] API error response:', errorText);
+        throw new Error(`API call failed: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('[SkillsExperienceComp] API response data:', data);
+      
+      if (data.error) {
+        throw new Error(`API returned error: ${data.error}`);
+      }
+      
       narrative = data.narrative;
       console.log('[SkillsExperienceComp] Narrative returned from API:', narrative);
     } catch (error) {
