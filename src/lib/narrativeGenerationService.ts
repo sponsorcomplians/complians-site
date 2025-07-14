@@ -99,30 +99,20 @@ export class NarrativeGenerationService {
 
     // --- CUSTOM LOGIC FOR SKILLS & EXPERIENCE AGENT ---
     if (input.agentType === 'skills-experience' || input.agentType === 'ai-skills-experience-compliance') {
-      // Build a single user message with all extracted data
-      const userMessage = `Please assess the following worker:\n\n- Migrant name: ${input.workerName}\n- CoS Reference: ${input.cosReference}\n- SOC Code: ${input.socCode}\n- Job Title: ${input.jobTitle}\n- Job Duties (CoS): ${input.cosDuties}\n- Job Description Duties: ${input.jobDescriptionDuties}\n- Documents provided: ${[input.hasCV ? 'CV' : '', input.hasReferences ? 'reference letter' : '', input.hasTraining ? 'training certificate' : '', input.hasContracts ? 'employment contract' : '', input.hasPayslips ? 'payslips' : ''].filter(Boolean).join(', ') || 'None'}\n- Gaps: ${input.inconsistenciesDescription || 'None'}\n- Issues: ${input.missingDocs.length > 0 ? 'Missing documents: ' + input.missingDocs.join(', ') : 'None'}\n\nWrite a compliance letter assessing if this person is suitable for the role based on this information. Conclude if the sponsor breached duties or is compliant.`;
-      const messages = [
-        { role: 'system', content: skillsExperienceLetterSystemPrompt },
-        { role: 'user', content: userMessage }
-      ];
-      // Call OpenAI directly with this messages array
+      // Use the standard AI generation flow instead of direct OpenAI call
       try {
-        const openai = require('openai');
-        const client = new openai.OpenAI();
-        const completion = await client.chat.completions.create({
-          model: 'gpt-4o',
-          messages,
-          temperature: 0.2,
-          max_tokens: 1200
-        });
-        const aiNarrative = completion.choices[0].message.content;
-        // ... (validation, audit, and return as in normal flow)
+        // Generate tenant-specific AI prompt
+        const basePrompt = this.generateBasePrompt(adjustedInput);
+        const tenantPrompt = generateAIPrompt(basePrompt, adjustedInput, tenantAIConfig);
+        
+        const aiNarrative = await generateAINarrative(adjustedInput, tenantPrompt);
+        
         const audit: NarrativeAudit = {
           id: auditId,
           timestamp: new Date().toISOString(),
           input: adjustedInput,
           output: aiNarrative,
-          model: 'gpt-4o',
+          model: 'ai-generated',
           promptVersion: this.currentPromptVersion,
           temperature: 0.2,
           duration: Date.now() - startTime,
@@ -131,10 +121,15 @@ export class NarrativeGenerationService {
           fallbackUsed: false,
           costEstimate: (Math.ceil(aiNarrative.length / 4) / 1000) * 0.01,
           tenantAIConfig: tenantAIConfig,
-          customPrompt: skillsExperienceLetterSystemPrompt
+          customPrompt: tenantPrompt
         };
+
+        // Store audit log
         this.auditLog.push(audit);
+        
+        // Log metrics
         await narrativeMetrics.logGeneration(audit);
+        
         return { narrative: aiNarrative, audit };
       } catch (error) {
         console.error('AI generation failed for skills-experience agent:', error);

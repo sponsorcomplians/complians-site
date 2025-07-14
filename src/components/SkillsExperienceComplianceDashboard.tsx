@@ -598,23 +598,52 @@ export default function SkillsExperienceComplianceDashboard() {
     const aiStartTime = Date.now();
     
     try {
-      // When generating the narrative (look for the function that calls generateAINarrative)
-      console.log('[SkillsExperienceComp] Calling generateAINarrative with:', info);
-      const { generateAINarrative } = await import('@/lib/aiNarrativeService');
-      const { narrativeMetrics } = await import('@/lib/narrativeMetrics');
+      // Call the API route instead of direct service to avoid client-side execution issues
+      console.log('[SkillsExperienceComp] Calling generate-narrative API with:', info);
       
-      narrative = await generateAINarrative({
-        ...info,
-        step1Pass,
-        step2Pass,
-        step3Pass,
-        step4Pass,
-        step5Pass,
-        isCompliant,
-        riskLevel,
-        agentType: 'skills-experience'
+      const response = await fetch('/api/generate-narrative', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workerName: info.workerName,
+          cosReference: info.cosReference,
+          assignmentDate: info.assignmentDate,
+          jobTitle: info.jobTitle,
+          socCode: info.socCode,
+          cosDuties: info.cosDuties,
+          jobDescriptionDuties: info.jobDescriptionDuties,
+          step1Pass,
+          step2Pass,
+          step3Pass,
+          step4Pass,
+          step5Pass,
+          hasJobDescription: info.hasJobDescription,
+          hasCV: info.hasCV,
+          hasReferences: info.hasReferences,
+          hasContracts: info.hasContracts,
+          hasPayslips: info.hasPayslips,
+          hasTraining: info.hasTraining,
+          employmentHistoryConsistent: info.employmentHistoryConsistent,
+          experienceMatchesDuties: info.experienceMatchesDuties,
+          referencesCredible: info.referencesCredible,
+          experienceRecentAndContinuous: info.experienceRecentAndContinuous,
+          inconsistenciesDescription: info.inconsistenciesDescription,
+          missingDocs: info.missingDocs,
+          isCompliant,
+          riskLevel,
+          agentType: 'skills-experience'
+        })
       });
-      console.log('[SkillsExperienceComp] Narrative returned:', narrative);
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      narrative = data.narrative;
+      console.log('[SkillsExperienceComp] Narrative returned from API:', narrative);
     } catch (error) {
       console.error('[SkillsExperienceComp] Error or fallback in narrative generation:', error);
       
