@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 // documentProcessor.worker.ts
-import { documentParserService } from '../lib/documentParser.service';
 
 interface WorkerMessage {
   type: 'PARSE_DOCUMENT' | 'PARSE_BATCH';
@@ -49,7 +48,7 @@ async function processSingleDocument(fileData: WorkerMessage['payload'][0]) {
       type: fileData.fileType
     });
 
-    const result = await documentParserService.parseDocument(file);
+    const result = await parseDocument(file);
 
     ctx.postMessage({
       type: 'COMPLETE',
@@ -83,7 +82,7 @@ async function processBatch(files: WorkerMessage['payload']) {
         type: files[i].fileType
       });
 
-      const result = await documentParserService.parseDocument(file);
+      const result = await parseDocument(file);
       results.push({ fileName: files[i].fileName, result });
     } catch (error) {
       results.push({ 
@@ -100,4 +99,22 @@ async function processBatch(files: WorkerMessage['payload']) {
       batchId: files[0]?.batchId
     }
   } as WorkerResponse);
+} 
+
+async function parseDocument(file: File) {
+  if (file.type === 'application/pdf') {
+    // Use API route for PDF parsing
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/parse-pdf', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Failed to parse PDF');
+    return await response.json();
+  } else {
+    // Fallback for DOCX or other types (if needed)
+    // You may implement DOCX parsing here or in another API route
+    return { text: 'Non-PDF parsing not implemented in worker.' };
+  }
 } 

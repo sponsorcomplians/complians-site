@@ -1,4 +1,6 @@
-import pdfParse from 'pdf-parse';
+// This file is now deprecated. PDF parsing is handled in the /api/parse-pdf API route.
+// You may safely remove this file if not used elsewhere.
+
 import mammoth from 'mammoth';
 import { ValidationError } from './error-handling';
 
@@ -53,9 +55,7 @@ class DocumentParserService {
   async parseDocument(file: File): Promise<ExtractedData> {
     let text = '';
     try {
-      if (file.type === 'application/pdf') {
-        text = await this.parsePDF(file);
-      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+      if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
                  file.type === 'application/msword') {
         text = await this.parseDOCX(file);
       } else if (file.type === 'text/plain') {
@@ -73,12 +73,6 @@ class DocumentParserService {
       }
       throw new ValidationError(`Failed to parse document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
-
-  private async parsePDF(file: File): Promise<string> {
-    const buffer = await file.arrayBuffer();
-    const data = await pdfParse(Buffer.from(buffer));
-    return data.text;
   }
 
   private async parseDOCX(file: File): Promise<string> {

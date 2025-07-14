@@ -29,7 +29,7 @@ import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
 import { errorHandlingService, DocumentParseError, ValidationError, AIServiceError } from "@/lib/error-handling";
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { documentParserService } from '@/lib/documentParser.service';
+// REMOVE: import { documentParserService } from '@/lib/documentParser.service';
 import { toast } from 'sonner';
 import { DocumentPreview } from '@/components/skills-compliance/DocumentProcessor/DocumentPreview';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -379,8 +379,15 @@ export default function SkillsExperienceComplianceDashboard() {
     try {
       for (const file of files) {
         try {
-          // Use documentParserService to extract structured data
-          const extracted = await documentParserService.parseDocument(file);
+          // Use API route to extract structured data
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await fetch('/api/parse-pdf', {
+            method: 'POST',
+            body: formData,
+          });
+          if (!response.ok) throw new Error('Failed to parse PDF');
+          const extracted = await response.json();
           setUploadedDocuments(prev => [...prev, {
             id: Date.now().toString(),
             name: file.name,
