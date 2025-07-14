@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pdfParse from 'pdf-parse';
 
 export const runtime = 'nodejs'; // Ensure this runs in Node.js, not edge
+export const dynamic = 'force-dynamic'; // Prevent static generation
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -11,11 +11,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
-  // @ts-ignore: File is a Blob in Next.js API routes
-  const buffer = Buffer.from(await file.arrayBuffer());
-
   try {
+    // Dynamically import pdf-parse to prevent build-time execution
+    const pdfParse = (await import('pdf-parse')).default;
+    
+    // @ts-ignore: File is a Blob in Next.js API routes
+    const buffer = Buffer.from(await file.arrayBuffer());
     const result = await pdfParse(buffer);
+    
     return NextResponse.json({ text: result.text });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to parse PDF', details: (error as Error).message }, { status: 500 });
