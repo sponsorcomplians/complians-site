@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
       compliance_score: body.compliance_score ?? 100,
       risk_score: body.risk_score ?? 0,
       compliance_status: body.compliance_status || (isCompliant ? 'COMPLIANT' : 'SERIOUS_BREACH'),
+      agentType: body.agentType || 'skills-experience', // Add the missing agentType field
     };
 
     console.log('🤖 [API] Calling NarrativeGenerationService with workerName:', safeWorkerName);
