@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Document, Page } from 'react-pdf';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -33,6 +32,24 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [metadata, setMetadata] = useState<DocumentMetadata | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [Document, setDocument] = useState<any>(null);
+  const [Page, setPage] = useState<any>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Dynamically import react-pdf only on client side
+    if (typeof window !== 'undefined') {
+      import('react-pdf').then(({ Document: Doc, Page: Pg }) => {
+        setDocument(Doc);
+        setPage(Pg);
+      }).catch((error) => {
+        console.error('Failed to load react-pdf:', error);
+        setLoadError('Failed to load PDF viewer.');
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setMetadata({
@@ -80,44 +97,55 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     );
   };
 
-  const renderPDFPreview = () => (
-    <div className="flex flex-col items-center">
-      <Document
-        file={file}
-        onLoadSuccess={onDocumentLoadSuccess}
-        onLoadError={onDocumentLoadError}
-        className="max-w-full"
-      >
-        <Page 
-          pageNumber={pageNumber} 
-          scale={scale}
-          className="shadow-lg"
-        />
-      </Document>
-      {/* Page Navigation */}
-      <div className="flex items-center gap-4 mt-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setPageNumber(prev => Math.max(1, prev - 1))}
-          disabled={pageNumber <= 1}
+  const renderPDFPreview = () => {
+    if (!isClient || !Document || !Page) {
+      return (
+        <div className="flex justify-center items-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <span className="ml-2 text-muted-foreground">Loading PDF viewer...</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center">
+        <Document
+          file={file}
+          onLoadSuccess={onDocumentLoadSuccess}
+          onLoadError={onDocumentLoadError}
+          className="max-w-full"
         >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="text-sm">
-          Page {pageNumber} of {numPages}
-        </span>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setPageNumber(prev => Math.min(numPages || 1, prev + 1))}
-          disabled={pageNumber >= (numPages || 1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+          <Page 
+            pageNumber={pageNumber} 
+            scale={scale}
+            className="shadow-lg"
+          />
+        </Document>
+        {/* Page Navigation */}
+        <div className="flex items-center gap-4 mt-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPageNumber(prev => Math.max(1, prev - 1))}
+            disabled={pageNumber <= 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm">
+            Page {pageNumber} of {numPages}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPageNumber(prev => Math.min(numPages || 1, prev + 1))}
+            disabled={pageNumber >= (numPages || 1)}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderTextPreview = () => (
     <div className="prose dark:prose-invert max-w-none">
