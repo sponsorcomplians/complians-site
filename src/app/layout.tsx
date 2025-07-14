@@ -27,8 +27,6 @@ export const metadata = {
   title: 'UK Sponsor Compliance System',
   description: 'HR SaaS for Sponsor Licence Compliance',
   manifest: '/manifest.json',
-  themeColor: '#0070f3',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -37,6 +35,14 @@ export const metadata = {
   formatDetection: {
     telephone: false,
   },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#0070f3',
 }
 
 export default function RootLayout({

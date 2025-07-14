@@ -233,40 +233,44 @@ export default function SkillsExperienceComplianceDashboard() {
 
   // Load workers from localStorage on mount
   useEffect(() => {
-    const savedWorkers = localStorage.getItem('skillsExperienceComplianceWorkers');
-    if (savedWorkers) {
-      try {
-        const parsedWorkers = JSON.parse(savedWorkers);
-        setWorkers(parsedWorkers);
-      } catch (error) {
-        console.error('Error loading saved workers:', error);
+    if (typeof window !== 'undefined') {
+      const savedWorkers = localStorage.getItem('skillsExperienceComplianceWorkers');
+      if (savedWorkers) {
+        try {
+          const parsedWorkers = JSON.parse(savedWorkers);
+          setWorkers(parsedWorkers);
+        } catch (error) {
+          console.error('Error loading saved workers:', error);
+        }
       }
     }
   }, []);
 
   // Save workers to localStorage whenever they change
   useEffect(() => {
-    if (workers.length > 0) {
+    if (typeof window !== 'undefined' && workers.length > 0) {
       localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(workers));
     }
   }, [workers]);
 
   // Load assessments from localStorage on mount
   useEffect(() => {
-    const savedAssessments = localStorage.getItem('skillsExperienceComplianceAssessments');
-    if (savedAssessments) {
-      try {
-        const parsedAssessments = JSON.parse(savedAssessments);
-        setAssessments(parsedAssessments);
-      } catch (error) {
-        console.error('Error loading saved assessments:', error);
+    if (typeof window !== 'undefined') {
+      const savedAssessments = localStorage.getItem('skillsExperienceComplianceAssessments');
+      if (savedAssessments) {
+        try {
+          const parsedAssessments = JSON.parse(savedAssessments);
+          setAssessments(parsedAssessments);
+        } catch (error) {
+          console.error('Error loading saved assessments:', error);
+        }
       }
     }
   }, []);
 
   // Save assessments to localStorage whenever they change
   useEffect(() => {
-    if (assessments.length > 0) {
+    if (typeof window !== 'undefined' && assessments.length > 0) {
       localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(assessments));
     }
   }, [assessments]);
@@ -847,8 +851,10 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
 
 ${assessment?.professionalAssessment}`;
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoLink);
-      alert('Email service not configured. Opening your email client instead.');
+      if (typeof window !== 'undefined') {
+        window.open(mailtoLink);
+        alert('Email service not configured. Opening your email client instead.');
+      }
     }
   };
 
@@ -858,7 +864,9 @@ ${assessment?.professionalAssessment}`;
       alert('No assessment report available to print.');
       return;
     }
-    window.print();
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
   };
 
   // View specific worker report
@@ -899,7 +907,9 @@ ${assessment?.professionalAssessment}`;
     const subject = `Help Required - Skills & Experience Compliance Breach for ${workerName}`;
     const body = `Dear Complians Support Team,\n\nI need assistance with a skills & experience compliance breach for worker: ${workerName}\n\nPlease provide guidance on:\n- Immediate actions required for skills/experience issues\n- Remedial steps to ensure compliance\n- Documentation needed for Home Office\n- Sponsor licence protection measures\n\nThank you for your assistance.\n\nBest regards`;
     const mailtoLink = `mailto:support@complians.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
+    if (typeof window !== 'undefined') {
+      window.open(mailtoLink);
+    }
   };
 
   // Delete worker
@@ -907,10 +917,14 @@ ${assessment?.professionalAssessment}`;
     if (confirm('Are you sure you want to delete this worker?')) {
       const updatedWorkers = workers.filter(w => w.id !== workerId);
       setWorkers(updatedWorkers);
-      localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(updatedWorkers));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('skillsExperienceComplianceWorkers', JSON.stringify(updatedWorkers));
+      }
       const updatedAssessments = assessments.filter(a => a.workerId !== workerId);
       setAssessments(updatedAssessments);
-      localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(updatedAssessments));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(updatedAssessments));
+      }
     }
   };
 
