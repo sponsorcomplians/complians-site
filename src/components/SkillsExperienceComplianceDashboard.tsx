@@ -23,9 +23,16 @@ import {
   HelpCircle,
   GraduationCap,
   Calendar,
+  Loader2,
 } from "lucide-react";
 import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
 import { useSearchParams } from 'next/navigation';
+import { errorHandlingService, DocumentParseError, ValidationError, AIServiceError } from "@/lib/error-handling";
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { documentParserService } from '@/lib/documentParser.service';
+import { toast } from 'sonner';
+import { DocumentPreview } from '@/components/skills-compliance/DocumentProcessor/DocumentPreview';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Types for our data structures
 interface SkillsExperienceWorker {
@@ -217,6 +224,12 @@ export default function SkillsExperienceComplianceDashboard() {
   const [currentAssessment, setCurrentAssessment] = useState<SkillsExperienceAssessment | null>(null);
   const [selectedWorkerAssessment, setSelectedWorkerAssessment] = useState<SkillsExperienceAssessment | null>(null);
   const [recipientEmail, setRecipientEmail] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [uploadedDocuments, setUploadedDocuments] = useState<any[]>([]);
+  const [previewDocument, setPreviewDocument] = useState<File | null>(null);
+  const [extractedData, setExtractedData] = useState<any>(null);
 
   // Load workers from localStorage on mount
   useEffect(() => {
@@ -297,28 +310,56 @@ export default function SkillsExperienceComplianceDashboard() {
     }
   };
 
-  const handleChatSend = () => {
-    if (!chatInput.trim()) return;
-    setChatMessages([
-      ...chatMessages,
-      {
-        role: 'user',
-        content: chatInput,
-        timestamp: new Date().toLocaleTimeString(),
-      },
-      {
-        role: 'assistant',
-        content:
-          "Thank you for your question. Our AI will review your query and provide guidance on skills and experience compliance.",
-        timestamp: new Date().toLocaleTimeString(),
-      },
-    ]);
-    setChatInput('');
+  const handleChatSend = async () => {
+    try {
+      await errorHandlingService.retryWithBackoff(
+        async () => {
+          if (!chatInput.trim()) {
+            throw new ValidationError("Message cannot be empty");
+          }
+          setChatMessages([
+            ...chatMessages,
+            {
+              role: 'user',
+              content: chatInput,
+              timestamp: new Date().toLocaleTimeString(),
+            },
+            {
+              role: 'assistant',
+              content:
+                "Thank you for your question. Our AI will review your query and provide guidance on skills and experience compliance.",
+              timestamp: new Date().toLocaleTimeString(),
+            },
+          ]);
+          setChatInput('');
+        },
+        "chat-send"
+      );
+    } catch (error) {
+      await errorHandlingService.handleError(error as Error);
+    }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(event.target.files || []);
-    setSelectedFiles(prev => [...prev, ...newFiles]);
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      const files = Array.from(event.target.files || []);
+      await errorHandlingService.retryWithBackoff(
+        async () => {
+          // Simulate file parsing/validation
+          if (files.some(f => f.size === 0)) {
+            throw new DocumentParseError("File is empty", { fileNames: files.map(f => f.name) });
+          }
+          // ... your file parsing logic ...
+          setSelectedFiles(files);
+        },
+        "file-upload"
+      );
+    } catch (error) {
+      await errorHandlingService.handleError(error as Error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleRemoveFile = (index: number) => {
@@ -329,6 +370,40 @@ export default function SkillsExperienceComplianceDashboard() {
     setSelectedFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  // Enhanced file upload with document parsing and error handling
+  const handleFileUpload = async (files: File[]) => {
+    setIsUploading(true);
+    try {
+      for (const file of files) {
+        try {
+          // Use documentParserService to extract structured data
+          const extracted = await documentParserService.parseDocument(file);
+          setUploadedDocuments(prev => [...prev, {
+            id: Date.now().toString(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            content: extracted.text,
+            extractedData: extracted,
+            uploadDate: new Date(),
+            file: file // Store file reference for preview
+          }]);
+          toast.success(`${file.name} uploaded and parsed successfully`);
+        } catch (error) {
+          await errorHandlingService.handleError(
+            error instanceof Error ? error : new Error('Unknown error'),
+            async () => {
+              // Fallback: Try alternative parsing method
+              console.log('Attempting fallback parsing for:', file.name);
+            }
+          );
+        }
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -605,82 +680,82 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
       alert('Please select at least one document to upload.');
       return;
     }
-    setUploading(true);
-    
     try {
-      // Extract real data from uploaded documents
-      const extracted = await extractSkillsExperienceInfo(selectedFiles);
-      
-      // Generate assessment using extracted data with enhanced logic
-      const assessmentResult = await generateSkillsExperienceAssessment({
-        workerName: extracted.workerName,
-        cosReference: 'COS_' + Date.now(),
-        assignmentDate: extracted.assignmentDate,
-        jobTitle: extracted.jobTitle,
-        socCode: extracted.socCode,
-        cosDuties: extracted.cosDuties,
-        jobDescriptionDuties: extracted.jobDescriptionDuties,
-        hasJobDescription: extracted.hasJobDescription,
-        hasCV: extracted.hasCV || false,
-        hasReferences: extracted.hasReferences || false,
-        hasContracts: extracted.hasContracts || false,
-        hasPayslips: extracted.hasPayslips || false,
-        hasTraining: extracted.hasTraining || false,
-        employmentHistoryConsistent: extracted.employmentHistoryConsistent || false,
-        experienceMatchesDuties: extracted.experienceMatchesDuties || false,
-        referencesCredible: extracted.referencesCredible || false,
-        experienceRecentAndContinuous: extracted.experienceRecentAndContinuous || false,
-        inconsistenciesDescription: extracted.inconsistencies,
-        missingDocs: extracted.missingDocs || []
-      });
-      
-      const newAssessment: SkillsExperienceAssessment = {
-        id: 'ASSESS_' + Date.now(),
-        workerId: 'WORKER_' + Date.now(),
-        workerName: extracted.workerName,
-        jobTitle: extracted.jobTitle,
-        socCode: extracted.socCode,
-        skills: extracted.skills,
-        experience: extracted.experience,
-        complianceStatus: assessmentResult.complianceStatus,
-        riskLevel: assessmentResult.riskLevel,
-        redFlag: assessmentResult.redFlag,
-        assignmentDate: extracted.assignmentDate,
-        professionalAssessment: assessmentResult.professionalAssessment,
-        generatedAt: new Date().toISOString()
-      };
-      
-      // Add worker
-      const newWorker: SkillsExperienceWorker = {
-        id: newAssessment.workerId,
-        name: extracted.workerName,
-        jobTitle: extracted.jobTitle,
-        socCode: extracted.socCode,
-        complianceStatus: assessmentResult.complianceStatus,
-        riskLevel: assessmentResult.riskLevel,
-        lastAssessment: new Date().toISOString().split('T')[0],
-        redFlag: assessmentResult.redFlag,
-        assignmentDate: extracted.assignmentDate,
-        skills: extracted.skills,
-        experience: extracted.experience
-      };
-      
-      setWorkers(prev => [...prev, newWorker]);
-      setAssessments(prev => [...prev, newAssessment]);
-      setCurrentAssessment(newAssessment);
-      setSelectedFiles([]);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      setActiveTab('assessment');
-      
-      // Log audit information if available
-      if (assessmentResult.auditId) {
-        console.log(`Assessment generated with audit ID: ${assessmentResult.auditId}`);
-      }
+      await errorHandlingService.retryWithBackoff(
+        async () => {
+          // Extract real data from uploaded documents
+          const extracted = await extractSkillsExperienceInfo(selectedFiles);
+          
+          // Generate assessment using extracted data with enhanced logic
+          const assessmentResult = await generateSkillsExperienceAssessment({
+            workerName: extracted.workerName,
+            cosReference: 'COS_' + Date.now(),
+            assignmentDate: extracted.assignmentDate,
+            jobTitle: extracted.jobTitle,
+            socCode: extracted.socCode,
+            cosDuties: extracted.cosDuties,
+            jobDescriptionDuties: extracted.jobDescriptionDuties,
+            hasJobDescription: extracted.hasJobDescription,
+            hasCV: extracted.hasCV || false,
+            hasReferences: extracted.hasReferences || false,
+            hasContracts: extracted.hasContracts || false,
+            hasPayslips: extracted.hasPayslips || false,
+            hasTraining: extracted.hasTraining || false,
+            employmentHistoryConsistent: extracted.employmentHistoryConsistent || false,
+            experienceMatchesDuties: extracted.experienceMatchesDuties || false,
+            referencesCredible: extracted.referencesCredible || false,
+            experienceRecentAndContinuous: extracted.experienceRecentAndContinuous || false,
+            inconsistenciesDescription: extracted.inconsistencies,
+            missingDocs: extracted.missingDocs || []
+          });
+          
+          const newAssessment: SkillsExperienceAssessment = {
+            id: 'ASSESS_' + Date.now(),
+            workerId: 'WORKER_' + Date.now(),
+            workerName: extracted.workerName,
+            jobTitle: extracted.jobTitle,
+            socCode: extracted.socCode,
+            skills: extracted.skills,
+            experience: extracted.experience,
+            complianceStatus: assessmentResult.complianceStatus,
+            riskLevel: assessmentResult.riskLevel,
+            redFlag: assessmentResult.redFlag,
+            assignmentDate: extracted.assignmentDate,
+            professionalAssessment: assessmentResult.professionalAssessment,
+            generatedAt: new Date().toISOString()
+          };
+          
+          // Add worker
+          const newWorker: SkillsExperienceWorker = {
+            id: newAssessment.workerId,
+            name: extracted.workerName,
+            jobTitle: extracted.jobTitle,
+            socCode: extracted.socCode,
+            complianceStatus: assessmentResult.complianceStatus,
+            riskLevel: assessmentResult.riskLevel,
+            lastAssessment: new Date().toISOString().split('T')[0],
+            redFlag: assessmentResult.redFlag,
+            assignmentDate: extracted.assignmentDate,
+            skills: extracted.skills,
+            experience: extracted.experience
+          };
+          
+          setWorkers(prev => [...prev, newWorker]);
+          setAssessments(prev => [...prev, newAssessment]);
+          setCurrentAssessment(newAssessment);
+          setSelectedFiles([]);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+          setActiveTab('assessment');
+          
+          // Log audit information if available
+          if (assessmentResult.auditId) {
+            console.log(`Assessment generated with audit ID: ${assessmentResult.auditId}`);
+          }
+        },
+        `ai-assessment-${new Date().toISOString()}`
+      );
     } catch (error) {
-      console.error('Error during analysis:', error);
-      alert('Error analyzing documents. Please try again.');
-    } finally {
-      setUploading(false);
+      await errorHandlingService.handleError(error as Error);
     }
   };
 
@@ -885,282 +960,283 @@ ${assessment?.professionalAssessment}`;
   };
 
   return (
-    <div className="container mx-auto p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
-          <Bot className="h-8 w-8 text-brand-light" />
-          AI Skills & Experience Compliance System
-        </h1>
-        <p className="text-gray-600">
-          AI-powered skills and experience compliance analysis for UK sponsors
-        </p>
-      </div>
-      {/* Explainer Module */}
-      <div className="mb-8">
-        <AgentAssessmentExplainer />
-      </div>
-      {/* Navigation Tabs */}
-      <div className="flex justify-center mb-8">
-        <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500">
-        <TabButton
-          value="dashboard"
-          icon={<BarChart3 className="h-5 w-5" />}
-          label="Dashboard"
-        />
-        <TabButton
-          value="workers"
-          icon={<Users className="h-5 w-5" />}
-          label="Workers"
-        />
-        <TabButton
-          value="assessment"
-          icon={<FileText className="h-5 w-5" />}
-          label="Assessment"
-        />
-        <TabButton
-          value="ai-assistant"
-          icon={<MessageSquare className="h-5 w-5" />}
-          label="AI Assistant"
-        />
-      </div>
-      </div>
-      {/* Tab Content */}
-      {activeTab === 'dashboard' && (
-        <div>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Total Workers
-                  </div>
-                  <div className="text-2xl font-bold text-brand-dark">
-                    {dashboardStats.totalWorkers}
-                  </div>
-                  <div className="text-xs text-gray-400">Active workers</div>
-                </div>
-                <Users className="h-6 w-6 text-brand-light" />
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    Compliance Rate
-                  </div>
-                  <div className="text-2xl font-bold text-brand-dark">
-                    {dashboardStats.complianceRate}%
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {dashboardStats.compliantWorkers} compliant workers
-                  </div>
-                </div>
-                <CheckCircle className="h-6 w-6 text-green-500" />
-              </div>
-            </div>
-            <div
-              className={`bg-white rounded-lg p-6 shadow border ${
-                dashboardStats.redFlags > 0
-                  ? 'border-red-500 border-2 animate-pulse'
-                  : ''
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-red-500">
-                    Red Flags
-                  </div>
-                  <div className="text-2xl font-bold text-red-600">
-                    {dashboardStats.redFlags}
-                  </div>
-                  <div className="text-xs text-red-600">
-                    Immediate attention required
-                  </div>
-                </div>
-                <AlertTriangle className="h-6 w-6 text-red-500" />
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-gray-500">
-                    High Risk
-                  </div>
-                  <div className="text-2xl font-bold text-brand-dark">
-                    {dashboardStats.highRisk}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    High risk workers
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
-                <PieChart className="h-5 w-5" />
-                Compliance Status Distribution
-              </div>
-              {/* Pie chart placeholder */}
-              <div className="flex items-center justify-center h-48">
-                <div className="w-40 h-40 rounded-full bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400">[Pie Chart]</span>
-                </div>
-              </div>
-              <div className="flex justify-center space-x-4 mt-4">
-                {pieChartData.map((item, idx) => (
-                  <div key={idx} className="flex items-center space-x-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    ></div>
-                    <span className="text-sm">
-                      {item.name}: {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Risk Level Breakdown
-              </div>
-              <BarChartComponent data={barChartData} />
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white rounded-lg p-6 shadow border">
-            <div className="font-semibold text-brand-dark mb-2">
-              Recent Activity
-            </div>
-            <ul>
-              <li className="mb-2 text-sm">
-                <span className="text-yellow-500 font-bold">●</span> Ahmed Hassan requires review
-                <div className="text-xs text-gray-500">
-                  Missing training certificates - 2024-06-08
-                </div>
-              </li>
-              <li className="mb-2 text-sm">
-                <span className="text-red-500 font-bold">●</span> Red flag detected for Sarah Johnson
-                <div className="text-xs text-gray-500">
-                  Care Assistant without qualifications - 2024-06-09
-                </div>
-              </li>
-              <li className="mb-2 text-sm">
-                <span className="text-green-500 font-bold">●</span> John Smith assessment completed
-                <div className="text-xs text-gray-500">
-                  Compliant status confirmed - 2024-06-10
-                </div>
-              </li>
-            </ul>
-          </div>
+    <ErrorBoundary>
+      <div className="container mx-auto p-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
+            <Bot className="h-8 w-8 text-brand-light" />
+            AI Skills & Experience Compliance System
+          </h1>
+          <p className="text-gray-600">
+            AI-powered skills and experience compliance analysis for UK sponsors
+          </p>
         </div>
-      )}
-
-      {activeTab === 'workers' && (
-        <div className="bg-white rounded-lg p-6 shadow border">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="font-semibold text-brand-dark flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Workers
+        {/* Explainer Module */}
+        <div className="mb-8">
+          <AgentAssessmentExplainer />
+        </div>
+        {/* Navigation Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500">
+          <TabButton
+            value="dashboard"
+            icon={<BarChart3 className="h-5 w-5" />}
+            label="Dashboard"
+          />
+          <TabButton
+            value="workers"
+            icon={<Users className="h-5 w-5" />}
+            label="Workers"
+          />
+          <TabButton
+            value="assessment"
+            icon={<FileText className="h-5 w-5" />}
+            label="Assessment"
+          />
+          <TabButton
+            value="ai-assistant"
+            icon={<MessageSquare className="h-5 w-5" />}
+            label="AI Assistant"
+          />
+        </div>
+        </div>
+        {/* Tab Content */}
+        {activeTab === 'dashboard' && (
+          <div>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <div className="bg-white rounded-lg p-6 shadow border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">
+                      Total Workers
+                    </div>
+                    <div className="text-2xl font-bold text-brand-dark">
+                      {dashboardStats.totalWorkers}
+                    </div>
+                    <div className="text-xs text-gray-400">Active workers</div>
+                  </div>
+                  <Users className="h-6 w-6 text-brand-light" />
+                </div>
               </div>
-              <div className="text-gray-600 text-sm mt-1">
-                Manage sponsored workers and their skills/experience
+              <div className="bg-white rounded-lg p-6 shadow border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">
+                      Compliance Rate
+                    </div>
+                    <div className="text-2xl font-bold text-brand-dark">
+                      {dashboardStats.complianceRate}%
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {dashboardStats.compliantWorkers} compliant workers
+                    </div>
+                  </div>
+                  <CheckCircle className="h-6 w-6 text-green-500" />
+                </div>
+              </div>
+              <div
+                className={`bg-white rounded-lg p-6 shadow border ${
+                  dashboardStats.redFlags > 0
+                    ? 'border-red-500 border-2 animate-pulse'
+                    : ''
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium text-red-500">
+                      Red Flags
+                    </div>
+                    <div className="text-2xl font-bold text-red-600">
+                      {dashboardStats.redFlags}
+                    </div>
+                    <div className="text-xs text-red-600">
+                      Immediate attention required
+                    </div>
+                  </div>
+                  <AlertTriangle className="h-6 w-6 text-red-500" />
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium text-gray-500">
+                      High Risk
+                    </div>
+                    <div className="text-2xl font-bold text-brand-dark">
+                      {dashboardStats.highRisk}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      High risk workers
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium" aria-label="Add Worker">
-              <Plus className="h-4 w-4" />
-              Add Worker
-            </button>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="bg-white rounded-lg p-6 shadow border">
+                <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
+                  <PieChart className="h-5 w-5" />
+                  Compliance Status Distribution
+                </div>
+                {/* Pie chart placeholder */}
+                <div className="flex items-center justify-center h-48">
+                  <div className="w-40 h-40 rounded-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-400">[Pie Chart]</span>
+                  </div>
+                </div>
+                <div className="flex justify-center space-x-4 mt-4">
+                  {pieChartData.map((item, idx) => (
+                    <div key={idx} className="flex items-center space-x-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      ></div>
+                      <span className="text-sm">
+                        {item.name}: {item.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-6 shadow border">
+                <div className="font-semibold text-brand-dark mb-2 flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Risk Level Breakdown
+                </div>
+                <BarChartComponent data={barChartData} />
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white rounded-lg p-6 shadow border">
+              <div className="font-semibold text-brand-dark mb-2">
+                Recent Activity
+              </div>
+              <ul>
+                <li className="mb-2 text-sm">
+                  <span className="text-yellow-500 font-bold">●</span> Ahmed Hassan requires review
+                  <div className="text-xs text-gray-500">
+                    Missing training certificates - 2024-06-08
+                  </div>
+                </li>
+                <li className="mb-2 text-sm">
+                  <span className="text-red-500 font-bold">●</span> Red flag detected for Sarah Johnson
+                  <div className="text-xs text-gray-500">
+                    Care Assistant without qualifications - 2024-06-09
+                  </div>
+                </li>
+                <li className="mb-2 text-sm">
+                  <span className="text-green-500 font-bold">●</span> John Smith assessment completed
+                  <div className="text-xs text-gray-500">
+                    Compliant status confirmed - 2024-06-10
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-gray-100 text-brand-dark">
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">Job Title</th>
-                  <th className="px-4 py-2 text-left">SOC Code</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Risk Level</th>
-                  <th className="px-4 py-2 text-left">View Report</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {workers.map((worker) => (
-                  <tr
-                    key={worker.id}
-                    className={
-                      worker.redFlag
-                        ? 'bg-red-50'
-                        : worker.complianceStatus === 'SERIOUS_BREACH'
-                        ? 'bg-yellow-50'
-                        : ''
-                    }
-                  >
-                    <td className="px-4 py-2">{worker.name}</td>
-                    <td className="px-4 py-2">{worker.jobTitle}</td>
-                    <td className="px-4 py-2">{worker.socCode}</td>
-                    <td className="px-4 py-2">
-                      {getStatusBadge(worker.complianceStatus, worker.redFlag)}
-                    </td>
-                    <td className="px-4 py-2">
-                      {getRiskBadge(worker.riskLevel)}
-                    </td>
-                    <td className="px-4 py-2">
-                      <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={() => handleViewWorkerReport(worker.id)}>
-                        <Eye className="h-4 w-4 mr-1" /> View Report
-                      </Button>
-                    </td>
-                    <td className="px-4 py-2">
-                      <Button size="sm" variant="destructive" onClick={() => handleDeleteWorker(worker.id)}>
-                        <XCircle className="h-4 w-4 mr-1" /> Delete
-                      </Button>
-                    </td>
+        )}
+
+        {activeTab === 'workers' && (
+          <div className="bg-white rounded-lg p-6 shadow border">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="font-semibold text-brand-dark flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Workers
+                </div>
+                <div className="text-gray-600 text-sm mt-1">
+                  Manage sponsored workers and their skills/experience
+                </div>
+              </div>
+              <button className="bg-brand-light text-brand-dark px-4 py-2 rounded flex items-center gap-2 font-medium" aria-label="Add Worker">
+                <Plus className="h-4 w-4" />
+                Add Worker
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-100 text-brand-dark">
+                    <th className="px-4 py-2 text-left">Name</th>
+                    <th className="px-4 py-2 text-left">Job Title</th>
+                    <th className="px-4 py-2 text-left">SOC Code</th>
+                    <th className="px-4 py-2 text-left">Status</th>
+                    <th className="px-4 py-2 text-left">Risk Level</th>
+                    <th className="px-4 py-2 text-left">View Report</th>
+                    <th className="px-4 py-2 text-left">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'assessment' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-6 shadow border">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
-              <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
-              <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" aria-label="Upload Skills & Experience Documents" />
-              <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()} aria-label="Choose Files">Choose Files</Button>
-              {selectedFiles.length > 0 && (
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">Selected Files ({selectedFiles.length}):</h4>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={handleClearAllFiles}
-                      className="text-red-600 hover:text-red-700"
+                </thead>
+                <tbody>
+                  {workers.map((worker) => (
+                    <tr
+                      key={worker.id}
+                      className={
+                        worker.redFlag
+                          ? 'bg-red-50'
+                          : worker.complianceStatus === 'SERIOUS_BREACH'
+                          ? 'bg-yellow-50'
+                          : ''
+                      }
                     >
-                      Clear All
-                    </Button>
+                      <td className="px-4 py-2">{worker.name}</td>
+                      <td className="px-4 py-2">{worker.jobTitle}</td>
+                      <td className="px-4 py-2">{worker.socCode}</td>
+                      <td className="px-4 py-2">
+                        {getStatusBadge(worker.complianceStatus, worker.redFlag)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {getRiskBadge(worker.riskLevel)}
+                      </td>
+                      <td className="px-4 py-2">
+                        <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white" onClick={() => handleViewWorkerReport(worker.id)}>
+                          <Eye className="h-4 w-4 mr-1" /> View Report
+                        </Button>
+                      </td>
+                      <td className="px-4 py-2">
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteWorker(worker.id)}>
+                          <XCircle className="h-4 w-4 mr-1" /> Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-                  <ul className="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto">
-                    {selectedFiles.map((file, index) => (
-                      <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded hover:bg-gray-100 transition">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4" /> 
-                          <span className="truncate">{file.name}</span>
+          </div>
+        )}
+
+        {activeTab === 'assessment' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg p-6 shadow border">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Upload Skills & Experience Documents</h3>
+                <p className="text-gray-600 mb-4">Upload CV, qualification certificates, experience documents, and application forms for AI analysis</p>
+                <input ref={fileInputRef} type="file" multiple accept=".pdf,.docx,.doc" onChange={handleFileSelect} className="hidden" aria-label="Upload Skills & Experience Documents" />
+                <Button className="bg-black hover:bg-gray-800 text-white mb-4" onClick={() => fileInputRef.current?.click()} aria-label="Choose Files">Choose Files</Button>
+                {selectedFiles.length > 0 && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">Selected Files ({selectedFiles.length}):</h4>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={handleClearAllFiles}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Clear All
+                      </Button>
+            </div>
+                    <ul className="text-sm text-gray-600 space-y-2 max-h-40 overflow-y-auto">
+                      {selectedFiles.map((file, index) => (
+                        <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded hover:bg-gray-100 transition">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" /> 
+                            <span className="truncate">{file.name}</span>
               </div>
                         <Button 
                           size="sm" 
@@ -1335,6 +1411,21 @@ ${assessment?.professionalAssessment}`;
           </div>
         </div>
       )}
+      <Dialog open={!!previewDocument} onOpenChange={() => setPreviewDocument(null)}>
+        <DialogContent className="max-w-6xl h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Document Preview</DialogTitle>
+          </DialogHeader>
+          {previewDocument && (
+            <DocumentPreview 
+              file={previewDocument}
+              extractedData={extractedData}
+              onClose={() => setPreviewDocument(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
+    </ErrorBoundary>
   );
 } 

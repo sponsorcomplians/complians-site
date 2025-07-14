@@ -20,10 +20,23 @@ if (typeof window !== 'undefined') {
 
 import './globals.css'
 import { AuthProvider } from '@/components/AuthProvider'
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
+import { MobileLayout } from '@/components/MobileLayout'
 
 export const metadata = {
   title: 'UK Sponsor Compliance System',
   description: 'HR SaaS for Sponsor Licence Compliance',
+  manifest: '/manifest.json',
+  themeColor: '#0070f3',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'ComplianceAI',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 }
 
 export default function RootLayout({
@@ -39,7 +52,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          {children}
+          <ServiceWorkerRegistration />
+          <MobileLayout>
+            {children}
+          </MobileLayout>
         </AuthProvider>
       </body>
     </html>
