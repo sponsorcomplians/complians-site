@@ -53,9 +53,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <ServiceWorkerRegistration />
-          <MobileLayout>
-            {children}
-          </MobileLayout>
+          {children}
         </AuthProvider>
       </body>
     </html>

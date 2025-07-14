@@ -7,6 +7,7 @@ import { Brain, Zap, FileText, Clock, CheckCircle, Shield, TrendingUp, Mail, Pho
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { MobileLayout } from '@/components/MobileLayout';
 
 const allAgents = [
   {
@@ -306,177 +307,178 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#001e70] to-[#00c3ff] text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            AI Compliance Agents
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Revolutionise your compliance management with our suite of
-            intelligent AI agents
-          </p>
-          <p className="text-lg mb-12 max-w-4xl mx-auto">
-            From qualification verification to salary compliance, our AI agents
-            provide expert-level analysis, automated reporting, and real-time
-            compliance monitoring for UK sponsors.
-          </p>
-
-          {/* Feature Highlights with Icons */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Brain className="w-10 h-10 text-[#001e70]" />
-              </div>
-              <h3 className="font-semibold">Expert-Level Analysis</h3>
-            </div>
-            <div className="text-center">
-              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Zap className="w-10 h-10 text-[#001e70]" />
-              </div>
-              <h3 className="font-semibold">Real-Time Monitoring</h3>
-            </div>
-            <div className="text-center">
-              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <FileText className="w-10 h-10 text-[#001e70]" />
-              </div>
-              <h3 className="font-semibold">Professional Reporting</h3>
-            </div>
-            <div className="text-center">
-              <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
-                <Clock className="w-10 h-10 text-[#001e70]" />
-              </div>
-              <h3 className="font-semibold">24/7 Availability</h3>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Our AI Agents */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Our AI Agents?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Advanced AI technology meets compliance expertise
+    <MobileLayout>
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-br from-[#001e70] to-[#00c3ff] text-white py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              AI Compliance Agents
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+              Revolutionise your compliance management with our suite of
+              intelligent AI agents
             </p>
-          </div>
+            <p className="text-lg mb-12 max-w-4xl mx-auto">
+              From qualification verification to salary compliance, our AI agents
+              provide expert-level analysis, automated reporting, and real-time
+              compliance monitoring for UK sponsors.
+            </p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-8 h-8 text-blue-600" />
+            {/* Feature Highlights with Icons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                  <Brain className="w-10 h-10 text-[#001e70]" />
+                </div>
+                <h3 className="font-semibold">Expert-Level Analysis</h3>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Expert-Level Analysis
-              </h3>
-              <p className="text-gray-600">
-                AI that matches human expert assessment quality
+              <div className="text-center">
+                <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                  <Zap className="w-10 h-10 text-[#001e70]" />
+                </div>
+                <h3 className="font-semibold">Real-Time Monitoring</h3>
+              </div>
+              <div className="text-center">
+                <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-10 h-10 text-[#001e70]" />
+                </div>
+                <h3 className="font-semibold">Professional Reporting</h3>
+              </div>
+              <div className="text-center">
+                <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                  <Clock className="w-10 h-10 text-[#001e70]" />
+                </div>
+                <h3 className="font-semibold">24/7 Availability</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Choose Our AI Agents */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Why Choose Our AI Agents?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Advanced AI technology meets compliance expertise
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Brain className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Expert-Level Analysis
+                </h3>
+                <p className="text-gray-600">
+                  AI that matches human expert assessment quality
         </p>
       </div>
 
-            <div className="text-center">
-              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-green-600" />
+              <div className="text-center">
+                <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Instant Processing
+                </h3>
+                <p className="text-gray-600">
+                  Get compliance reports in seconds, not hours
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Instant Processing
-              </h3>
-              <p className="text-gray-600">
-                Get compliance reports in seconds, not hours
-              </p>
-            </div>
 
-            <div className="text-center">
-              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Shield />
+              <div className="text-center">
+                <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Shield />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  100% UK Compliant
+                </h3>
+                <p className="text-gray-600">
+                  Built specifically for UK sponsor requirements
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                100% UK Compliant
-              </h3>
-              <p className="text-gray-600">
-                Built specifically for UK sponsor requirements
-              </p>
-            </div>
 
-            <div className="text-center">
-              <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <TrendingUp />
+              <div className="text-center">
+                <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Continuous Learning
+                </h3>
+                <p className="text-gray-600">
+                  AI that improves with every assessment
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Continuous Learning
-              </h3>
-              <p className="text-gray-600">
-                AI that improves with every assessment
-              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured AI Agents */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured AI Agents
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our most popular AI-powered compliance solutions
-            </p>
-          </div>
+        {/* Featured AI Agents */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Featured AI Agents
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Our most popular AI-powered compliance solutions
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {featuredAgents.map((agent) => (
-              <Card
-                key={agent.id}
-                className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              >
-                {/* Image/Video Holder */}
-                <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-                  {agent.id === "qualification" && (
-                    <img
-                      src="/images/ai-qualification-compliance-agent.png"
-                      alt="AI Qualification Compliance Agent"
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  {agent.id === "salary" && (
-                    <img
-                      src="/images/ai-salary-compliance-agent.png"
-                      alt="AI Salary Compliance Agent"
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  {/* Image placeholder - no video overlay */}
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {featuredAgents.map((agent) => (
+                <Card
+                  key={agent.id}
+                  className="relative overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                >
+                  {/* Image/Video Holder */}
+                  <div className="relative h-56 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+                    {agent.id === "qualification" && (
+                      <img
+                        src="/images/ai-qualification-compliance-agent.png"
+                        alt="AI Qualification Compliance Agent"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                    {agent.id === "salary" && (
+                      <img
+                        src="/images/ai-salary-compliance-agent.png"
+                        alt="AI Salary Compliance Agent"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                    {/* Image placeholder - no video overlay */}
       </div>
 
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge
-                          variant={
-                            agent.status === "Popular" ? "default" : "secondary"
-                          }
-                        >
-                          {agent.status}
-                        </Badge>
-                        <Badge variant="outline" className="capitalize">
-                          {agent.level}
-                        </Badge>
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge
+                            variant={
+                              agent.status === "Popular" ? "default" : "secondary"
+                            }
+                          >
+                            {agent.status}
+                          </Badge>
+                          <Badge variant="outline" className="capitalize">
+                            {agent.level}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-xl mb-2">
+                          {agent.title}
+                        </CardTitle>
+                        <CardDescription className="text-base">
+                          {agent.description}
+                        </CardDescription>
                       </div>
-                      <CardTitle className="text-xl mb-2">
-                        {agent.title}
-                      </CardTitle>
-                      <CardDescription className="text-base">
-                        {agent.description}
-                      </CardDescription>
                     </div>
-                  </div>
             </CardHeader>
 
             <CardContent>
@@ -801,5 +803,6 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+    </MobileLayout>
   );
 }
