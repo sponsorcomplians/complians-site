@@ -638,8 +638,18 @@ export default function SkillsExperienceComplianceDashboard() {
       
       console.log('[SkillsExperienceComp] Request body:', JSON.stringify(requestBody, null, 2));
       
-      // Debug: Log the API key being sent
-      const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'test-public-key-123'; // Fallback for testing
+      // Get API key from server endpoint (more reliable than client-side env vars)
+      let apiKey = 'test-public-key-123'; // Default fallback
+      try {
+        const keyResponse = await fetch('/api/get-api-key');
+        if (keyResponse.ok) {
+          const keyData = await keyResponse.json();
+          apiKey = keyData.apiKey;
+        }
+      } catch (error) {
+        console.warn('[SkillsExperienceComp] Failed to get API key from server, using fallback');
+      }
+      
       console.log('[SkillsExperienceComp] API Key being sent:', apiKey ? '***' + apiKey.slice(-4) : 'EMPTY');
       console.log('[SkillsExperienceComp] Environment check:', {
         hasEnvVar: !!process.env.NEXT_PUBLIC_API_KEY,
