@@ -602,33 +602,38 @@ export default function SkillsExperienceComplianceDashboard() {
       console.log('[SkillsExperienceComp] Calling generate-narrative API with:', info);
       
       const requestBody = {
-        workerName: info.workerName,
-        cosReference: info.cosReference,
-        assignmentDate: info.assignmentDate,
-        jobTitle: info.jobTitle,
-        socCode: info.socCode,
-        cosDuties: info.cosDuties,
-        jobDescriptionDuties: info.jobDescriptionDuties,
-        step1Pass,
-        step2Pass,
-        step3Pass,
-        step4Pass,
-        step5Pass,
-        hasJobDescription: info.hasJobDescription,
-        hasCV: info.hasCV,
-        hasReferences: info.hasReferences,
-        hasContracts: info.hasContracts,
-        hasPayslips: info.hasPayslips,
-        hasTraining: info.hasTraining,
-        employmentHistoryConsistent: info.employmentHistoryConsistent,
-        experienceMatchesDuties: info.experienceMatchesDuties,
-        referencesCredible: info.referencesCredible,
-        experienceRecentAndContinuous: info.experienceRecentAndContinuous,
-        inconsistenciesDescription: info.inconsistenciesDescription,
-        missingDocs: info.missingDocs,
-        isCompliant,
-        riskLevel,
-        agentType: 'skills-experience'
+        worker: {
+          name: info.workerName,
+          cosReference: info.cosReference,
+          assignmentDate: info.assignmentDate,
+          jobTitle: info.jobTitle,
+          socCode: info.socCode,
+          cosDuties: info.cosDuties,
+          jobDescriptionDuties: info.jobDescriptionDuties
+        },
+        documents: {
+          hasJobDescription: info.hasJobDescription,
+          hasCV: info.hasCV,
+          hasReferences: info.hasReferences,
+          hasContracts: info.hasContracts,
+          hasPayslips: info.hasPayslips,
+          hasTraining: info.hasTraining,
+          missingDocs: info.missingDocs
+        },
+        assessmentData: {
+          step1Pass,
+          step2Pass,
+          step3Pass,
+          step4Pass,
+          step5Pass,
+          employmentHistoryConsistent: info.employmentHistoryConsistent,
+          experienceMatchesDuties: info.experienceMatchesDuties,
+          referencesCredible: info.referencesCredible,
+          experienceRecentAndContinuous: info.experienceRecentAndContinuous,
+          inconsistenciesDescription: info.inconsistenciesDescription,
+          isCompliant,
+          riskLevel
+        }
       };
       
       console.log('[SkillsExperienceComp] Request body:', JSON.stringify(requestBody, null, 2));
