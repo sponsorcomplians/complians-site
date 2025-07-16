@@ -685,6 +685,17 @@ export default function SkillsExperienceComplianceDashboard() {
       
       // Use existing template literal as fallback
       narrative = `
+[Your Company Letterhead]
+
+[Date]
+
+[Recipient Name/Title]
+[Recipient Address]
+
+Subject: Skills and Experience Compliance Assessment - ${info.workerName}
+
+Dear [Recipient Name/Title],
+
 Following a detailed review of the documents you have provided, serious concerns have been identified regarding your assignment of the Certificate of Sponsorship (CoS) for roles under Standard Occupational Classification (SOC) code ${info.socCode} (${info.jobTitle}). The evidence suggests that you have not adequately assessed or verified the skills and experience of the sponsored worker prior to assigning the CoS. This constitutes a significant breach of your sponsor duties under the Workers and Temporary Workers: Guidance for Sponsors.
 
 A Certificate of Sponsorship (CoS) was assigned to ${info.workerName} (${info.cosReference}) on ${info.assignmentDate} to work as a ${info.jobTitle}. The summary of job description in your CoS states: ${info.cosDuties}. In addition, your job description states that your main duties and responsibilities include: ${info.jobDescriptionDuties}.
