@@ -638,12 +638,16 @@ export default function SkillsExperienceComplianceDashboard() {
       
       console.log('[SkillsExperienceComp] Request body:', JSON.stringify(requestBody, null, 2));
       
+      // Debug: Log the API key being sent
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'test-public-key-123'; // Fallback for testing
+      console.log('[SkillsExperienceComp] API Key being sent:', apiKey ? '***' + apiKey.slice(-4) : 'EMPTY');
+      
       const response = await fetch('/api/generate-narrative', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           // Add authentication header
-          'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          'x-api-key': apiKey,
           // OR use Bearer token
           // 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`
         },
