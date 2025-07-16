@@ -642,6 +642,10 @@ export default function SkillsExperienceComplianceDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Add authentication header
+          'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          // OR use Bearer token
+          // 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`
         },
         body: JSON.stringify(requestBody)
       });
@@ -986,6 +990,40 @@ ${assessment?.professionalAssessment}`;
         localStorage.setItem('skillsExperienceComplianceAssessments', JSON.stringify(updatedAssessments));
       }
     }
+  };
+
+  // Helper function to extract compliance status from narrative
+  const extractComplianceStatus = (narrative: string): string => {
+    if (narrative.includes('COMPLIANT')) return 'COMPLIANT';
+    if (narrative.includes('SERIOUS BREACH')) return 'SERIOUS_BREACH';
+    if (narrative.includes('MAJOR CONCERNS')) return 'MAJOR_CONCERNS';
+    if (narrative.includes('MINOR ISSUES')) return 'MINOR_ISSUES';
+    return 'REQUIRES_REVIEW';
+  };
+
+  // Fallback template generator
+  const generateTemplateNarrative = (workerId: string): string => {
+    const worker = workers.find(w => w.id === workerId);
+    if (!worker) return 'Worker not found';
+    
+    return `
+SKILLS AND EXPERIENCE COMPLIANCE ASSESSMENT
+
+Worker: ${worker.name}
+Role: ${worker.jobTitle}
+SOC Code: ${worker.socCode}
+Assessment Date: ${new Date().toLocaleDateString()}
+
+This is a template-generated report. AI service was unavailable.
+
+Documents Reviewed:
+${selectedFiles.map(f => `- ${f.name} (${f.type})`).join('\n')}
+
+COMPLIANCE STATUS: REQUIRES MANUAL REVIEW
+
+Note: This assessment requires manual review as the AI service was unavailable. 
+Please review all documents manually to ensure compliance with Home Office requirements.
+  `.trim();
   };
 
   // UI Components
