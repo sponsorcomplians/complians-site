@@ -6,8 +6,8 @@ function isAuthorized(request: NextRequest): boolean {
   const apiKey = request.headers.get('x-api-key');
   const authHeader = request.headers.get('authorization');
   
-  // Check for API key in header
-  if (apiKey && apiKey === process.env.API_SECRET_KEY) {
+  // Check for API key in header (check both public and secret keys)
+  if (apiKey && (apiKey === process.env.NEXT_PUBLIC_API_KEY || apiKey === process.env.API_SECRET_KEY)) {
     return true;
   }
   
@@ -46,7 +46,70 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { worker, documents, assessmentData } = body;
+    console.log('API Route - Received request body:', JSON.stringify(body, null, 2));
+
+    // Extract data with fallbacks
+    const { 
+      workerName, 
+      cosReference, 
+      assignmentDate, 
+      jobTitle, 
+      socCode, 
+      cosDuties, 
+      jobDescriptionDuties,
+      hasJobDescription,
+      hasCV,
+      hasReferences,
+      hasContracts,
+      hasPayslips,
+      hasTraining,
+      employmentHistoryConsistent,
+      experienceMatchesDuties,
+      referencesCredible,
+      experienceRecentAndContinuous,
+      inconsistenciesDescription,
+      missingDocs,
+      worker,
+      documents,
+      assessmentData 
+    } = body;
+
+    // Build comprehensive data object for AI analysis
+    const analysisData = {
+      worker: {
+        name: workerName || worker?.name || 'Unknown Worker',
+        cosReference: cosReference || worker?.cosReference || 'Unknown CoS',
+        assignmentDate: assignmentDate || worker?.assignmentDate || 'Unknown Date',
+        jobTitle: jobTitle || worker?.jobTitle || 'Unknown Role',
+        socCode: socCode || worker?.socCode || 'Unknown SOC',
+        cosDuties: cosDuties || worker?.cosDuties || 'Not provided',
+        jobDescriptionDuties: jobDescriptionDuties || worker?.jobDescriptionDuties || 'Not provided'
+      },
+      documents: {
+        hasJobDescription: hasJobDescription || false,
+        hasCV: hasCV || false,
+        hasReferences: hasReferences || false,
+        hasContracts: hasContracts || false,
+        hasPayslips: hasPayslips || false,
+        hasTraining: hasTraining || false,
+        uploadedFiles: documents || []
+      },
+      assessment: {
+        employmentHistoryConsistent: employmentHistoryConsistent || false,
+        experienceMatchesDuties: experienceMatchesDuties || false,
+        referencesCredible: referencesCredible || false,
+        experienceRecentAndContinuous: experienceRecentAndContinuous || false,
+        inconsistenciesDescription: inconsistenciesDescription || 'None noted',
+        missingDocs: missingDocs || []
+      },
+      rawData: {
+        worker,
+        documents,
+        assessmentData
+      }
+    };
+
+    console.log('API Route - Structured analysis data:', JSON.stringify(analysisData, null, 2));
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -64,7 +127,7 @@ export async function POST(request: NextRequest) {
           },
           {
             role: 'user',
-            content: `Generate a compliance assessment for the following worker:\n\n${JSON.stringify({ worker, documents, assessmentData }, null, 2)}`
+            content: `Generate a compliance assessment based on the following extracted data. Use ONLY the information provided and do not use any templates or fallback content:\n\n${JSON.stringify(analysisData, null, 2)}`
           }
         ],
         temperature: 0.3,
@@ -79,16 +142,22 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
+    console.log('API Route - OpenAI response:', JSON.stringify(data, null, 2));
+    
     const narrative = data.choices[0]?.message?.content;
 
     if (!narrative) {
-      throw new Error('No narrative generated');
+      console.error('API Route - No narrative generated from OpenAI');
+      throw new Error('No narrative generated from AI service');
     }
+
+    console.log('API Route - Generated narrative:', narrative);
 
     return NextResponse.json({ 
       success: true, 
       narrative,
-      model: 'gpt-4-turbo-preview'
+      model: 'gpt-4-turbo-preview',
+      analysisData: analysisData
     });
 
   } catch (error) {
