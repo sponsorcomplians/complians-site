@@ -641,6 +641,11 @@ export default function SkillsExperienceComplianceDashboard() {
       // Debug: Log the API key being sent
       const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'test-public-key-123'; // Fallback for testing
       console.log('[SkillsExperienceComp] API Key being sent:', apiKey ? '***' + apiKey.slice(-4) : 'EMPTY');
+      console.log('[SkillsExperienceComp] Environment check:', {
+        hasEnvVar: !!process.env.NEXT_PUBLIC_API_KEY,
+        envVarLength: process.env.NEXT_PUBLIC_API_KEY?.length || 0,
+        usingFallback: !process.env.NEXT_PUBLIC_API_KEY
+      });
       
       const response = await fetch('/api/generate-narrative', {
         method: 'POST',
