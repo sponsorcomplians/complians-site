@@ -15,32 +15,42 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   }
 
-  if (process.env.DISABLE_AUTH === 'true') return NextResponse.json({ user: { email: 'dev@test.com', role: 'admin' } });
+  // Check if auth is disabled for development/testing
+  const isAuthDisabled = process.env.DISABLE_AUTH === 'true';
+  const headersList = await headers();
+  
+  if (!isAuthDisabled) {
+    try {
+      const session = await getServerSession(authOptions);
+      
+      if (!session?.user?.id || !session?.user?.tenant_id) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
 
-  try {
-    const session = await getServerSession(authOptions);
-    const headersList = await headers();
-    
-    if (!session?.user?.id || !session?.user?.tenant_id) {
+      // Check if tenant can generate more narratives
+      const canGenerateNarrative = await canPerformAction(session.user.tenant_id, 'generate_narrative');
+      
+      if (!canGenerateNarrative) {
+        return NextResponse.json(
+          { 
+            error: 'Narrative limit exceeded',
+            message: 'You have reached the maximum number of narratives for your current plan. Please upgrade your plan to generate more narratives.'
+          },
+          { status: 403 }
+        );
+      }
+    } catch (error) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication failed' },
         { status: 401 }
       );
     }
+  }
 
-    // Check if tenant can generate more narratives
-    const canGenerateNarrative = await canPerformAction(session.user.tenant_id, 'generate_narrative');
-    
-    if (!canGenerateNarrative) {
-      return NextResponse.json(
-        { 
-          error: 'Narrative limit exceeded',
-          message: 'You have reached the maximum number of narratives for your current plan. Please upgrade your plan to generate more narratives.'
-        },
-        { status: 403 }
-      );
-    }
-
+  try {
     const body = await request.json();
     console.log('📥 [API] Received request body:', JSON.stringify(body, null, 2));
     
