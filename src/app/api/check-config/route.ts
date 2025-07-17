@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     },
-    recommendations: []
+    recommendations: [] as string[]
   };
 
   // Add recommendations
