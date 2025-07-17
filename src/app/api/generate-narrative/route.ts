@@ -6,8 +6,20 @@ function isAuthorized(request: NextRequest): boolean {
   const apiKey = request.headers.get('x-api-key');
   const authHeader = request.headers.get('authorization');
   
+  console.log('[Auth Check] Headers received:', {
+    'x-api-key': apiKey ? `***${apiKey.slice(-4)}` : 'not provided',
+    'authorization': authHeader ? 'Bearer ***' : 'not provided'
+  });
+  
+  // Allow if DISABLE_AUTH is set to true (development mode)
+  if (process.env.DISABLE_AUTH === 'true') {
+    console.log('[Auth Check] DISABLE_AUTH is true, allowing request');
+    return true;
+  }
+  
   // Check for API key in header (check both public and secret keys)
   if (apiKey && (apiKey === process.env.NEXT_PUBLIC_API_KEY || apiKey === process.env.API_SECRET_KEY)) {
+    console.log('[Auth Check] Valid API key provided');
     return true;
   }
   
@@ -15,14 +27,19 @@ function isAuthorized(request: NextRequest): boolean {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
     // Add your token validation logic here
-    return token === process.env.API_SECRET_KEY;
+    if (token === process.env.API_SECRET_KEY) {
+      console.log('[Auth Check] Valid Bearer token provided');
+      return true;
+    }
   }
   
-  // Allow if DISABLE_AUTH is set to true
-  if (process.env.DISABLE_AUTH === 'true') {
+  // For development, allow test key if no other auth is configured
+  if (apiKey === 'test-public-key-123' && !process.env.NEXT_PUBLIC_API_KEY && !process.env.API_SECRET_KEY) {
+    console.log('[Auth Check] Using test key in development mode');
     return true;
   }
   
+  console.log('[Auth Check] Authorization failed');
   return false;
 }
 
@@ -38,9 +55,13 @@ export async function POST(request: NextRequest) {
 
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key not configured');
+      console.error('[API Route] OpenAI API key not configured in environment variables');
+      console.error('[API Route] Please set OPENAI_API_KEY in your .env.local file');
       return NextResponse.json(
-        { error: 'AI service not configured' },
+        { 
+          error: 'AI service not configured',
+          details: 'OpenAI API key is missing. Please configure OPENAI_API_KEY in environment variables.'
+        },
         { status: 500 }
       );
     }
@@ -119,7 +140,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4-turbo',
         messages: [
           {
             role: 'system',
@@ -136,9 +157,23 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('OpenAI API error:', error);
-      throw new Error('Failed to generate narrative');
+      const errorText = await response.text();
+      console.error('[API Route] OpenAI API error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      
+      // Parse error if it's JSON
+      let errorDetails = errorText;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorDetails = errorJson.error?.message || errorText;
+      } catch (e) {
+        // Keep original error text if not JSON
+      }
+      
+      throw new Error(`OpenAI API error (${response.status}): ${errorDetails}`);
     }
 
     const data = await response.json();
@@ -156,7 +191,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       narrative,
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       analysisData: analysisData
     });
 

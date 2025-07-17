@@ -675,20 +675,58 @@ export default function SkillsExperienceComplianceDashboard() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[SkillsExperienceComp] API error response:', errorText);
-        throw new Error(`API call failed: ${response.status} - ${errorText}`);
+        
+        // Try to parse JSON error
+        let errorMessage = `API call failed: ${response.status}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.details) {
+            errorMessage += ` - ${errorJson.details}`;
+          } else if (errorJson.error) {
+            errorMessage += ` - ${errorJson.error}`;
+          }
+        } catch (e) {
+          errorMessage += ` - ${errorText}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       console.log('[SkillsExperienceComp] API response data:', data);
       
       if (data.error) {
-        throw new Error(`API returned error: ${data.error}`);
+        throw new Error(`API returned error: ${data.error}${data.details ? ` - ${data.details}` : ''}`);
+      }
+      
+      if (!data.narrative) {
+        throw new Error('No narrative returned from API');
       }
       
       narrative = data.narrative;
-      console.log('[SkillsExperienceComp] Narrative returned from API:', narrative);
+      console.log('[SkillsExperienceComp] Narrative successfully generated via AI');
     } catch (error) {
-      console.error('[SkillsExperienceComp] Error or fallback in narrative generation:', error);
+      console.error('[SkillsExperienceComp] Error in AI narrative generation:', error);
+      
+      // Show user-friendly error notification
+      if (error instanceof Error) {
+        if (error.message.includes('OpenAI API key is missing')) {
+          toast.error('AI service not configured. Please contact support.', {
+            description: 'Using template-based assessment instead.',
+            duration: 5000
+          });
+        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          toast.error('Authentication failed', {
+            description: 'Please check your API configuration.',
+            duration: 5000
+          });
+        } else {
+          toast.warning('AI narrative generation failed', {
+            description: 'Using template-based assessment instead.',
+            duration: 5000
+          });
+        }
+      }
       
       // Log fallback usage
       try {
