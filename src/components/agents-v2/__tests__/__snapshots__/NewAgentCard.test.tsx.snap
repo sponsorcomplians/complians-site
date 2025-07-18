@@ -1,0 +1,4643 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`NewAgentCard > Responsive Design Tests > should maintain layout in compact variant > compact-responsive 1`] = `
+<div
+  style="width: 300px;"
+>
+  <div
+    class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50 max-w-sm "
+  >
+    <div
+      class="relative h-48 bg-gray-50"
+    >
+      <img
+        alt="AI Test Compliance Agent"
+        class="object-cover"
+        src="/images/test-agent-showcase.png"
+        style="position: absolute; inset: 0;"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+      />
+    </div>
+    <div
+      class="absolute top-4 right-4 flex flex-col gap-2"
+    >
+      <div
+        class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-star h-3 w-3 mr-1"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+          />
+        </svg>
+        Popular
+      </div>
+    </div>
+    <div
+      class="p-6"
+    >
+      <div
+        class="flex items-start gap-3 mb-4"
+      >
+        <div
+          class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+        >
+          <div
+            class="h-6 w-6"
+            data-testid="icon-GraduationCap"
+          >
+            GraduationCap
+          </div>
+        </div>
+        <div
+          class="flex-1 min-w-0"
+        >
+          <h3
+            class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+          >
+            AI Test Compliance Agent
+          </h3>
+          <div
+            class="flex items-center gap-2 mb-2"
+          >
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+            >
+              advanced
+            </span>
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+            >
+              compliance
+            </span>
+          </div>
+          <p
+            class="text-gray-600 text-sm leading-relaxed"
+          >
+            A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 mb-4"
+      >
+        <span
+          class="text-2xl font-bold text-[#263976]"
+        >
+          £199.99
+        </span>
+        <span
+          class="text-lg text-gray-500 line-through"
+        >
+          £299.99
+        </span>
+      </div>
+      <div
+        class="mb-4"
+      >
+        <h4
+          class="font-semibold text-sm text-gray-900 mb-2"
+        >
+          Key Benefits:
+        </h4>
+        <ul
+          class="space-y-1"
+        >
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Reduce compliance errors by 95%
+            </span>
+          </li>
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Save 20+ hours per week
+            </span>
+          </li>
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Ensure regulatory compliance
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="flex gap-2"
+      >
+        <button
+          class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+        >
+          Get Started
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-arrow-right h-4 w-4 ml-2"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+            <path
+              d="m12 5 7 7-7 7"
+            />
+          </svg>
+        </button>
+        <button
+          class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-eye h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Responsive Design Tests > should maintain layout in featured variant > featured-responsive 1`] = `
+<div
+  style="width: 400px;"
+>
+  <div
+    class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50 max-w-md "
+  >
+    <div
+      class="relative h-48 bg-gray-50"
+    >
+      <img
+        alt="AI Test Compliance Agent"
+        class="object-cover"
+        src="/images/test-agent-showcase.png"
+        style="position: absolute; inset: 0;"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+      />
+    </div>
+    <div
+      class="absolute top-4 right-4 flex flex-col gap-2"
+    >
+      <div
+        class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-star h-3 w-3 mr-1"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+          />
+        </svg>
+        Popular
+      </div>
+    </div>
+    <div
+      class="p-6"
+    >
+      <div
+        class="flex items-start gap-3 mb-4"
+      >
+        <div
+          class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+        >
+          <div
+            class="h-6 w-6"
+            data-testid="icon-GraduationCap"
+          >
+            GraduationCap
+          </div>
+        </div>
+        <div
+          class="flex-1 min-w-0"
+        >
+          <h3
+            class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+          >
+            AI Test Compliance Agent
+          </h3>
+          <div
+            class="flex items-center gap-2 mb-2"
+          >
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+            >
+              advanced
+            </span>
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+            >
+              compliance
+            </span>
+          </div>
+          <p
+            class="text-gray-600 text-sm leading-relaxed"
+          >
+            A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+          </p>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 mb-4"
+      >
+        <span
+          class="text-2xl font-bold text-[#263976]"
+        >
+          £199.99
+        </span>
+        <span
+          class="text-lg text-gray-500 line-through"
+        >
+          £299.99
+        </span>
+      </div>
+      <div
+        class="mb-4"
+      >
+        <h4
+          class="font-semibold text-sm text-gray-900 mb-2"
+        >
+          Key Benefits:
+        </h4>
+        <ul
+          class="space-y-1"
+        >
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Reduce compliance errors by 95%
+            </span>
+          </li>
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Save 20+ hours per week
+            </span>
+          </li>
+          <li
+            class="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.801 10A10 10 0 1 1 17 3.335"
+              />
+              <path
+                d="m9 11 3 3L22 4"
+              />
+            </svg>
+            <span
+              class="line-clamp-1"
+            >
+              Ensure regulatory compliance
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="flex gap-2"
+      >
+        <button
+          class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+        >
+          Get Started
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-arrow-right h-4 w-4 ml-2"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12h14"
+            />
+            <path
+              d="m12 5 7 7-7 7"
+            />
+          </svg>
+        </button>
+        <button
+          class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-eye h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render agent with minimal data 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden   "
+>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  />
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-Bot"
+        >
+          Bot
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          Minimal Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            basic
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            hr
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A minimal agent for testing.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £99.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      />
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render agent without original price 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render agent without showcase image 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render coming soon agent correctly 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden   "
+>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-sparkles h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+        />
+        <path
+          d="M20 3v4"
+        />
+        <path
+          d="M22 5h-4"
+        />
+        <path
+          d="M4 17v2"
+        />
+        <path
+          d="M5 18H3"
+        />
+      </svg>
+      New
+    </div>
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-gray-300 bg-gray-100 text-gray-600"
+    >
+      Coming Soon
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Coming Soon Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+        disabled=""
+      >
+        Coming Soon
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render compact variant correctly 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50 max-w-sm "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render default variant correctly 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render featured variant correctly 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50 max-w-md "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render with custom className 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  custom-class"
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render without actions when showActions is false 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render without badges when showBadges is false 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render without benefits when showBenefits is false 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Snapshot Tests > should render without image when showImage is false 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Visual Regression Tests > should maintain consistent button states for available agents > available-agent-buttons 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Visual Regression Tests > should maintain consistent button states for coming soon agents > coming-soon-agent-buttons 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden   "
+>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-sparkles h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+        />
+        <path
+          d="M20 3v4"
+        />
+        <path
+          d="M22 5h-4"
+        />
+        <path
+          d="M4 17v2"
+        />
+        <path
+          d="M5 18H3"
+        />
+      </svg>
+      New
+    </div>
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-gray-300 bg-gray-100 text-gray-600"
+    >
+      Coming Soon
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Coming Soon Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+        disabled=""
+      >
+        Coming Soon
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Visual Regression Tests > should maintain consistent styling for both popular and new agents > popular-and-new-agent-styling 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-sparkles h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+        />
+        <path
+          d="M20 3v4"
+        />
+        <path
+          d="M22 5h-4"
+        />
+        <path
+          d="M4 17v2"
+        />
+        <path
+          d="M5 18H3"
+        />
+      </svg>
+      New
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Visual Regression Tests > should maintain consistent styling for new agents > new-agent-styling 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden   "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-500 text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-sparkles h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
+        />
+        <path
+          d="M20 3v4"
+        />
+        <path
+          d="M22 5h-4"
+        />
+        <path
+          d="M4 17v2"
+        />
+        <path
+          d="M5 18H3"
+        />
+      </svg>
+      New
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`NewAgentCard > Visual Regression Tests > should maintain consistent styling for popular agents > popular-agent-styling 1`] = `
+<div
+  class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ring-2 ring-[#00c3ff] ring-opacity-50  "
+>
+  <div
+    class="relative h-48 bg-gray-50"
+  >
+    <img
+      alt="AI Test Compliance Agent"
+      class="object-cover"
+      src="/images/test-agent-showcase.png"
+      style="position: absolute; inset: 0;"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"
+    />
+  </div>
+  <div
+    class="absolute top-4 right-4 flex flex-col gap-2"
+  >
+    <div
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-[#00c3ff] text-white"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-star h-3 w-3 mr-1"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        />
+      </svg>
+      Popular
+    </div>
+  </div>
+  <div
+    class="p-6"
+  >
+    <div
+      class="flex items-start gap-3 mb-4"
+    >
+      <div
+        class="flex-shrink-0 p-2 bg-[#263976] text-white rounded-lg"
+      >
+        <div
+          class="h-6 w-6"
+          data-testid="icon-GraduationCap"
+        >
+          GraduationCap
+        </div>
+      </div>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <h3
+          class="text-lg font-semibold text-[#263976] leading-tight mb-1"
+        >
+          AI Test Compliance Agent
+        </h3>
+        <div
+          class="flex items-center gap-2 mb-2"
+        >
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            advanced
+          </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700"
+          >
+            compliance
+          </span>
+        </div>
+        <p
+          class="text-gray-600 text-sm leading-relaxed"
+        >
+          A comprehensive AI agent for testing compliance requirements with advanced features and real-time monitoring capabilities.
+        </p>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2 mb-4"
+    >
+      <span
+        class="text-2xl font-bold text-[#263976]"
+      >
+        £199.99
+      </span>
+      <span
+        class="text-lg text-gray-500 line-through"
+      >
+        £299.99
+      </span>
+    </div>
+    <div
+      class="mb-4"
+    >
+      <h4
+        class="font-semibold text-sm text-gray-900 mb-2"
+      >
+        Key Benefits:
+      </h4>
+      <ul
+        class="space-y-1"
+      >
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Reduce compliance errors by 95%
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Save 20+ hours per week
+          </span>
+        </li>
+        <li
+          class="flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-circle-check-big h-3 w-3 text-green-500 flex-shrink-0"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21.801 10A10 10 0 1 1 17 3.335"
+            />
+            <path
+              d="m9 11 3 3L22 4"
+            />
+          </svg>
+          <span
+            class="line-clamp-1"
+          >
+            Ensure regulatory compliance
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        class="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#263976] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[#263976] hover:bg-[#1e2a5a] text-white"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-arrow-right h-4 w-4 ml-2"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 12h14"
+          />
+          <path
+            d="m12 5 7 7-7 7"
+          />
+        </svg>
+      </button>
+      <button
+        class="inline-flex items-center justify-center px-3 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-900"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-eye h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;
