@@ -457,8 +457,8 @@ export default function SkillsExperienceComplianceDashboard() {
       
       // Extract basic worker information with multiple fallback patterns
       // Combine all document texts for extraction
-      const allTexts = documentSummary.documents?.map(doc => doc.extractedText || '').join('\n') || '';
-      const extractedText = allTexts || assessmentData.extractedData?.toString() || '';
+      const allTexts = (documentSummary as any).documents?.map((doc: any) => doc.extractedText || '').join('\n') || '';
+      const extractedText = allTexts || JSON.stringify(documentSummary) || assessmentData.extractedData?.toString() || '';
       
       // Try multiple patterns for worker name
       const workerName = assessmentData.workerName || 
