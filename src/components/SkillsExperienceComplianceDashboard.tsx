@@ -25,7 +25,7 @@ import {
   Calendar,
   Loader2,
 } from "lucide-react";
-import AgentAssessmentExplainer from "./AgentAssessmentExplainer";
+
 import { useSearchParams } from 'next/navigation';
 import { errorHandlingService, DocumentParseError, ValidationError, AIServiceError } from "@/lib/error-handling";
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -1161,7 +1161,25 @@ Please review all documents manually to ensure compliance with Home Office requi
         </div>
         {/* Explainer Module */}
         <div className="mb-8">
-          <AgentAssessmentExplainer />
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Bot className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">AI Skills & Experience Compliance System</h3>
+            </div>
+            <p className="text-blue-800 mb-3">
+              The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements.
+            </p>
+            <div className="text-sm text-blue-700">
+              <strong>Capabilities:</strong>
+              <ul className="list-disc list-inside mt-1 space-y-1">
+                <li>Verifies skills and experience match the specific job role requirements</li>
+                <li>Analyses CVs, references, contracts, payslips, and training certificates</li>
+                <li>Detects inconsistencies and gaps in employment history and qualifications</li>
+                <li>Flags compliance risks under paragraph C1.38 of the Immigration Rules</li>
+                <li>Generates legal-style reports with detailed compliance assessments</li>
+              </ul>
+            </div>
+          </div>
         </div>
         {/* Navigation Tabs */}
         <div className="flex justify-center mb-8">
