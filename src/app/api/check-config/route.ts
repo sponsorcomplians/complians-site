@@ -1,13 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Configuration check endpoint for debugging AI setup
-export async function GET(request: NextRequest) {
-  // Only allow in development mode
-  if (process.env.NODE_ENV !== 'development' && process.env.DISABLE_AUTH !== 'true') {
-    return NextResponse.json(
-      { error: 'Not available in production' },
-      { status: 403 }
-    );
+export async function GET() {
+  // Check if we should show full details or just status
+  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.DISABLE_AUTH === 'true';
+  
+  if (!isDevelopment) {
+    // In production, just return basic status
+    return NextResponse.json({
+      status: 'ok',
+      ai: {
+        configured: !!process.env.OPENAI_API_KEY
+      },
+      message: process.env.OPENAI_API_KEY 
+        ? '✅ AI service is configured' 
+        : '⚠️ AI service not configured - narratives will use templates'
+    }, { status: 200 });
   }
 
   const config = {

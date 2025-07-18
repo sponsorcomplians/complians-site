@@ -47,8 +47,12 @@ export async function POST(request: NextRequest) {
   try {
     // Check authorization
     if (!isAuthorized(request)) {
+      console.log('[API Route] Authorization failed - returning 401');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { 
+          error: 'Unauthorized',
+          details: 'Please configure authentication or set DISABLE_AUTH=true for development'
+        },
         { status: 401 }
       );
     }
