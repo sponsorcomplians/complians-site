@@ -3,7 +3,8 @@
 
 export const AIStyleConfig = {
   // Choose your preferred tone (uncomment one)
-  tone: 'professional', // default
+  tone: 'plainEnglish', // Use simple, everyday language
+  // tone: 'professional', // default formal tone
   // tone: 'assertive',
   // tone: 'detailed',
   // tone: 'concise',
