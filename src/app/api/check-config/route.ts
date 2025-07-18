@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Configuration check endpoint for debugging AI setup
 export async function GET(request: NextRequest) {
   // Only allow in development mode
   if (process.env.NODE_ENV !== 'development' && process.env.DISABLE_AUTH !== 'true') {
