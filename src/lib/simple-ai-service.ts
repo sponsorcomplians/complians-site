@@ -1,6 +1,9 @@
 // Simple AI Service for Narrative Generation
 // No complex authentication, just straightforward AI integration
 
+import { improvedSkillsPrompt, toneVariations, formatOptions } from './prompts/improved-skills-prompt';
+import { getStyleConfiguration } from './ai-style-config';
+
 interface NarrativeRequest {
   workerName: string;
   cosReference: string;
@@ -83,53 +86,42 @@ export class SimpleAIService {
   }
 
   private getSystemPrompt(): string {
-    return `You are a Senior Immigration Solicitor and UK sponsor compliance specialist analyzing sponsor compliance with Home Office guidance.
-
-Generate a professional compliance assessment letter following this format:
-
-SKILLS AND EXPERIENCE COMPLIANCE ASSESSMENT
-
-Worker: [Worker Name]
-CoS Reference: [CoS Reference]
-Role: [Job Title]
-SOC Code: [SOC Code]
-Assignment Date: [Date]
-
-INTRODUCTION
-This assessment evaluates whether the sponsored worker meets the skills, qualifications, and experience requirements stated in their Certificate of Sponsorship (CoS).
-
-FINDINGS
-[Analyze the provided information systematically]
-
-CONCLUSION
-Based on the evidence, determine if the worker is COMPLIANT or in SERIOUS BREACH.
-
-Use formal British legal English. Be specific about any issues found.`;
+    // Use the configuration-based style
+    // This pulls from ai-style-config.ts for easy customization
+    return getStyleConfiguration();
   }
 
   private buildPrompt(data: NarrativeRequest): string {
-    return `Generate a compliance assessment for:
+    return `Please generate a compliance assessment using the following case information:
 
-Worker: ${data.workerName}
-CoS Reference: ${data.cosReference}
-Assignment Date: ${data.assignmentDate}
-Job Title: ${data.jobTitle}
-SOC Code: ${data.socCode}
+CASE DETAILS:
+- Worker Name: ${data.workerName}
+- CoS Reference: ${data.cosReference}
+- Assignment Date: ${data.assignmentDate}
+- Job Title: ${data.jobTitle}
+- SOC Code: ${data.socCode}
+- Assessment Date: ${new Date().toLocaleDateString('en-GB')}
 
-CoS Duties: ${data.cosDuties}
-Job Description Duties: ${data.jobDescriptionDuties}
+ROLE INFORMATION:
+- CoS Stated Duties: "${data.cosDuties}"
+- Job Description Duties: "${data.jobDescriptionDuties}"
 
-Missing Documents: ${data.missingDocs.length > 0 ? data.missingDocs.join(', ') : 'None'}
+DOCUMENTATION STATUS:
+- Missing Documents: ${data.missingDocs.length > 0 ? data.missingDocs.join(', ') : 'All key documents provided'}
+- Total Missing: ${data.missingDocs.length} documents
 
-Assessment Results:
-- Employment History Consistent: ${data.employmentHistoryConsistent ? 'Yes' : 'No'}
-- Experience Matches Duties: ${data.experienceMatchesDuties ? 'Yes' : 'No'}
-- References Credible: ${data.referencesCredible ? 'Yes' : 'No'}
-- Experience Recent and Continuous: ${data.experienceRecentAndContinuous ? 'Yes' : 'No'}
+ASSESSMENT FINDINGS:
+1. Employment History Consistency: ${data.employmentHistoryConsistent ? 'CONFIRMED - No gaps or discrepancies identified' : 'FAILED - Significant gaps or inconsistencies found'}
+2. Experience/Duties Alignment: ${data.experienceMatchesDuties ? 'CONFIRMED - Experience aligns with role requirements' : 'FAILED - Experience does not match required duties'}
+3. Reference Verification: ${data.referencesCredible ? 'CONFIRMED - References appear genuine and detailed' : 'FAILED - References lack credibility or detail'}
+4. Experience Currency: ${data.experienceRecentAndContinuous ? 'CONFIRMED - Recent and continuous relevant experience' : 'FAILED - Extended gaps affecting skill currency'}
 
-${data.inconsistenciesDescription ? `Inconsistencies: ${data.inconsistenciesDescription}` : ''}
+${data.inconsistenciesDescription ? `SPECIFIC CONCERNS IDENTIFIED:\n${data.inconsistenciesDescription}` : ''}
 
-Generate a professional compliance assessment letter based on this information.`;
+COMPLIANCE DETERMINATION REQUIRED:
+Based on the above findings, determine whether this case is COMPLIANT or constitutes a SERIOUS BREACH of sponsor duties under Paragraph C1.38.
+
+Generate the full assessment letter following the specified format and style guidelines.`;
   }
 
   private getFallbackNarrative(data: NarrativeRequest): string {
