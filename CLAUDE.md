@@ -16,6 +16,8 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 npm run lint:fix     # Fix ESLint issues
 npm run type-check   # TypeScript type checking
+npm run clean        # Clean build artifacts
+npm run analyze      # Analyze bundle size
 ```
 
 ### Database
@@ -36,6 +38,7 @@ npm run test  # Outputs "Tests coming soon"
 ```
 
 Manual integration tests exist as standalone scripts (e.g., `test-billing.mjs`, `test-auth-improvements.mjs`).
+Run specific tests with: `node test-billing.mjs` or `node test-auth-improvements.mjs`
 
 ## Architecture Overview
 
@@ -104,6 +107,7 @@ Key tables include:
 1. **Primary AI Provider**: OpenAI GPT-4
    - Configure via `OPENAI_API_KEY` in `.env.local`
    - Fallback models: GPT-4 Turbo, GPT-3.5 Turbo
+   - Alternative providers: Anthropic Claude, Google Gemini, Together AI
 
 2. **Prompt Management**
    - Domain-specific prompts in `/src/lib/prompts/`
@@ -118,20 +122,47 @@ Key tables include:
 
 4. **Skills & Experience Agent Implementation** (NEW - January 2025)
    - **Simple AI Service**: `/src/lib/simple-ai-service.ts` - Direct OpenAI integration
+   - **Universal AI Service**: `/src/lib/universal-ai-service.ts` - Multi-provider support
    - **API Endpoint**: `/api/generate-narrative-v2` - No authentication required
    - **Manual Worker Form**: Pre-filled form for data confirmation/correction
    - **Customizable Narratives**: Plain English style configurable in `ai-style-config.ts`
    - **Fallback Logic**: Template-based narratives when AI fails
 
+5. **AI Performance Optimization**
+   - Response caching with TTL in `/lib/narrativeCache.ts`
+   - Rate limiting via `/lib/rate-limit-service.ts`
+   - Streaming responses for long narratives
+   - Error recovery with fallback prompts
+
 ### API Endpoints
 
 Key API routes:
-- `/api/auth/*`: Authentication flows
-- `/api/billing/*`: Stripe integration
-- `/api/workers/*`: Worker management
-- `/api/generate-narrative`: AI narrative generation
-- `/api/compliance/*`: Various compliance endpoints
-- `/api/tenants/*`: Multi-tenant management
+- `/api/auth/*`: Authentication flows (NextAuth.js with magic links)
+- `/api/billing/*`: Stripe integration (subscriptions, webhooks, checkout)
+- `/api/workers/*`: Worker management (CRUD operations)
+- `/api/generate-narrative`: AI narrative generation (authenticated)
+- `/api/generate-narrative-v2`: AI narrative generation (unauthenticated)
+- `/api/compliance/*`: Various compliance endpoints (16+ domains)
+- `/api/tenants/*`: Multi-tenant management (tenant isolation)
+- `/api/master-compliance/*`: Comprehensive compliance dashboard
+- `/api/audit-logs/*`: Audit trail management
+- `/api/rbac/*`: Role-based access control
+- `/api/purchases/*`: Product purchase tracking
+- `/api/webhooks/*`: Stripe and compliance webhooks
+
+### Service Layer Architecture
+
+**Core Services** (all in `/src/lib/`):
+- `narrativeGenerationService.ts`: Main AI orchestration
+- `aiNarrativeService.ts`: Direct OpenAI integration
+- `ai-compliance-service.ts`: Compliance business logic
+- `multi-tenant-service.ts`: Tenant isolation and configuration
+- `stripe-billing-service.ts`: Payment processing
+- `audit-service.ts`: Comprehensive audit logging
+- `rbac-service.ts`: Role-based access control
+- `workers-service.ts`: Worker data management
+- `rate-limit-service.ts`: API rate limiting
+- `securityService.ts`: Security utilities and validation
 
 ### Development Best Practices
 
@@ -152,34 +183,57 @@ Critical environment variables (see `.env.example`):
 - `STRIPE_WEBHOOK_SECRET`
 - `NEXTAUTH_SECRET`
 - `RESEND_API_KEY`
+- `SENDGRID_API_KEY` (alternative email provider)
+- `TOGETHER_API_KEY` (alternative AI provider)
+- `ANTHROPIC_API_KEY` (alternative AI provider)
+- `GOOGLE_AI_API_KEY` (alternative AI provider)
+- `DISABLE_AUTH=true` (development only, disables authentication)
 
 ### Common Development Tasks
 
 1. **Adding a new compliance domain**:
-   - Create prompt in `/src/lib/prompts/`
+   - Create prompt in `/src/lib/prompts/` (follow existing patterns)
    - Add agent type to `narrativeGenerationService.ts`
-   - Create UI component in `/src/components/`
+   - Create UI component in `/src/components/` (use existing Dashboard as template)
+   - Add route in `/app/ai-[domain]-compliance/page.tsx`
 
 2. **Modifying AI behavior**:
    - Update prompts in `/src/lib/prompts/`
    - Adjust model selection in `aiNarrativeService.ts`
    - Configure tenant-specific settings via `multi-tenant-service.ts`
    - For simple implementations, use `simple-ai-service.ts` pattern
+   - Test with `/api/test-narrative` endpoint
 
 3. **Working with the database**:
    - Run migrations in numerical order from root directory
    - Update types with `npm run db:generate-types`
    - Use Supabase client from `/src/lib/supabase-client.ts`
+   - Check schema with `check-db.js` script
+   - Fix issues with provided SQL migration files
 
 4. **Handling Authentication Issues**:
    - If auth blocks AI generation, use `simple-ai-service.ts` pattern
    - Create new API endpoints without auth checks (e.g., `/api/generate-narrative-v2`)
    - Use `DISABLE_AUTH=true` environment variable for development
+   - Check `/api/test-auth` for debugging auth issues
 
 5. **Customizing AI Narratives**:
    - Edit `/src/lib/ai-style-config.ts` for tone and format
    - Update prompts in `/src/lib/prompts/improved-skills-prompt.ts`
    - See `AI_CUSTOMIZATION_GUIDE.md` for detailed instructions
+   - Test changes with tenant-specific settings in `/app/tenant-ai-settings/`
+
+6. **Database Migrations**:
+   - Use numbered SQL files for schema changes
+   - Always backup before running migrations
+   - Use `run-migration-direct.js` for direct execution
+   - Verify with `test-database-integration.js`
+
+7. **Adding New Products**:
+   - Add product configuration in `/lib/products.ts`
+   - Create product-specific components if needed
+   - Update Stripe product IDs in environment variables
+   - Test purchase flow with test cards
 
 ### Deployment Notes
 
@@ -203,15 +257,43 @@ Critical environment variables (see `.env.example`):
    - Verify authentication isn't blocking the request
    - Use `/api/generate-narrative-v2` endpoint if auth issues persist
    - Check browser console for 401/403 errors
+   - Test with `/api/debug-env` to verify environment setup
+   - Check rate limits with `/api/rate-limit-status`
 
 2. **Worker Data Showing as "Unknown"**:
    - Manual worker form will appear after document upload
    - Users can confirm/edit extracted information
    - All fields marked with * are required
    - Job Title should match exactly as stated in CoS
+   - Check document parsing with `/api/parse-pdf` endpoint
 
 3. **Environment Variables Not Loading**:
    - Ensure `.env.local` file exists in root directory
    - Restart dev server after adding new variables
    - In Vercel, add variables without quotes
    - Use `DISABLE_AUTH=true` (not `"true"`) in Vercel
+   - Use `/api/check-config` to verify configuration
+
+4. **Database Connection Issues**:
+   - Check Supabase project ID in connection string
+   - Verify RLS policies aren't blocking reads
+   - Use `/api/debug-db` to test connection
+   - Check tenant_id column exists on all tables
+
+5. **Stripe Webhook Issues**:
+   - Ensure webhook endpoint is publicly accessible
+   - Check webhook secret matches Stripe dashboard
+   - Use test mode credentials for development
+   - Check webhook delivery logs in Stripe dashboard
+
+6. **Build Failures**:
+   - Check for TypeScript errors with `npm run type-check`
+   - Verify all environment variables are set for build
+   - Clear cache with `npm run clean && rm -rf node_modules/.cache`
+   - Check for missing dependencies
+
+7. **Supabase Schema Issues**:
+   - Run `npm run db:generate-types` after schema changes
+   - Check for missing tenant_id columns
+   - Use provided SQL migration files for fixes
+   - Verify RLS policies are properly configured
