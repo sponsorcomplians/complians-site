@@ -11,6 +11,12 @@ function isAuthorized(request: NextRequest): boolean {
     'authorization': authHeader ? 'Bearer ***' : 'not provided'
   });
   
+  console.log('[Auth Check] Environment check:', {
+    DISABLE_AUTH: process.env.DISABLE_AUTH,
+    DISABLE_AUTH_is_true: process.env.DISABLE_AUTH === 'true',
+    NODE_ENV: process.env.NODE_ENV
+  });
+  
   // Allow if DISABLE_AUTH is set to true (development mode)
   if (process.env.DISABLE_AUTH === 'true') {
     console.log('[Auth Check] DISABLE_AUTH is true, allowing request');
@@ -48,13 +54,21 @@ export async function POST(request: NextRequest) {
     // Check authorization
     if (!isAuthorized(request)) {
       console.log('[API Route] Authorization failed - returning 401');
-      return NextResponse.json(
-        { 
-          error: 'Unauthorized',
-          details: 'Please configure authentication or set DISABLE_AUTH=true for development'
-        },
-        { status: 401 }
-      );
+      
+      // Include debug info in development
+      const debugInfo = {
+        error: 'Unauthorized',
+        details: 'Please configure authentication or set DISABLE_AUTH=true for development',
+        debug: {
+          DISABLE_AUTH_configured: !!process.env.DISABLE_AUTH,
+          DISABLE_AUTH_value: process.env.DISABLE_AUTH,
+          hasPublicKey: !!process.env.NEXT_PUBLIC_API_KEY,
+          hasSecretKey: !!process.env.API_SECRET_KEY,
+          environment: process.env.NODE_ENV
+        }
+      };
+      
+      return NextResponse.json(debugInfo, { status: 401 });
     }
 
     // Check if OpenAI API key is configured

@@ -598,73 +598,31 @@ export default function SkillsExperienceComplianceDashboard() {
     const aiStartTime = Date.now();
     
     try {
-      // Call the API route instead of direct service to avoid client-side execution issues
-      console.log('[SkillsExperienceComp] Calling generate-narrative API with:', info);
+      // Use the new simplified API v2
+      console.log('[SkillsExperienceComp] Calling generate-narrative-v2 API');
       
       const requestBody = {
-        worker: {
-          name: info.workerName,
-          cosReference: info.cosReference,
-          assignmentDate: info.assignmentDate,
-          jobTitle: info.jobTitle,
-          socCode: info.socCode,
-          cosDuties: info.cosDuties,
-          jobDescriptionDuties: info.jobDescriptionDuties
-        },
-        documents: {
-          hasJobDescription: info.hasJobDescription,
-          hasCV: info.hasCV,
-          hasReferences: info.hasReferences,
-          hasContracts: info.hasContracts,
-          hasPayslips: info.hasPayslips,
-          hasTraining: info.hasTraining,
-          missingDocs: info.missingDocs
-        },
-        assessmentData: {
-          step1Pass,
-          step2Pass,
-          step3Pass,
-          step4Pass,
-          step5Pass,
-          employmentHistoryConsistent: info.employmentHistoryConsistent,
-          experienceMatchesDuties: info.experienceMatchesDuties,
-          referencesCredible: info.referencesCredible,
-          experienceRecentAndContinuous: info.experienceRecentAndContinuous,
-          inconsistenciesDescription: info.inconsistenciesDescription,
-          isCompliant,
-          riskLevel
-        }
+        workerName: info.workerName,
+        cosReference: info.cosReference,
+        assignmentDate: info.assignmentDate,
+        jobTitle: info.jobTitle,
+        socCode: info.socCode,
+        cosDuties: info.cosDuties,
+        jobDescriptionDuties: info.jobDescriptionDuties,
+        missingDocs: info.missingDocs,
+        employmentHistoryConsistent: info.employmentHistoryConsistent,
+        experienceMatchesDuties: info.experienceMatchesDuties,
+        referencesCredible: info.referencesCredible,
+        experienceRecentAndContinuous: info.experienceRecentAndContinuous,
+        inconsistenciesDescription: info.inconsistenciesDescription
       };
       
-      console.log('[SkillsExperienceComp] Request body:', JSON.stringify(requestBody, null, 2));
+      console.log('[SkillsExperienceComp] Simplified request:', requestBody);
       
-      // Get API key from server endpoint (more reliable than client-side env vars)
-      let apiKey = 'test-public-key-123'; // Default fallback
-      try {
-        const keyResponse = await fetch('/api/get-api-key');
-        if (keyResponse.ok) {
-          const keyData = await keyResponse.json();
-          apiKey = keyData.apiKey;
-        }
-      } catch (error) {
-        console.warn('[SkillsExperienceComp] Failed to get API key from server, using fallback');
-      }
-      
-      console.log('[SkillsExperienceComp] API Key being sent:', apiKey ? '***' + apiKey.slice(-4) : 'EMPTY');
-      console.log('[SkillsExperienceComp] Environment check:', {
-        hasEnvVar: !!process.env.NEXT_PUBLIC_API_KEY,
-        envVarLength: process.env.NEXT_PUBLIC_API_KEY?.length || 0,
-        usingFallback: !process.env.NEXT_PUBLIC_API_KEY
-      });
-      
-      const response = await fetch('/api/generate-narrative', {
+      const response = await fetch('/api/generate-narrative-v2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Add authentication header
-          'x-api-key': apiKey,
-          // OR use Bearer token
-          // 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`
         },
         body: JSON.stringify(requestBody)
       });
@@ -673,60 +631,26 @@ export default function SkillsExperienceComplianceDashboard() {
       console.log('[SkillsExperienceComp] Response ok:', response.ok);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[SkillsExperienceComp] API error response:', errorText);
-        
-        // Try to parse JSON error
-        let errorMessage = `API call failed: ${response.status}`;
-        try {
-          const errorJson = JSON.parse(errorText);
-          if (errorJson.details) {
-            errorMessage += ` - ${errorJson.details}`;
-          } else if (errorJson.error) {
-            errorMessage += ` - ${errorJson.error}`;
-          }
-        } catch (e) {
-          errorMessage += ` - ${errorText}`;
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(`API call failed: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('[SkillsExperienceComp] API response data:', data);
+      console.log('[SkillsExperienceComp] API response:', data);
       
-      if (data.error) {
-        throw new Error(`API returned error: ${data.error}${data.details ? ` - ${data.details}` : ''}`);
-      }
-      
-      if (!data.narrative) {
-        throw new Error('No narrative returned from API');
+      if (!data.success || !data.narrative) {
+        throw new Error(data.error || 'Failed to generate narrative');
       }
       
       narrative = data.narrative;
-      console.log('[SkillsExperienceComp] Narrative successfully generated via AI');
+      console.log('[SkillsExperienceComp] Narrative generated successfully');
     } catch (error) {
       console.error('[SkillsExperienceComp] Error in AI narrative generation:', error);
       
       // Show user-friendly error notification
-      if (error instanceof Error) {
-        if (error.message.includes('OpenAI API key is missing')) {
-          toast.error('AI service not configured. Please contact support.', {
-            description: 'Using template-based assessment instead.',
-            duration: 5000
-          });
-        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-          toast.error('Authentication failed', {
-            description: 'Please check your API configuration.',
-            duration: 5000
-          });
-        } else {
-          toast.warning('AI narrative generation failed', {
-            description: 'Using template-based assessment instead.',
-            duration: 5000
-          });
-        }
-      }
+      toast.info('Using template-based assessment', {
+        description: 'AI narrative generation is currently unavailable.',
+        duration: 3000
+      });
       
       // Log fallback usage
       try {
