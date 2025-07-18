@@ -109,11 +109,19 @@ Key tables include:
    - Domain-specific prompts in `/src/lib/prompts/`
    - Each prompt includes UK legal references
    - Structured output requirements
+   - Customizable styles via `/src/lib/ai-style-config.ts`
 
 3. **Multi-Model Architecture**
    - Different models for different tasks (extraction, matching, assessment)
    - Ensemble voting for critical decisions
    - A/B testing framework built-in
+
+4. **Skills & Experience Agent Implementation** (NEW - January 2025)
+   - **Simple AI Service**: `/src/lib/simple-ai-service.ts` - Direct OpenAI integration
+   - **API Endpoint**: `/api/generate-narrative-v2` - No authentication required
+   - **Manual Worker Form**: Pre-filled form for data confirmation/correction
+   - **Customizable Narratives**: Plain English style configurable in `ai-style-config.ts`
+   - **Fallback Logic**: Template-based narratives when AI fails
 
 ### API Endpoints
 
@@ -156,11 +164,22 @@ Critical environment variables (see `.env.example`):
    - Update prompts in `/src/lib/prompts/`
    - Adjust model selection in `aiNarrativeService.ts`
    - Configure tenant-specific settings via `multi-tenant-service.ts`
+   - For simple implementations, use `simple-ai-service.ts` pattern
 
 3. **Working with the database**:
    - Run migrations in numerical order from root directory
    - Update types with `npm run db:generate-types`
    - Use Supabase client from `/src/lib/supabase-client.ts`
+
+4. **Handling Authentication Issues**:
+   - If auth blocks AI generation, use `simple-ai-service.ts` pattern
+   - Create new API endpoints without auth checks (e.g., `/api/generate-narrative-v2`)
+   - Use `DISABLE_AUTH=true` environment variable for development
+
+5. **Customizing AI Narratives**:
+   - Edit `/src/lib/ai-style-config.ts` for tone and format
+   - Update prompts in `/src/lib/prompts/improved-skills-prompt.ts`
+   - See `AI_CUSTOMIZATION_GUIDE.md` for detailed instructions
 
 ### Deployment Notes
 
@@ -176,3 +195,23 @@ Critical environment variables (see `.env.example`):
 - Implement proper authentication checks in API routes
 - Validate all user inputs before AI processing
 - Use Supabase RLS policies for data access control
+
+### Troubleshooting Common Issues
+
+1. **AI Narrative Generation Not Working**:
+   - Check `OPENAI_API_KEY` is set in environment variables
+   - Verify authentication isn't blocking the request
+   - Use `/api/generate-narrative-v2` endpoint if auth issues persist
+   - Check browser console for 401/403 errors
+
+2. **Worker Data Showing as "Unknown"**:
+   - Manual worker form will appear after document upload
+   - Users can confirm/edit extracted information
+   - All fields marked with * are required
+   - Job Title should match exactly as stated in CoS
+
+3. **Environment Variables Not Loading**:
+   - Ensure `.env.local` file exists in root directory
+   - Restart dev server after adding new variables
+   - In Vercel, add variables without quotes
+   - Use `DISABLE_AUTH=true` (not `"true"`) in Vercel
