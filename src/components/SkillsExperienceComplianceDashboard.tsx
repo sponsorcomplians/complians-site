@@ -1631,7 +1631,7 @@ Please review all documents manually to ensure compliance with Home Office requi
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Job Title *</label>
+              <label className="block text-sm font-medium mb-1">Job Title (as stated in the CoS) *</label>
               <input
                 type="text"
                 value={pendingWorkerData?.jobTitle || ''}
