@@ -26,13 +26,13 @@ tone: 'assertive',      // Strong, definitive statements
 ### Tone Examples:
 
 **Professional (Default):**
-> "The evidence suggests that the worker's experience aligns with the role requirements."
+> "The evidence suggests that John Smith's experience aligns with the Software Engineer role requirements."
 
 **Assertive:**
-> "The worker's experience definitively meets all role requirements."
+> "John Smith's experience definitively meets all requirements for the Software Engineer position."
 
 **Risk-Focused:**
-> "While the worker meets basic requirements, potential compliance risks include..."
+> "While John Smith meets basic requirements for CoS ABC123, potential compliance risks include..."
 
 ## 2. Changing the Format
 
@@ -40,11 +40,13 @@ Select your preferred document format:
 
 ```typescript
 // Choose your preferred format (uncomment one)
-format: 'letter',    // Formal business letter
-// format: 'report', // Executive report with sections
-// format: 'memo',   // Internal memorandum
-// format: 'bulleted', // Bullet-point focused
+format: 'narrative', // Flowing paragraphs without sections (default)
+// format: 'letter',  // Letter style paragraphs
+// format: 'report',  // Report style narrative
+// format: 'memo',    // Memo style text
 ```
+
+**Note**: All formats now use continuous paragraphs without bullet points or numbered sections. The narrative refers to workers by name and includes job titles and CoS references throughout.
 
 ## 3. Custom Instructions
 

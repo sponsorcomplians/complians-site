@@ -11,20 +11,21 @@ export const AIStyleConfig = {
   // tone: 'solutionOriented',
 
   // Choose your preferred format (uncomment one)
-  format: 'letter', // default
+  format: 'narrative', // default - flowing paragraphs without sections
+  // format: 'letter',
   // format: 'report',
   // format: 'memo',
-  // format: 'bulleted',
 
   // Custom style instructions
   // Add any specific requirements for your organization
   customInstructions: `
-    // Example custom instructions:
-    // - Always include case reference numbers in headers
-    // - Use British date format (DD/MM/YYYY)
-    // - Include your company name: [Your Company Name]
-    // - Add specific legal disclaimer at the end
-    // - Use specific terminology preferred by your organization
+    - Write in continuous paragraphs without any section headings or bullet points
+    - Always use the worker's actual name throughout (e.g., "Mr. Smith" or "John Smith")
+    - Reference the specific job title and CoS number multiple times in the narrative
+    - Do not include any signature blocks or contact information
+    - Do not use phrases like "the worker" or "the candidate" - always use their name
+    - Integrate all information into flowing prose
+    - Avoid any numbered lists or bullet points - use connecting phrases instead
   `,
 
   // Specific phrases to use or avoid
@@ -75,8 +76,9 @@ export function getStyleConfiguration() {
   }
   
   // Add format preference
-  if (AIStyleConfig.format !== 'letter' && formatOptions[AIStyleConfig.format + 'Style']) {
-    prompt += '\n\nFORMAT PREFERENCE:\n' + formatOptions[AIStyleConfig.format + 'Style'];
+  const formatKey = AIStyleConfig.format + 'Style';
+  if (formatOptions[formatKey]) {
+    prompt += '\n\nFORMAT PREFERENCE:\n' + formatOptions[formatKey];
   }
   
   // Add custom instructions
