@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MobileLayout } from '@/components/MobileLayout';
+import { UIToggle } from '@/components/agents-v2';
 
 const allAgents = [
   {
@@ -308,6 +309,7 @@ export default function HomePage() {
 
   return (
     <MobileLayout>
+      <UIToggle currentPage="old" />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-[#001e70] to-[#00c3ff] text-white py-20">

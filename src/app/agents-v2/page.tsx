@@ -38,6 +38,7 @@ import { Badge } from '@/components/agents-v2/Badge'
 import { Icon } from '@/components/agents-v2/IconMap'
 import { aiAgents } from '@/components/agents-v2/data'
 import { AIAgent } from '@/components/agents-v2/types'
+import { UIToggle } from '@/components/agents-v2'
 
 export default function AgentsV2Page() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -81,6 +82,7 @@ export default function AgentsV2Page() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <UIToggle currentPage="new" />
       {/* Hero Section with Showcase Images */}
       <div className="bg-gradient-to-r from-[#263976] to-[#00c3ff] text-white py-16">
         <div className="container mx-auto px-6">
