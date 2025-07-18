@@ -1158,25 +1158,55 @@ Please review all documents manually to ensure compliance with Home Office requi
             AI-powered skills and experience compliance analysis for UK sponsors
           </p>
         </div>
-        {/* Explainer Module */}
+
+        {/* Two-column layout above tabs */}
         <div className="mb-8">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Bot className="h-5 w-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-blue-900">AI Skills & Experience Compliance System</h3>
+          <div className="bg-white rounded-lg p-6 shadow border">
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* Left: What this agent does */}
+              <div className="md:w-2/3 w-full mb-4 md:mb-0">
+                <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
+                  <h3 className="text-lg font-semibold text-[#263976] mb-2">
+                    What this agent does:
+                  </h3>
+                  <p className="text-gray-700 mb-4 leading-relaxed">
+                    The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements. This system ensures that all sponsored workers possess the necessary competencies and documented experience to fulfill their designated roles effectively and lawfully.
+                  </p>
+                  <ul className="list-disc list-inside mb-4 text-gray-700">
+                    <li>Verifies skills and experience match the specific job role requirements</li>
+                    <li>Analyses CVs, references, contracts, payslips, and training certificates</li>
+                    <li>Detects inconsistencies and gaps in employment history and qualifications</li>
+                    <li>Flags compliance risks under paragraph C1.38 of the Immigration Rules</li>
+                    <li>Generates legal-style reports with detailed compliance assessments</li>
+                    <li>Provides remedial action guidance for identified compliance gaps</li>
+                  </ul>
+                </div>
+              </div>
+              {/* Right: Documents required */}
+              <div className="md:w-1/3 w-full">
+                <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
+                  <h4 className="text-md font-semibold text-[#263976] mb-2">Documents required for a full compliance assessment:</h4>
+                  <ul className="list-disc list-inside text-gray-700">
+                    <li>Certificate of Sponsorship (CoS)</li>
+                    <li>Full job description document</li>
+                    <li>CV with detailed employment history</li>
+                    <li>Reference letters from previous employers</li>
+                    <li>Employment contracts and terms of engagement</li>
+                    <li>Recent payslips demonstrating salary compliance</li>
+                    <li>Training certificates and professional qualifications (if applicable)</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <p className="text-blue-800 mb-3">
-              The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements.
-            </p>
-            <div className="text-sm text-blue-700">
-              <strong>Capabilities:</strong>
-              <ul className="list-disc list-inside mt-1 space-y-1">
-                <li>Verifies skills and experience match the specific job role requirements</li>
-                <li>Analyses CVs, references, contracts, payslips, and training certificates</li>
-                <li>Detects inconsistencies and gaps in employment history and qualifications</li>
-                <li>Flags compliance risks under paragraph C1.38 of the Immigration Rules</li>
-                <li>Generates legal-style reports with detailed compliance assessments</li>
-              </ul>
+            
+            {/* Warning */}
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <p className="text-red-600 font-medium text-sm leading-relaxed">
+                  ⚠️ CRITICAL COMPLIANCE WARNING: Missing or incomplete documentation will be marked against compliance and may result in a serious breach of sponsor duties or potential licence suspension. The AI Skills & Experience Compliance System provides essential verification but does not replace the sponsor's legal responsibility to ensure all workers meet the required standards.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -1415,56 +1445,6 @@ Please review all documents manually to ensure compliance with Home Office requi
 
         {activeTab === 'assessment' && (
           <div className="space-y-6">
-            {/* Documents Required Section */}
-            <div className="bg-white rounded-lg p-6 shadow border">
-              <div className="flex flex-col md:flex-row gap-8">
-                {/* Left: What this agent does */}
-                <div className="md:w-2/3 w-full mb-4 md:mb-0">
-                  <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
-                    <h3 className="text-lg font-semibold text-[#263976] mb-2">
-                      What this agent does:
-                    </h3>
-                    <p className="text-gray-700 mb-4 leading-relaxed">
-                      The AI Skills & Experience Compliance System is a sophisticated automated assessment tool designed to evaluate and verify the qualifications, skills, and professional experience of migrant workers against UK Home Office compliance requirements. This system ensures that all sponsored workers possess the necessary competencies and documented experience to fulfill their designated roles effectively and lawfully.
-                    </p>
-                    <ul className="list-disc list-inside mb-4 text-gray-700">
-                      <li>Verifies skills and experience match the specific job role requirements</li>
-                      <li>Analyses CVs, references, contracts, payslips, and training certificates</li>
-                      <li>Detects inconsistencies and gaps in employment history and qualifications</li>
-                      <li>Flags compliance risks under paragraph C1.38 of the Immigration Rules</li>
-                      <li>Generates legal-style reports with detailed compliance assessments</li>
-                      <li>Provides remedial action guidance for identified compliance gaps</li>
-                    </ul>
-                  </div>
-                </div>
-                {/* Right: Documents required */}
-                <div className="md:w-1/3 w-full">
-                  <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
-                    <h4 className="text-md font-semibold text-[#263976] mb-2">Documents required for a full compliance assessment:</h4>
-                    <ul className="list-disc list-inside text-gray-700">
-                      <li>Certificate of Sponsorship (CoS)</li>
-                      <li>Full job description document</li>
-                      <li>CV with detailed employment history</li>
-                      <li>Reference letters from previous employers</li>
-                      <li>Employment contracts and terms of engagement</li>
-                      <li>Recent payslips demonstrating salary compliance</li>
-                      <li>Training certificates and professional qualifications (if applicable)</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Warning */}
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-red-600 font-medium text-sm leading-relaxed">
-                    ⚠️ CRITICAL COMPLIANCE WARNING: Missing or incomplete documentation will be marked against compliance and may result in a serious breach of sponsor duties or potential licence suspension. The AI Skills & Experience Compliance System provides essential verification but does not replace the sponsor's legal responsibility to ensure all workers meet the required standards.
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <div className="bg-white rounded-lg p-6 shadow border">
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
