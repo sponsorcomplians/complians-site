@@ -1,0 +1,57 @@
+# CodeRabbit Configuration
+# This file configures how CodeRabbit analyzes your code
+
+# General settings
+settings:
+  # Language-specific settings
+  languages:
+    typescript:
+      # Enable TypeScript-specific analysis
+      enabled: true
+      # Custom rules for TypeScript
+      rules:
+        - "no-any"
+        - "prefer-interface"
+    javascript:
+      enabled: true
+    sql:
+      enabled: true
+
+# Review settings
+review:
+  # What to include in reviews
+  include:
+    - "src/**/*.{ts,tsx,js,jsx}"
+    - "lib/**/*.{ts,tsx,js,jsx}"
+    - "components/**/*.{ts,tsx,js,jsx}"
+  
+  # What to exclude from reviews
+  exclude:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "*.test.{ts,tsx,js,jsx}"
+    - "*.spec.{ts,tsx,js,jsx}"
+
+# Chat settings
+chat:
+  # Context window size
+  context_lines: 50
+  
+  # Include file types in chat context
+  include_files:
+    - "*.{ts,tsx,js,jsx}"
+    - "*.{json,yaml,yml}"
+    - "*.md"
+
+# Security settings
+security:
+  # Enable security analysis
+  enabled: true
+  
+  # Check for common vulnerabilities
+  checks:
+    - "sql-injection"
+    - "xss"
+    - "authentication"
+    - "authorization" 

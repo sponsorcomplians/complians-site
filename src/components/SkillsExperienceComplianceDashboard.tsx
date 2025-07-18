@@ -780,24 +780,57 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
       return;
     }
     try {
+      // Extract real data from uploaded documents
+      const extracted = await extractSkillsExperienceInfo(selectedFiles);
+      
+      // Log extracted data for debugging
+      console.log('[handleAnalyze] Extracted data:', extracted);
+      
+      // Show worker form with pre-filled data for user confirmation
+      setPendingWorkerData({
+        workerName: extracted.workerName || '',
+        jobTitle: extracted.jobTitle || '',
+        socCode: extracted.socCode || '',
+        assignmentDate: extracted.assignmentDate || new Date().toISOString().split('T')[0],
+        // Store all extracted data for later use
+        extractedData: extracted
+      });
+      setShowWorkerForm(true);
+    } catch (error) {
+      await errorHandlingService.handleError(error as Error);
+    }
+  };
+
+  // Generate assessment with manually confirmed data
+  const generateAssessmentWithData = async (workerData: any) => {
+    try {
       await errorHandlingService.retryWithBackoff(
         async () => {
-          // Extract real data from uploaded documents
-          const extracted = await extractSkillsExperienceInfo(selectedFiles);
+          const extracted = workerData.extractedData || {};
           
-          // Log extracted data for debugging
-          console.log('[handleAnalyze] Extracted data:', extracted);
+          // Use manually entered data, falling back to extracted data
+          const finalWorkerName = workerData.workerName || extracted.workerName || 'Unknown Worker';
+          const finalJobTitle = workerData.jobTitle || extracted.jobTitle || 'Unknown Position';
+          const finalSocCode = workerData.socCode || extracted.socCode || 'Unknown';
+          const finalAssignmentDate = workerData.assignmentDate || extracted.assignmentDate || new Date().toISOString().split('T')[0];
+          
+          console.log('[generateAssessmentWithData] Using worker data:', {
+            workerName: finalWorkerName,
+            jobTitle: finalJobTitle,
+            socCode: finalSocCode,
+            assignmentDate: finalAssignmentDate
+          });
           
           // Generate assessment using extracted data with enhanced logic
           const assessmentResult = await generateSkillsExperienceAssessment({
-            workerName: extracted.workerName,
+            workerName: finalWorkerName,
             cosReference: 'COS_' + Date.now(),
-            assignmentDate: extracted.assignmentDate,
-            jobTitle: extracted.jobTitle,
-            socCode: extracted.socCode,
-            cosDuties: extracted.cosDuties,
-            jobDescriptionDuties: extracted.jobDescriptionDuties,
-            hasJobDescription: extracted.hasJobDescription,
+            assignmentDate: finalAssignmentDate,
+            jobTitle: finalJobTitle,
+            socCode: finalSocCode,
+            cosDuties: extracted.cosDuties || 'Not provided',
+            jobDescriptionDuties: extracted.jobDescriptionDuties || 'Not provided',
+            hasJobDescription: extracted.hasJobDescription || false,
             hasCV: extracted.hasCV || false,
             hasReferences: extracted.hasReferences || false,
             hasContracts: extracted.hasContracts || false,
@@ -814,40 +847,40 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
           const newAssessment: SkillsExperienceAssessment = {
             id: 'ASSESS_' + Date.now(),
             workerId: 'WORKER_' + Date.now(),
-            workerName: extracted.workerName,
-            jobTitle: extracted.jobTitle,
-            socCode: extracted.socCode,
-            skills: extracted.skills,
-            experience: extracted.experience,
+            workerName: finalWorkerName,
+            jobTitle: finalJobTitle,
+            socCode: finalSocCode,
+            skills: extracted.skills || 'To be assessed',
+            experience: extracted.experience || 'To be assessed',
             complianceStatus: assessmentResult.complianceStatus,
             riskLevel: assessmentResult.riskLevel,
             redFlag: assessmentResult.redFlag,
-            assignmentDate: extracted.assignmentDate,
+            assignmentDate: finalAssignmentDate,
             professionalAssessment: assessmentResult.professionalAssessment,
             generatedAt: new Date().toISOString()
           };
           
-          // Add worker
+          // Add worker with manually confirmed data
           const newWorker: SkillsExperienceWorker = {
             id: newAssessment.workerId,
-            name: extracted.workerName,
-            jobTitle: extracted.jobTitle,
-            socCode: extracted.socCode,
+            name: finalWorkerName,
+            jobTitle: finalJobTitle,
+            socCode: finalSocCode,
             complianceStatus: assessmentResult.complianceStatus,
             riskLevel: assessmentResult.riskLevel,
             lastAssessment: new Date().toISOString().split('T')[0],
             redFlag: assessmentResult.redFlag,
-            assignmentDate: extracted.assignmentDate,
-            skills: extracted.skills,
-            experience: extracted.experience
+            assignmentDate: finalAssignmentDate,
+            skills: extracted.skills || 'To be assessed',
+            experience: extracted.experience || 'To be assessed'
           };
           
           // Log the new worker being added
-          console.log('[handleAnalyze] Adding new worker:', newWorker);
+          console.log('[generateAssessmentWithData] Adding new worker:', newWorker);
           
           setWorkers(prev => {
             const updated = [...prev, newWorker];
-            console.log('[handleAnalyze] Updated workers list:', updated);
+            console.log('[generateAssessmentWithData] Updated workers list:', updated);
             return updated;
           });
           setAssessments(prev => [...prev, newAssessment]);
@@ -855,6 +888,7 @@ Compliance Verdict: ${isCompliant ? 'COMPLIANT' : 'SERIOUS BREACH'} — ${isComp
           setSelectedFiles([]);
           if (fileInputRef.current) fileInputRef.current.value = '';
           setActiveTab('assessment');
+          setPendingWorkerData(null);
           
           // Log audit information if available
           if (assessmentResult.auditId) {
@@ -1576,6 +1610,82 @@ Please review all documents manually to ensure compliance with Home Office requi
               onClose={() => setPreviewDocument(null)}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Worker Information Form */}
+      <Dialog open={showWorkerForm} onOpenChange={setShowWorkerForm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Worker Information</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Worker Name *</label>
+              <input
+                type="text"
+                value={pendingWorkerData?.workerName || ''}
+                onChange={(e) => setPendingWorkerData({...pendingWorkerData, workerName: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter worker's full name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Job Title *</label>
+              <input
+                type="text"
+                value={pendingWorkerData?.jobTitle || ''}
+                onChange={(e) => setPendingWorkerData({...pendingWorkerData, jobTitle: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. Software Engineer"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">SOC Code *</label>
+              <input
+                type="text"
+                value={pendingWorkerData?.socCode || ''}
+                onChange={(e) => setPendingWorkerData({...pendingWorkerData, socCode: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. 2136"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Assignment Date</label>
+              <input
+                type="date"
+                value={pendingWorkerData?.assignmentDate || new Date().toISOString().split('T')[0]}
+                onChange={(e) => setPendingWorkerData({...pendingWorkerData, assignmentDate: e.target.value})}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <Button
+                onClick={() => {
+                  setShowWorkerForm(false);
+                  setPendingWorkerData(null);
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  if (pendingWorkerData?.workerName && pendingWorkerData?.jobTitle && pendingWorkerData?.socCode) {
+                    setShowWorkerForm(false);
+                    // Continue with assessment generation
+                    await generateAssessmentWithData(pendingWorkerData);
+                  } else {
+                    toast.error('Please fill in all required fields');
+                  }
+                }}
+                className="flex-1"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
