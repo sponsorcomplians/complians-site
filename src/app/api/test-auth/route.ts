@@ -13,7 +13,7 @@ export async function GET() {
       hasSecretKey: !!process.env.API_SECRET_KEY,
       hasOpenAIKey: !!process.env.OPENAI_API_KEY,
     },
-    recommendations: []
+    recommendations: [] as string[]
   };
 
   // Add recommendations based on configuration
