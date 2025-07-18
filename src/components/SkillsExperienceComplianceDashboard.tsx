@@ -1147,8 +1147,7 @@ Please review all documents manually to ensure compliance with Home Office requi
   };
 
   return (
-    <ErrorBoundary>
-      <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-brand-dark mb-2 flex items-center gap-3">
@@ -1707,6 +1706,5 @@ Please review all documents manually to ensure compliance with Home Office requi
         </DialogContent>
       </Dialog>
     </div>
-    </ErrorBoundary>
   );
 } 
